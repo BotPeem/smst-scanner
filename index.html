@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SMST Open House 2026 - ระบบสแกนตั๋วเข้างาน</title>
+  <title>SMST Open House 2026 - ระบบเช็กอินเข้างาน</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -11,32 +11,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Prompt', sans-serif; }
+    .theme-bg { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); }
+    .card-glow { box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.3); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-12">
+<body class="theme-bg text-slate-100 min-h-screen pb-12">
 
-  <!-- แถบหัวเว็บ -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-20">
+  <!-- แถบหัวเว็บ ธีมม่วงดวงดาว -->
+  <header class="bg-indigo-950/80 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-20">
     <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-      <div>
-        <h1 class="text-lg font-bold text-emerald-400">SMST Open House 2026</h1>
-        <p class="text-xs text-slate-400">ระบบสแกน QR Code และเช็กอินเข้างาน</p>
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">🌙</span>
+        <div>
+          <h1 class="text-base font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
+          <p class="text-[11px] text-indigo-200/80">ระบบสแกนตั๋วและเช็กอินภาคสนาม</p>
+        </div>
       </div>
-      <div id="headerStats" class="text-right bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-        <p class="text-[10px] text-slate-400">เข้างานแล้ว</p>
-        <p class="text-sm font-bold text-emerald-400"><span id="checkedInCount">0</span> / <span id="totalCount">0</span> คน</p>
+      <div class="text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50">
+        <p class="text-[10px] text-indigo-300">เข้างานแล้ว</p>
+        <p class="text-sm font-extrabold text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span> คน</p>
       </div>
     </div>
 
     <!-- ปุ่มสลับหน้า -->
-    <div class="max-w-lg mx-auto px-4 pb-2 flex gap-2 text-xs font-medium">
-      <button onclick="switchTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">
+    <div class="max-w-lg mx-auto px-4 pb-2.5 flex gap-2 text-xs font-semibold">
+      <button onclick="switchTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 shadow-md transition">
         📷 สแกนตั๋ว
       </button>
-      <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+      <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
         📋 รายชื่อทั้งหมด
       </button>
-      <button onclick="switchTab('import')" id="tab-import" class="flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+      <button onclick="switchTab('import')" id="tab-import" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
         📂 อัปเดต CSV
       </button>
     </div>
@@ -46,18 +51,19 @@
 
     <!-- แท็บที่ 1: หน้าสแกนตั๋ว -->
     <section id="view-scan" class="space-y-4">
-      <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl card-glow">
+        
         <!-- ปุ่มเปิดกล้อง -->
         <div id="cameraStartArea">
-          <button onclick="startScanner()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-bold text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-            <span>📷</span> เปิดกล้องสแกน QR Code
+          <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+            <span class="text-xl">✨</span> เปิดกล้องสแกน QR Code
           </button>
         </div>
 
         <!-- กล่องแสดงภาพจากกล้อง -->
         <div id="cameraActiveArea" class="hidden space-y-3">
-          <div id="qr-reader" class="w-full rounded-xl overflow-hidden bg-black border border-slate-700"></div>
-          <button onclick="stopScanner()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl">
+          <div id="qr-reader" class="w-full rounded-2xl overflow-hidden bg-black border border-indigo-700"></div>
+          <button onclick="stopScanner()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-2xl">
             ✕ ปิดกล้อง
           </button>
         </div>
@@ -67,71 +73,73 @@
           <input
             id="searchInput"
             type="text"
-            placeholder="พิมพ์รหัสจอง (เช่น EA5641E3) หรือชื่อน้อง..."
-            class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
+            placeholder="พิมพ์รหัสจอง หรือชื่อน้อง..."
+            class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-indigo-800/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/50"
           />
-          <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm">
+          <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl text-sm shadow-md transition">
             ค้นหา
           </button>
         </form>
 
         <!-- ปุ่มลัดสำหรับกดทดสอบระบบ -->
-        <div class="mt-3 pt-3 border-t border-slate-800/80">
-          <p class="text-[11px] text-slate-400 mb-1.5">🧪 ปุ่มกดทดสอบข้อมูลจริงจากไฟล์ CSV ของคุณ:</p>
+        <div class="mt-3 pt-3 border-t border-indigo-800/40">
+          <p class="text-[11px] text-indigo-300 mb-1.5 flex items-center gap-1">
+            <span>⭐</span> ทดสอบข้อมูลตัวอย่าง:
+          </p>
           <div class="flex flex-wrap gap-1.5 text-xs">
-            <button onclick="searchTicket('EA5641E3')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded-lg border border-slate-700">
+            <button onclick="searchTicket('EA5641E3')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
               EA5641E3 (กลุ่ม 4 คน)
             </button>
-            <button onclick="searchTicket('F23143D5')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded-lg border border-slate-700">
+            <button onclick="searchTicket('F23143D5')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
               F23143D5 (กลุ่ม 3 คน)
             </button>
-            <button onclick="searchTicket('7892AC9E')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded-lg border border-slate-700">
+            <button onclick="searchTicket('7892AC9E')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
               7892AC9E (คู่ 2 คน)
             </button>
-            <button onclick="searchTicket('7447C7AD')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg border border-slate-700">
-              7447C7AD (รอชำระเงิน)
+            <button onclick="searchTicket('7447C7AD')" class="px-2.5 py-1.5 bg-amber-950/50 hover:bg-amber-900/50 text-amber-300 rounded-xl border border-amber-700/40">
+              7447C7AD (รอชำระ)
             </button>
-            <button onclick="searchTicket('D0856FAE')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-rose-300 rounded-lg border border-slate-700">
-              D0856FAE (ยกเลิกแล้ว)
+            <button onclick="searchTicket('D0856FAE')" class="px-2.5 py-1.5 bg-rose-950/50 hover:bg-rose-900/50 text-rose-300 rounded-xl border border-rose-700/40">
+              D0856FAE (ยกเลิก)
             </button>
           </div>
         </div>
       </div>
 
       <!-- สถานะกำลังโหลด -->
-      <div id="loadingIndicator" class="hidden text-center py-6 text-slate-400 text-sm animate-pulse">
-        กำลังค้นหาข้อมูลตั๋ว...
+      <div id="loadingIndicator" class="hidden text-center py-6 text-indigo-300 text-sm animate-pulse">
+        กำลังค้นหาข้อมูลตั๋วในระบบ...
       </div>
 
-      <!-- พื้นที่แสดงผลลัพธ์เมื่อสแกนหรือค้นหา -->
+      <!-- พื้นที่แสดงผลลัพธ์ -->
       <div id="resultContainer"></div>
     </section>
 
     <!-- แท็บที่ 2: รายชื่อทั้งหมด -->
     <section id="view-list" class="hidden space-y-3">
-      <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl">
         <div class="flex justify-between items-center mb-3">
-          <h2 class="font-bold text-base">รายชื่อผู้สมัครในระบบ</h2>
-          <button onclick="loadAllStatsAndList()" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-emerald-400">
-            🔄 รีเฟรชข้อมูล
+          <h2 class="font-bold text-sm text-indigo-200">รายชื่อผู้สมัครทั้งหมด</h2>
+          <button onclick="loadAllStatsAndList()" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
+            🔄 รีเฟรช
           </button>
         </div>
         <div id="allAttendeesList" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
       </div>
     </section>
 
-    <!-- แท็บที่ 3: อัปโหลดไฟล์ CSV ใหม่ -->
+    <!-- แท็บที่ 3: อัปโหลดไฟล์ CSV -->
     <section id="view-import" class="hidden space-y-4">
-      <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
-        <h2 class="font-bold text-lg text-emerald-400">📂 อัปเดตรายชื่อจากไฟล์ CSV</h2>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          เมื่อมีผู้สมัครเพิ่มในรอบถัดไป หรือมีการเพิ่มคอลัมน์ QR Code ในไฟล์ CSV คุณสามารถเลือกไฟล์ <code class="text-amber-300">.csv</code> เพื่อนำเข้าข้อมูลใหม่ได้ทันที โดยที่ประวัติการเช็กอินของคนที่เข้างานไปแล้วจะไม่หายครับ
+      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
+        <h2 class="font-bold text-base text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV</h2>
+        <p class="text-xs text-indigo-200/80 leading-relaxed">
+          อัปโหลดไฟล์ <code class="text-amber-300 bg-indigo-900 px-1.5 py-0.5 rounded">.csv</code> เพื่อเพิ่มรายชื่อรอบใหม่ หรืออัปเดตสถานะการชำระเงิน โดยประวัติการเช็กอินจะไม่หาย
         </p>
 
-        <div class="border-2 border-dashed border-slate-700 rounded-xl p-5 text-center space-y-3 bg-slate-950/50">
-          <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer" />
-          <button onclick="importCSVFile()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-xl text-sm">
-            ⬆️ อัปโหลดและบันทึกเข้าฐานข้อมูล
+        <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/40">
+          <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
+          <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl text-sm shadow-md transition">
+            ⬆️ อัปโหลดและบันทึกข้อมูล
           </button>
         </div>
 
@@ -142,7 +150,6 @@
   </main>
 
   <script>
-    // เชื่อมต่อ Supabase ของคุณ
     const SUPABASE_URL = "https://ebgauldhvwxoqczbdzic.supabase.co";
     const SUPABASE_KEY = "sb_publishable_CWarN4yQwi30TiIFP6Utxw_OCkkdbem";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -150,26 +157,23 @@
     let html5QrCode = null;
     let currentBookingCode = null;
 
-    // โหลดยอดผู้เข้างานทันทีที่เปิดเว็บ
     window.addEventListener("DOMContentLoaded", () => {
       loadAllStatsAndList();
     });
 
-    // สลับแท็บหน้าจอ
     function switchTab(tab) {
       ["scan", "list", "import"].forEach((t) => {
         document.getElementById(`view-${t}`).classList.add("hidden");
         const btn = document.getElementById(`tab-${t}`);
-        btn.className = "flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700";
+        btn.className = "flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
       });
       document.getElementById(`view-${tab}`).classList.remove("hidden");
-      document.getElementById(`tab-${tab}`).className = "flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold";
+      document.getElementById(`tab-${tab}`).className = "flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 shadow-md transition";
 
       if (tab !== "scan") stopScanner();
       if (tab === "list") loadAllStatsAndList();
     }
 
-    // เปิดกล้องสแกน QR Code
     async function startScanner() {
       document.getElementById("cameraStartArea").classList.add("hidden");
       document.getElementById("cameraActiveArea").classList.remove("hidden");
@@ -192,7 +196,6 @@
       }
     }
 
-    // ปิดกล้อง
     async function stopScanner() {
       if (html5QrCode) {
         try {
@@ -211,21 +214,18 @@
       if (val.trim()) searchTicket(val.trim());
     }
 
-    // ค้นหาข้อมูลตั๋ว (ค้นได้ทั้งรหัสจอง, รหัส QR, หรือชื่อผู้สมัคร)
     async function searchTicket(queryText) {
       const cleanQuery = queryText.trim();
       document.getElementById("searchInput").value = cleanQuery;
       document.getElementById("loadingIndicator").classList.remove("hidden");
       document.getElementById("resultContainer").innerHTML = "";
 
-      // 1. ค้นหาจากรหัสการจอง หรือ รหัส QR ก่อน
       let { data, error } = await supabaseClient
         .from("attendees")
         .select("*")
         .or(`booking_code.ilike.${cleanQuery},qr_code.ilike.${cleanQuery}`)
         .order("person_order", { ascending: true });
 
-      // 2. ถ้าไม่เจอ ให้ลองค้นหาจากชื่อผู้สมัคร แล้วดึงทั้งกลุ่มของรหัสจองนั้นมาแสดง
       if (!data || data.length === 0) {
         const { data: nameMatch } = await supabaseClient
           .from("attendees")
@@ -255,19 +255,16 @@
       renderTicketGroup(data);
     }
 
-    // แสดงผลกรณีไม่พบรหัสตั๋ว
     function renderNotFound(code) {
       document.getElementById("resultContainer").innerHTML = `
-        <div class="bg-rose-950/90 border-2 border-rose-500 p-6 rounded-2xl text-center shadow-xl">
+        <div class="bg-rose-950/80 border border-rose-500/60 p-6 rounded-3xl text-center shadow-xl">
           <div class="text-4xl mb-2">❌</div>
-          <h2 class="text-xl font-bold text-rose-300">ไม่พบรหัสตั๋วนี้ในระบบ!</h2>
-          <p class="text-sm text-rose-200 mt-1">คำค้นหา: <span class="font-mono font-bold">"${code}"</span></p>
-          <p class="text-xs text-rose-300/80 mt-2">กรุณาตรวจสอบรหัสการจอง หรือลองค้นหาด้วยชื่อ-นามสกุลจริง</p>
+          <h2 class="text-lg font-bold text-rose-200">ไม่พบรหัสตั๋วนี้ในระบบ!</h2>
+          <p class="text-xs text-rose-300 mt-1">คำค้นหา: <span class="font-mono font-bold">"${code}"</span></p>
         </div>
       `;
     }
 
-    // แสดงผลการ์ดข้อมูลตั๋วและรายชื่อทุกคนในกลุ่ม
     function renderTicketGroup(rows) {
       const first = rows[0];
       const totalPax = rows.length;
@@ -276,60 +273,54 @@
 
       const isCancelled = first.booking_status === "ยกเลิกแล้ว";
       const isUnpaid = first.booking_status === "รอชำระเงิน";
-      const hasProblem = isCancelled || isUnpaid;
 
-      let borderClass = "border-emerald-500 bg-slate-900";
+      let borderClass = "border-indigo-700/60 bg-indigo-950/40";
       let statusBanner = "";
 
       if (isCancelled) {
-        borderClass = "border-rose-500 bg-rose-950/40";
+        borderClass = "border-rose-500/80 bg-rose-950/60";
         statusBanner = `
-          <div class="bg-rose-600 text-white p-3 rounded-xl font-bold text-center text-sm mb-4">
-            ⛔ ตั๋วใบนี้ถูกยกเลิกแล้ว (สถานะ: ยกเลิกแล้ว) ห้ามเช็กอินเข้างาน!
+          <div class="bg-rose-600 text-white p-3 rounded-2xl font-bold text-center text-xs mb-4">
+            ⛔ ตั๋วใบนี้ถูกยกเลิกแล้ว (ห้ามเช็กอินเข้างาน!)
           </div>`;
       } else if (isUnpaid) {
-        borderClass = "border-amber-500 bg-amber-950/40";
+        borderClass = "border-amber-500/80 bg-amber-950/60";
         statusBanner = `
-          <div class="bg-amber-500 text-slate-950 p-3 rounded-xl font-bold text-center text-sm mb-4">
-            ⚠️ รายการนี้ "รอชำระเงิน" กรุณาตรวจสอบหลักฐานการโอนเงินก่อนให้เข้างาน
+          <div class="bg-amber-500 text-slate-950 p-3 rounded-2xl font-bold text-center text-xs mb-4">
+            ⚠️ รายการนี้ "รอชำระเงิน" กรุณาตรวจสอบหลักฐานการโอนก่อน
           </div>`;
       } else if (remainingPax === 0) {
-        borderClass = "border-blue-500 bg-slate-900";
+        borderClass = "border-amber-400/80 bg-indigo-950/60";
         statusBanner = `
-          <div class="bg-blue-600/30 border border-blue-400 text-blue-200 p-3 rounded-xl font-bold text-center text-sm mb-4">
-            🎉 รหัสจองนี้เช็กอินเข้างานครบทั้ง ${totalPax} คนเรียบร้อยแล้ว
+          <div class="bg-amber-400/20 border border-amber-400/50 text-amber-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">
+            🎉 รหัสจองนี้เช็กอินเข้างานครบทั้ง ${totalPax} คนแล้ว
           </div>`;
       } else {
         statusBanner = `
-          <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-xl font-bold text-center text-sm mb-4">
-            ✅ ตั๋วถูกต้อง • สามารถเช็กอินเข้างานได้อีก ${remainingPax} คน
+          <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">
+            ✅ ตั๋วถูกต้อง • เช็กอินได้อีก ${remainingPax} คน
           </div>`;
       }
 
-      // สร้างรายการรายชื่อแต่ละคนในกลุ่ม
       const membersHtml = rows.map((person) => {
         const isChecked = person.is_checked_in;
         return `
-          <div class="p-3.5 rounded-xl border ${
+          <div class="p-3.5 rounded-2xl border ${
             isChecked
-              ? "bg-slate-950/80 border-slate-800 opacity-85"
-              : "bg-slate-800/90 border-slate-700"
+              ? "bg-slate-950/60 border-indigo-900/50 opacity-80"
+              : "bg-indigo-900/40 border-indigo-700/60"
           } flex items-center justify-between gap-3">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-slate-700 text-slate-200">
+                <span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-800 text-indigo-200">
                   คนที่ ${person.person_order}
                 </span>
-                <p class="font-bold text-base truncate ${isChecked ? "line-through text-slate-400" : "text-white"}">
-                  ${person.full_name || "ไม่ระบุชื่อ"}
+                <p class="font-bold text-sm truncate ${isChecked ? "line-through text-indigo-300" : "text-white"}">
+                  ${person.full_name || "-"}
                 </p>
               </div>
-              <p class="text-xs text-slate-400 mt-1 truncate">🏫 ${person.school || "-"} • 📞 ${person.phone || "-"}</p>
-              ${
-                isChecked
-                  ? `<p class="text-xs text-emerald-400 font-medium mt-1">✔ เช็กอินแล้วเมื่อ ${person.checked_in_at || "-"}</p>`
-                  : ""
-              }
+              <p class="text-[11px] text-indigo-200/70 mt-1 truncate">🏫 ${person.school || "-"} • 📞 ${person.phone || "-"}</p>
+              ${isChecked ? `<p class="text-[11px] text-amber-300 font-medium mt-0.5">✔ เช็กอินเมื่อ ${person.checked_in_at || "-"}</p>` : ""}
             </div>
 
             <div>
@@ -338,16 +329,16 @@
                   ? `<button
                       onclick="togglePersonCheckIn(${person.id}, true)"
                       ${isCancelled ? "disabled" : ""}
-                      class="px-4 py-2.5 rounded-xl font-bold text-sm shadow transition ${
+                      class="px-4 py-2 rounded-xl font-bold text-xs shadow transition ${
                         isCancelled
-                          ? "bg-slate-700 text-slate-500 cursor-not-allowed"
-                          : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 active:scale-95"
+                          ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+                          : "bg-amber-300 hover:bg-amber-200 text-slate-950 active:scale-95"
                       }">
                       เช็กอิน
                     </button>`
                   : `<button
                       onclick="togglePersonCheckIn(${person.id}, false)"
-                      class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 text-xs">
+                      class="px-3 py-1.5 rounded-xl bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-700 text-xs">
                       ↩️ ยกเลิก
                     </button>`
               }
@@ -356,42 +347,33 @@
         `;
       }).join("");
 
-      // ปุ่มเช็กอินทั้งกลุ่มพร้อมกัน (กรณีมาพร้อมกันหลายคน)
       const checkInAllBtn =
         !isCancelled && remainingPax > 1
-          ? `<button onclick="checkInAllRemaining('${first.booking_code}')" class="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm shadow-lg transition">
-              ✅ มาพร้อมกัน! กดเช็กอินคนที่เหลือทั้งหมด (${remainingPax} คน)
+          ? `<button onclick="checkInAllRemaining('${first.booking_code}')" class="w-full mt-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-xs shadow-lg transition">
+              ✨ เช็กอินคนที่เหลือทั้งหมดพร้อมกัน (${remainingPax} คน)
             </button>`
           : "";
 
       document.getElementById("resultContainer").innerHTML = `
-        <div class="border-2 ${borderClass} p-5 rounded-2xl shadow-xl">
+        <div class="border-2 ${borderClass} p-5 rounded-3xl shadow-xl backdrop-blur-md">
           ${statusBanner}
 
-          <div class="flex justify-between items-start border-b border-slate-800 pb-3 mb-4">
+          <div class="flex justify-between items-start border-b border-indigo-800/60 pb-3 mb-4">
             <div>
-              <span class="text-xs font-mono bg-slate-800 px-2.5 py-1 rounded text-emerald-400 border border-slate-700">
+              <span class="text-xs font-mono bg-indigo-900/80 px-2.5 py-1 rounded-xl text-amber-300 border border-indigo-700/50">
                 รหัสจอง: ${first.booking_code}
               </span>
-              <h3 class="text-sm font-semibold text-slate-200 mt-2">${first.ticket_type || "-"}</h3>
-              <p class="text-xs text-slate-400 mt-0.5">
-                ผู้ติดต่อหลัก: ${first.contact_name || "-"} (${first.contact_phone || "-"})
-              </p>
-              <p class="text-xs mt-1">
-                สถานะจอง: <span class="font-semibold text-white">${first.booking_status || "-"}</span> •
-                การเงิน: <span class="font-semibold text-amber-300">${first.payment_status || "-"}</span>
-              </p>
+              <h3 class="text-xs font-semibold text-indigo-200 mt-2">${first.ticket_type || "-"}</h3>
+              <p class="text-[11px] text-indigo-300/80 mt-0.5">ผู้ติดต่อ: ${first.contact_name || "-"}</p>
             </div>
-            <div class="text-right bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-800">
-              <p class="text-[11px] text-slate-400">เข้างานแล้ว</p>
-              <p class="text-2xl font-extrabold text-emerald-400">${checkedInPax}/${totalPax}</p>
+            <div class="text-right bg-indigo-950/80 px-3.5 py-2 rounded-2xl border border-indigo-800/80">
+              <p class="text-[10px] text-indigo-300">เข้าแล้ว</p>
+              <p class="text-xl font-extrabold text-amber-300">${checkedInPax}/${totalPax}</p>
             </div>
           </div>
 
-          <p class="text-xs font-semibold text-slate-300 mb-2">
-            รายชื่อผู้สมัครในรหัสนี้ (กดเช็กอินเฉพาะคนที่มาถึงได้เลย):
-          </p>
-          <div class="space-y-2.5">
+          <p class="text-xs font-semibold text-indigo-200 mb-2">รายชื่อผู้สมัครในรหัสนี้:</p>
+          <div class="space-y-2">
             ${membersHtml}
           </div>
 
@@ -400,56 +382,36 @@
       `;
     }
 
-    // ฟังก์ชันกดเช็กอิน หรือ ยกเลิก รายบุคคล
     async function togglePersonCheckIn(rowId, checkInState) {
       const nowStr = checkInState
         ? new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น."
         : null;
 
-      const { error } = await supabaseClient
+      await supabaseClient
         .from("attendees")
         .update({ is_checked_in: checkInState, checked_in_at: nowStr })
         .eq("id", rowId);
 
-      if (error) {
-        alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
-        return;
-      }
-
-      if (currentBookingCode) {
-        await searchTicket(currentBookingCode);
-      }
+      if (currentBookingCode) searchTicket(currentBookingCode);
       loadAllStatsAndList();
     }
 
-    // ฟังก์ชันกดเช็กอินคนที่เหลือทั้งหมดในกลุ่มเดียว
     async function checkInAllRemaining(bookingCode) {
-      const nowStr =
-        new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น.";
+      const nowStr = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น.";
 
-      const { error } = await supabaseClient
+      await supabaseClient
         .from("attendees")
         .update({ is_checked_in: true, checked_in_at: nowStr })
         .eq("booking_code", bookingCode)
         .eq("is_checked_in", false);
 
-      if (error) {
-        alert("เกิดข้อผิดพลาด: " + error.message);
-        return;
-      }
-
-      await searchTicket(bookingCode);
+      searchTicket(bookingCode);
       loadAllStatsAndList();
     }
 
-    // โหลดสถิติมุมขวาบน และตารางรายชื่อทั้งหมด
     async function loadAllStatsAndList() {
-      const { data, error } = await supabaseClient
-        .from("attendees")
-        .select("*")
-        .order("id", { ascending: true });
-
-      if (error || !data) return;
+      const { data } = await supabaseClient.from("attendees").select("*").order("id", { ascending: true });
+      if (!data) return;
 
       const validRows = data.filter((r) => r.booking_status !== "ยกเลิกแล้ว");
       const checkedCount = validRows.filter((r) => r.is_checked_in).length;
@@ -457,82 +419,56 @@
       document.getElementById("checkedInCount").innerText = checkedCount;
       document.getElementById("totalCount").innerText = validRows.length;
 
-      const listEl = document.getElementById("allAttendeesList");
-      listEl.innerHTML = data.map((r) => `
-        <div onclick="switchTab('scan'); searchTicket('${r.booking_code}')" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-600 cursor-pointer flex justify-between items-center text-xs">
+      document.getElementById("allAttendeesList").innerHTML = data.map((r) => `
+        <div onclick="switchTab('scan'); searchTicket('${r.booking_code}')" class="p-3 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 hover:border-indigo-600 cursor-pointer flex justify-between items-center text-xs">
           <div>
-            <span class="font-mono text-emerald-400 font-bold">${r.booking_code}</span>
-            <span class="text-slate-400 ml-1">(${r.person_order})</span>
+            <span class="font-mono text-amber-300 font-bold">${r.booking_code}</span>
+            <span class="text-indigo-300 ml-1">(${r.person_order})</span>
             <span class="font-semibold text-white ml-1">${r.full_name || "-"}</span>
-            <p class="text-[11px] text-slate-400 mt-0.5">${r.school || "-"} • สถานะ: ${r.booking_status || "-"}</p>
+            <p class="text-[10px] text-indigo-300/70 mt-0.5">${r.school || "-"}</p>
           </div>
           <div>
-            ${
-              r.is_checked_in
-                ? `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg font-bold">เข้าแล้ว</span>`
-                : `<span class="px-2 py-1 bg-slate-800 text-slate-400 rounded-lg">ยังไม่เข้า</span>`
-            }
+            ${r.is_checked_in ? `<span class="px-2 py-1 bg-amber-400/20 text-amber-300 rounded-xl font-bold">เข้าแล้ว</span>` : `<span class="px-2 py-1 bg-indigo-900/60 text-indigo-300 rounded-xl">ยังไม่เข้า</span>`}
           </div>
         </div>
       `).join("");
     }
 
-    // ฟังก์ชันอัปโหลดไฟล์ CSV ใหม่ผ่านหน้าเว็บ
     function importCSVFile() {
       const fileInput = document.getElementById("csvFileInput");
       const statusEl = document.getElementById("importStatus");
+      if (!fileInput.files.length) return alert("กรุณาเลือกไฟล์ .csv");
 
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert("กรุณาเลือกไฟล์ .csv ก่อนครับ");
-        return;
-      }
-
-      statusEl.innerHTML = `<span class="text-amber-300">กำลังอ่านไฟล์และอัปเดตฐานข้อมูล...</span>`;
-
+      statusEl.innerHTML = `<span class="text-amber-300">กำลังอัปเดตข้อมูล...</span>`;
       Papa.parse(fileInput.files[0], {
         header: true,
         skipEmptyLines: true,
         complete: async function (results) {
-          const rows = results.data;
-          const payload = [];
+          const payload = results.data.map(r => ({
+            booking_code: (r["รหัสการจอง"] || "").trim(),
+            person_order: (r["คนที่"] || "1/1").trim(),
+            full_name: r["ชื่อ-นามสกุล (ภาษาไทย)"] || "-",
+            school: r["โรงเรียน/มหาวิทยาลัย"] || "-",
+            phone: String(r["เบอร์โทรศัพท์"] || "-"),
+            emergency_phone: String(r["เบอร์โทรฉุกเฉิน"] || "-"),
+            emergency_relation: r["เกี่ยวข้องกับผู้สมัครเป็น"] || "-",
+            ticket_type: r["ชุดบัตร"] || "-",
+            amount: parseFloat(r["ยอดที่ต้องจ่าย"]) || 0,
+            contact_name: r["ผู้ติดต่อ"] || "-",
+            contact_phone: String(r["เบอร์ผู้ติดต่อ"] || "-"),
+            email: r["อีเมลบัญชี"] || "-",
+            booking_status: r["สถานะ"] || "-",
+            payment_status: r["สถานะการชำระเงิน"] || "-",
+            qr_code: (r["QR"] || r["รหัสการจอง"] || "").trim(),
+          })).filter(r => r.booking_code);
 
-          for (const r of rows) {
-            const bCode = (r["รหัสการจอง"] || "").trim();
-            const pOrder = (r["คนที่"] || "1/1").trim();
-            if (!bCode) continue;
-
-            const qrVal = (r["QR"] || r["QR Code"] || r["qr_code"] || bCode).trim();
-
-            payload.push({
-              booking_code: bCode,
-              person_order: pOrder,
-              full_name: r["ชื่อ-นามสกุล (ภาษาไทย)"] || "-",
-              school: r["โรงเรียน/มหาวิทยาลัย"] || "-",
-              phone: String(r["เบอร์โทรศัพท์"] || "-"),
-              emergency_phone: String(r["เบอร์โทรฉุกเฉิน"] || "-"),
-              emergency_relation: r["เกี่ยวข้องกับผู้สมัครเป็น"] || "-",
-              ticket_type: r["ชุดบัตร"] || "-",
-              amount: parseFloat(r["ยอดที่ต้องจ่าย"]) || 0,
-              contact_name: r["ผู้ติดต่อ"] || "-",
-              contact_phone: String(r["เบอร์ผู้ติดต่อ"] || "-"),
-              email: r["อีเมลบัญชี"] || "-",
-              booking_status: r["สถานะ"] || "-",
-              payment_status: r["สถานะการชำระเงิน"] || "-",
-              qr_code: qrVal,
-            });
-          }
-
-          const { error } = await supabaseClient
-            .from("attendees")
-            .upsert(payload, { onConflict: "booking_code,person_order" });
-
-          if (error) {
-            statusEl.innerHTML = `<span class="text-rose-400">❌ เกิดข้อผิดพลาด: ${error.message}</span>`;
-          } else {
-            statusEl.innerHTML = `<span class="text-emerald-400 font-bold">✅ อัปเดตข้อมูลสำเร็จทั้งหมด ${payload.length} รายชื่อ!</span>`;
+          const { error } = await supabaseClient.from("attendees").upsert(payload, { onConflict: "booking_code,person_order" });
+          if (error) statusEl.innerHTML = `<span class="text-rose-400">❌ ${error.message}</span>`;
+          else {
+            statusEl.innerHTML = `<span class="text-amber-300 font-bold">✅ อัปเดตสำเร็จ ${payload.length} รายชื่อ!</span>`;
             loadAllStatsAndList();
           }
-        },
+        }
       });
     }
   </script>

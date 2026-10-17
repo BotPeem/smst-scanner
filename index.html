@@ -24,7 +24,7 @@
         <span class="text-2xl">🌙</span>
         <div>
           <h1 class="text-base font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
-          <p class="text-[11px] text-indigo-200/80">ระบบสแกนตั๋วและเช็กอินภาคสนาม</p>
+          <p class="text-[11px] text-indigo-200/80">ระบบสแกนรหัสบัตรเข้างาน & เช็กอิน</p>
         </div>
       </div>
       <div class="text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50">
@@ -36,10 +36,10 @@
     <!-- ปุ่มสลับหน้า -->
     <div class="max-w-lg mx-auto px-4 pb-2.5 flex gap-2 text-xs font-semibold">
       <button onclick="switchTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 shadow-md transition">
-        📷 สแกนตั๋ว
+        📷 สแกนบัตร
       </button>
       <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
-        📋 รายชื่อทั้งหมด
+        📋 รายชื่อ (เรียงตามเวลาจอง)
       </button>
       <button onclick="switchTab('import')" id="tab-import" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
         📂 อัปเดต CSV
@@ -56,7 +56,7 @@
         <!-- ปุ่มเปิดกล้อง -->
         <div id="cameraStartArea">
           <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-            <span class="text-xl">✨</span> เปิดกล้องสแกน QR Code
+            <span class="text-xl">✨</span> เปิดกล้องสแกน QR รหัสบัตรเข้างาน
           </button>
         </div>
 
@@ -68,12 +68,12 @@
           </button>
         </div>
 
-        <!-- ช่องค้นหาด้วยรหัสการจอง หรือ ชื่อ -->
+        <!-- ช่องค้นหาด้วย รหัสบัตรเข้างาน (คอลัมน์ C), รหัสจอง หรือ ชื่อ -->
         <form onsubmit="handleSearchSubmit(event)" class="mt-4 flex gap-2">
           <input
             id="searchInput"
             type="text"
-            placeholder="พิมพ์รหัสจอง หรือชื่อน้อง..."
+            placeholder="พิมพ์รหัสบัตร (เช่น SMST-WF8747QA), รหัสจอง หรือชื่อ..."
             class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-indigo-800/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/50"
           />
           <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl text-sm shadow-md transition">
@@ -84,20 +84,20 @@
         <!-- ปุ่มลัดสำหรับกดทดสอบระบบ -->
         <div class="mt-3 pt-3 border-t border-indigo-800/40">
           <p class="text-[11px] text-indigo-300 mb-1.5 flex items-center gap-1">
-            <span>⭐</span> ทดสอบข้อมูลตัวอย่าง:
+            <span>⭐</span> ทดสอบข้อมูลจริงจากไฟล์ CSV ใหม่:
           </p>
           <div class="flex flex-wrap gap-1.5 text-xs">
-            <button onclick="searchTicket('EA5641E3')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
-              EA5641E3 (กลุ่ม 4 คน)
+            <button onclick="searchTicket('SMST-WF8747QA')" class="px-2.5 py-1.5 bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 font-semibold rounded-xl border border-amber-400/50">
+              🎫 SMST-WF8747QA (รหัสบัตรเข้างาน)
             </button>
-            <button onclick="searchTicket('F23143D5')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
-              F23143D5 (กลุ่ม 3 คน)
+            <button onclick="searchTicket('5AA9AC95')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
+              5AA9AC95 (กลุ่ม 4 คน)
             </button>
-            <button onclick="searchTicket('7892AC9E')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
-              7892AC9E (คู่ 2 คน)
+            <button onclick="searchTicket('73BF04B4')" class="px-2.5 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 rounded-xl border border-indigo-700/50">
+              73BF04B4 (กลุ่ม 3 คน)
             </button>
-            <button onclick="searchTicket('7447C7AD')" class="px-2.5 py-1.5 bg-amber-950/50 hover:bg-amber-900/50 text-amber-300 rounded-xl border border-amber-700/40">
-              7447C7AD (รอชำระ)
+            <button onclick="searchTicket('3C4E25F0')" class="px-2.5 py-1.5 bg-amber-950/50 hover:bg-amber-900/50 text-amber-300 rounded-xl border border-amber-700/40">
+              3C4E25F0 (รอชำระ 4 คน)
             </button>
             <button onclick="searchTicket('D0856FAE')" class="px-2.5 py-1.5 bg-rose-950/50 hover:bg-rose-900/50 text-rose-300 rounded-xl border border-rose-700/40">
               D0856FAE (ยกเลิก)
@@ -108,21 +108,29 @@
 
       <!-- สถานะกำลังโหลด -->
       <div id="loadingIndicator" class="hidden text-center py-6 text-indigo-300 text-sm animate-pulse">
-        กำลังค้นหาข้อมูลตั๋วในระบบ...
+        กำลังค้นหาข้อมูลบัตรเข้างาน...
       </div>
 
       <!-- พื้นที่แสดงผลลัพธ์ -->
       <div id="resultContainer"></div>
     </section>
 
-    <!-- แท็บที่ 2: รายชื่อทั้งหมด -->
+    <!-- แท็บที่ 2: รายชื่อทั้งหมด (เรียงตามวันเวลาที่จอง คอลัมน์ S) -->
     <section id="view-list" class="hidden space-y-3">
       <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="font-bold text-sm text-indigo-200">รายชื่อผู้สมัครทั้งหมด</h2>
-          <button onclick="loadAllStatsAndList()" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
-            🔄 รีเฟรช
-          </button>
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+          <div>
+            <h2 class="font-bold text-sm text-amber-300">รายชื่อผู้สมัคร (เรียงตามวันที่จอง คอลัมน์ S)</h2>
+            <p class="text-[11px] text-indigo-300">จัดเรียงอัตโนมัติตามวัน-เวลาที่จอง และลำดับคนในกลุ่ม</p>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="toggleSortOrder()" id="sortOrderBtn" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
+              🕒 เรียง: จองก่อน → ล่าสุด
+            </button>
+            <button onclick="loadAllStatsAndList()" class="text-xs px-2.5 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-indigo-200 border border-indigo-700/50">
+              🔄
+            </button>
+          </div>
         </div>
         <div id="allAttendeesList" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
       </div>
@@ -132,14 +140,15 @@
     <section id="view-import" class="hidden space-y-4">
       <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
         <h2 class="font-bold text-base text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV</h2>
-        <p class="text-xs text-indigo-200/80 leading-relaxed">
-          อัปโหลดไฟล์ <code class="text-amber-300 bg-indigo-900 px-1.5 py-0.5 rounded">.csv</code> เพื่อเพิ่มรายชื่อรอบใหม่ หรืออัปเดตสถานะการชำระเงิน โดยประวัติการเช็กอินจะไม่หาย
-        </p>
+        <div class="text-xs text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-3.5 rounded-2xl border border-indigo-800/50">
+          <p>✅ <b>รองรับคอลัมน์ C (รหัสบัตรเข้างาน):</b> ดึงรหัสบัตรเข้างานมาใช้สแกน QR อัตโนมัติ</p>
+          <p>✅ <b>จัดเรียงลำดับใหม่อัตโนมัติด้วยคอลัมน์ S (วันที่จอง):</b> แม้ไฟล์ CSV ต้นทางจะเรียงลำดับสลับกัน ระบบจะเรียงตามวัน-เวลาที่จอง และเรียงคนที่ 1, 2, 3, 4 ให้เองโดยที่สถานะคนเช็กอินไปแล้วไม่หายครับ</p>
+        </div>
 
         <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/40">
           <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
           <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl text-sm shadow-md transition">
-            ⬆️ อัปโหลดและบันทึกข้อมูล
+            ⬆️ อัปโหลดและจัดเรียงข้อมูลตามเวลาจอง
           </button>
         </div>
 
@@ -155,7 +164,46 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let html5QrCode = null;
-    let currentBookingCode = null;
+    let currentSearchQuery = null;
+    let sortAscending = true; // true = จองก่อนขึ้นก่อน (เก่า -> ใหม่), false = จองล่าสุดขึ้นก่อน
+
+    // ฟังก์ชันแปลง "17/10/2569 20:09:23" (คอลัมน์ S) ให้เป็น "2569-10-17 20:09:23" เพื่อใช้เรียงลำดับได้ถูกต้อง 100%
+    function parseThaiDateToISO(dateStr) {
+      if (!dateStr) return "9999-99-99 99:99:99";
+      const s = String(dateStr).trim();
+      const parts = s.split(" ");
+      const dParts = parts[0].split("/");
+      if (dParts.length === 3) {
+        const day = dParts[0].padStart(2, "0");
+        const month = dParts[1].padStart(2, "0");
+        const year = dParts[2];
+        const timePart = parts[1] || "00:00:00";
+        return `${year}-${month}-${day} ${timePart}`;
+      }
+      return s;
+    }
+
+    // ฟังก์ชันช่วยเรียงลำดับ "คนที่" เช่น 1/4, 2/4, 3/4, 4/4
+    function parsePersonOrderNum(orderStr) {
+      if (!orderStr) return 1;
+      const num = parseInt(String(orderStr).split("/")[0], 10);
+      return isNaN(num) ? 1 : num;
+    }
+
+    // ฟังก์ชันจัดเรียงแถวข้อมูลตามคอลัมน์ S (วันที่จอง) และลำดับคนที่ในกลุ่ม
+    function sortAttendeeRows(rows, asc = true) {
+      return [...rows].sort((a, b) => {
+        const isoA = a.booking_date_iso || parseThaiDateToISO(a.booking_date);
+        const isoB = b.booking_date_iso || parseThaiDateToISO(b.booking_date);
+        if (isoA !== isoB) {
+          return asc ? isoA.localeCompare(isoB) : isoB.localeCompare(isoA);
+        }
+        if (a.booking_code !== b.booking_code) {
+          return a.booking_code.localeCompare(b.booking_code);
+        }
+        return parsePersonOrderNum(a.person_order) - parsePersonOrderNum(b.person_order);
+      });
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
       loadAllStatsAndList();
@@ -172,6 +220,14 @@
 
       if (tab !== "scan") stopScanner();
       if (tab === "list") loadAllStatsAndList();
+    }
+
+    function toggleSortOrder() {
+      sortAscending = !sortAscending;
+      document.getElementById("sortOrderBtn").innerText = sortAscending
+        ? "🕒 เรียง: จองก่อน → ล่าสุด"
+        : "🕒 เรียง: ล่าสุด → จองก่อน";
+      loadAllStatsAndList();
     }
 
     async function startScanner() {
@@ -214,58 +270,77 @@
       if (val.trim()) searchTicket(val.trim());
     }
 
+    // ค้นหาจาก รหัสบัตรเข้างาน (คอลัมน์ C) เป็นหลัก ตามด้วย รหัสการจอง หรือ ชื่อ-นามสกุล
     async function searchTicket(queryText) {
       const cleanQuery = queryText.trim();
+      currentSearchQuery = cleanQuery;
       document.getElementById("searchInput").value = cleanQuery;
       document.getElementById("loadingIndicator").classList.remove("hidden");
       document.getElementById("resultContainer").innerHTML = "";
 
-      let { data, error } = await supabaseClient
+      let matchedBookingCode = null;
+      let scannedTicketCode = null;
+
+      // 1. ค้นหาจาก รหัสบัตรเข้างาน (ticket_code คอลัมน์ C) หรือ qr_code หรือ รหัสการจอง (booking_code)
+      const { data: codeMatches } = await supabaseClient
         .from("attendees")
         .select("*")
-        .or(`booking_code.ilike.${cleanQuery},qr_code.ilike.${cleanQuery}`)
-        .order("person_order", { ascending: true });
+        .or(`ticket_code.ilike.${cleanQuery},qr_code.ilike.${cleanQuery},booking_code.ilike.${cleanQuery}`);
 
-      if (!data || data.length === 0) {
-        const { data: nameMatch } = await supabaseClient
+      if (codeMatches && codeMatches.length > 0) {
+        matchedBookingCode = codeMatches[0].booking_code;
+        // ถ้ารหัสที่สแกนตรงกับ รหัสบัตรเข้างาน (คอลัมน์ C) ให้จำไว้เพื่อไฮไลต์คนนั้น
+        const exactTicket = codeMatches.find(
+          (r) => r.ticket_code && r.ticket_code.toLowerCase() === cleanQuery.toLowerCase()
+        );
+        if (exactTicket) scannedTicketCode = exactTicket.ticket_code;
+      } else {
+        // 2. ถ้าไม่เจอด้วยรหัส ให้ค้นหาด้วย ชื่อ-นามสกุล
+        const { data: nameMatches } = await supabaseClient
           .from("attendees")
           .select("booking_code")
           .ilike("full_name", `%${cleanQuery}%`)
           .limit(1);
 
-        if (nameMatch && nameMatch.length > 0) {
-          const bCode = nameMatch[0].booking_code;
-          const res = await supabaseClient
-            .from("attendees")
-            .select("*")
-            .eq("booking_code", bCode)
-            .order("person_order", { ascending: true });
-          data = res.data;
+        if (nameMatches && nameMatches.length > 0) {
+          matchedBookingCode = nameMatches[0].booking_code;
         }
       }
 
-      document.getElementById("loadingIndicator").classList.add("hidden");
-
-      if (error || !data || data.length === 0) {
+      if (!matchedBookingCode) {
+        document.getElementById("loadingIndicator").classList.add("hidden");
         renderNotFound(cleanQuery);
         return;
       }
 
-      currentBookingCode = data[0].booking_code;
-      renderTicketGroup(data);
+      // ดึงสมาชิกทุกคนในกลุ่มการจองเดียวกันขึ้นมาแสดง และเรียงตามลำดับคนที่ 1, 2, 3, 4
+      const { data: groupRows, error } = await supabaseClient
+        .from("attendees")
+        .select("*")
+        .eq("booking_code", matchedBookingCode);
+
+      document.getElementById("loadingIndicator").classList.add("hidden");
+
+      if (error || !groupRows || groupRows.length === 0) {
+        renderNotFound(cleanQuery);
+        return;
+      }
+
+      const sortedGroup = sortAttendeeRows(groupRows, true);
+      renderTicketGroup(sortedGroup, scannedTicketCode);
     }
 
     function renderNotFound(code) {
       document.getElementById("resultContainer").innerHTML = `
         <div class="bg-rose-950/80 border border-rose-500/60 p-6 rounded-3xl text-center shadow-xl">
           <div class="text-4xl mb-2">❌</div>
-          <h2 class="text-lg font-bold text-rose-200">ไม่พบรหัสตั๋วนี้ในระบบ!</h2>
+          <h2 class="text-lg font-bold text-rose-200">ไม่พบรหัสบัตรเข้างานนี้ในระบบ!</h2>
           <p class="text-xs text-rose-300 mt-1">คำค้นหา: <span class="font-mono font-bold">"${code}"</span></p>
         </div>
       `;
     }
 
-    function renderTicketGroup(rows) {
+    function renderTicketGroup(rows, scannedTicketCode) {
       const first = rows[0];
       const totalPax = rows.length;
       const checkedInPax = rows.filter((r) => r.is_checked_in).length;
@@ -273,6 +348,7 @@
 
       const isCancelled = first.booking_status === "ยกเลิกแล้ว";
       const isUnpaid = first.booking_status === "รอชำระเงิน";
+      const isApproved = first.booking_status === "อนุมัติแล้ว";
 
       let borderClass = "border-indigo-700/60 bg-indigo-950/40";
       let statusBanner = "";
@@ -281,7 +357,7 @@
         borderClass = "border-rose-500/80 bg-rose-950/60";
         statusBanner = `
           <div class="bg-rose-600 text-white p-3 rounded-2xl font-bold text-center text-xs mb-4">
-            ⛔ ตั๋วใบนี้ถูกยกเลิกแล้ว (ห้ามเช็กอินเข้างาน!)
+            ⛔ บัตรนี้ถูกยกเลิกแล้ว (ห้ามเช็กอินเข้างาน!)
           </div>`;
       } else if (isUnpaid) {
         borderClass = "border-amber-500/80 bg-amber-950/60";
@@ -293,33 +369,57 @@
         borderClass = "border-amber-400/80 bg-indigo-950/60";
         statusBanner = `
           <div class="bg-amber-400/20 border border-amber-400/50 text-amber-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">
-            🎉 รหัสจองนี้เช็กอินเข้างานครบทั้ง ${totalPax} คนแล้ว
+            🎉 เช็กอินเข้างานครบทั้ง ${totalPax} คนแล้ว
           </div>`;
       } else {
         statusBanner = `
           <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">
-            ✅ ตั๋วถูกต้อง • เช็กอินได้อีก ${remainingPax} คน
+            ✅ บัตรถูกต้อง (${first.booking_status || "-"}) • เช็กอินได้อีก ${remainingPax} คน
           </div>`;
       }
 
       const membersHtml = rows.map((person) => {
         const isChecked = person.is_checked_in;
+        const hasTicketCode = person.ticket_code && person.ticket_code.trim() !== "" && person.ticket_code !== "-";
+        const isScannedMatch =
+          scannedTicketCode &&
+          hasTicketCode &&
+          person.ticket_code.toLowerCase() === scannedTicketCode.toLowerCase();
+
         return `
           <div class="p-3.5 rounded-2xl border ${
-            isChecked
+            isScannedMatch
+              ? "bg-amber-400/15 border-amber-400 shadow-lg"
+              : isChecked
               ? "bg-slate-950/60 border-indigo-900/50 opacity-80"
               : "bg-indigo-900/40 border-indigo-700/60"
           } flex items-center justify-between gap-3">
             <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-1.5">
                 <span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-800 text-indigo-200">
                   คนที่ ${person.person_order}
                 </span>
-                <p class="font-bold text-sm truncate ${isChecked ? "line-through text-indigo-300" : "text-white"}">
-                  ${person.full_name || "-"}
-                </p>
+                ${
+                  hasTicketCode
+                    ? `<span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                        🎫 ${person.ticket_code}
+                      </span>`
+                    : `<span class="px-2 py-0.5 text-[10px] rounded-lg bg-slate-800 text-slate-400">
+                        ยังไม่ออกรหัสบัตร
+                      </span>`
+                }
+                ${
+                  isScannedMatch
+                    ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-amber-400 text-slate-950">
+                        🎯 บัตรใบที่สแกน
+                      </span>`
+                    : ""
+                }
               </div>
-              <p class="text-[11px] text-indigo-200/70 mt-1 truncate">🏫 ${person.school || "-"} • 📞 ${person.phone || "-"}</p>
+              <p class="font-bold text-sm mt-1.5 truncate ${isChecked ? "line-through text-indigo-300" : "text-white"}">
+                ${person.full_name || "-"}
+              </p>
+              <p class="text-[11px] text-indigo-200/70 mt-0.5 truncate">🏫 ${person.school || "-"} • 📞 ${person.phone || "-"}</p>
               ${isChecked ? `<p class="text-[11px] text-amber-300 font-medium mt-0.5">✔ เช็กอินเมื่อ ${person.checked_in_at || "-"}</p>` : ""}
             </div>
 
@@ -329,7 +429,7 @@
                   ? `<button
                       onclick="togglePersonCheckIn(${person.id}, true)"
                       ${isCancelled ? "disabled" : ""}
-                      class="px-4 py-2 rounded-xl font-bold text-xs shadow transition ${
+                      class="px-4 py-2.5 rounded-xl font-bold text-xs shadow transition ${
                         isCancelled
                           ? "bg-slate-800 text-slate-500 cursor-not-allowed"
                           : "bg-amber-300 hover:bg-amber-200 text-slate-950 active:scale-95"
@@ -359,20 +459,30 @@
           ${statusBanner}
 
           <div class="flex justify-between items-start border-b border-indigo-800/60 pb-3 mb-4">
-            <div>
-              <span class="text-xs font-mono bg-indigo-900/80 px-2.5 py-1 rounded-xl text-amber-300 border border-indigo-700/50">
-                รหัสจอง: ${first.booking_code}
-              </span>
-              <h3 class="text-xs font-semibold text-indigo-200 mt-2">${first.ticket_type || "-"}</h3>
-              <p class="text-[11px] text-indigo-300/80 mt-0.5">ผู้ติดต่อ: ${first.contact_name || "-"}</p>
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-xs font-mono bg-indigo-900/80 px-2.5 py-1 rounded-xl text-amber-300 border border-indigo-700/50">
+                  รหัสจอง: ${first.booking_code}
+                </span>
+                <span class="text-[11px] bg-indigo-950/80 px-2.5 py-1 rounded-xl text-indigo-200 border border-indigo-800">
+                  🕒 จองเมื่อ: ${first.booking_date || "-"}
+                </span>
+              </div>
+              <h3 class="text-xs font-semibold text-indigo-200 pt-1">${first.ticket_type || "-"}</h3>
+              <p class="text-[11px] text-indigo-300/80">
+                ผู้ติดต่อ: ${first.contact_name || "-"} (${first.contact_phone || "-"})
+              </p>
+              <p class="text-[11px] text-indigo-300/80">
+                สถานะ: <b class="text-white">${first.booking_status || "-"}</b> • การเงิน: <b class="text-amber-300">${first.payment_status || "-"}</b>
+              </p>
             </div>
-            <div class="text-right bg-indigo-950/80 px-3.5 py-2 rounded-2xl border border-indigo-800/80">
+            <div class="text-right bg-indigo-950/80 px-3.5 py-2 rounded-2xl border border-indigo-800/80 shrink-0">
               <p class="text-[10px] text-indigo-300">เข้าแล้ว</p>
               <p class="text-xl font-extrabold text-amber-300">${checkedInPax}/${totalPax}</p>
             </div>
           </div>
 
-          <p class="text-xs font-semibold text-indigo-200 mb-2">รายชื่อผู้สมัครในรหัสนี้:</p>
+          <p class="text-xs font-semibold text-indigo-200 mb-2">รายชื่อผู้สมัครในกลุ่มนี้:</p>
           <div class="space-y-2">
             ${membersHtml}
           </div>
@@ -392,7 +502,7 @@
         .update({ is_checked_in: checkInState, checked_in_at: nowStr })
         .eq("id", rowId);
 
-      if (currentBookingCode) searchTicket(currentBookingCode);
+      if (currentSearchQuery) searchTicket(currentSearchQuery);
       loadAllStatsAndList();
     }
 
@@ -409,66 +519,105 @@
       loadAllStatsAndList();
     }
 
+    // โหลดรายชื่อทั้งหมดและเรียงตาม วันเวลาที่จอง (คอลัมน์ S) เสมอ
     async function loadAllStatsAndList() {
-      const { data } = await supabaseClient.from("attendees").select("*").order("id", { ascending: true });
+      const { data } = await supabaseClient.from("attendees").select("*");
       if (!data) return;
 
-      const validRows = data.filter((r) => r.booking_status !== "ยกเลิกแล้ว");
+      const sortedData = sortAttendeeRows(data, sortAscending);
+
+      const validRows = sortedData.filter((r) => r.booking_status !== "ยกเลิกแล้ว");
       const checkedCount = validRows.filter((r) => r.is_checked_in).length;
 
       document.getElementById("checkedInCount").innerText = checkedCount;
       document.getElementById("totalCount").innerText = validRows.length;
 
-      document.getElementById("allAttendeesList").innerHTML = data.map((r) => `
-        <div onclick="switchTab('scan'); searchTicket('${r.booking_code}')" class="p-3 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 hover:border-indigo-600 cursor-pointer flex justify-between items-center text-xs">
-          <div>
-            <span class="font-mono text-amber-300 font-bold">${r.booking_code}</span>
-            <span class="text-indigo-300 ml-1">(${r.person_order})</span>
-            <span class="font-semibold text-white ml-1">${r.full_name || "-"}</span>
-            <p class="text-[10px] text-indigo-300/70 mt-0.5">${r.school || "-"}</p>
+      document.getElementById("allAttendeesList").innerHTML = sortedData.map((r, idx) => {
+        const hasTicket = r.ticket_code && r.ticket_code.trim() !== "" && r.ticket_code !== "-";
+        const searchKey = hasTicket ? r.ticket_code : r.booking_code;
+        return `
+          <div onclick="switchTab('scan'); searchTicket('${searchKey}')" class="p-3 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 hover:border-amber-400/50 cursor-pointer flex justify-between items-center gap-2 text-xs transition">
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-300 rounded font-mono">#${idx + 1}</span>
+                ${
+                  hasTicket
+                    ? `<span class="font-mono text-amber-300 font-bold">🎫 ${r.ticket_code}</span>`
+                    : `<span class="font-mono text-indigo-300 font-semibold">จอง: ${r.booking_code}</span>`
+                }
+                <span class="text-indigo-300 text-[11px]">(${r.person_order})</span>
+                <span class="font-semibold text-white truncate">${r.full_name || "-"}</span>
+              </div>
+              <p class="text-[10px] text-indigo-300/70 mt-1 truncate">
+                🕒 จองเมื่อ: ${r.booking_date || "-"} • 🏫 ${r.school || "-"} • สถานะ: ${r.booking_status || "-"}
+              </p>
+            </div>
+            <div class="shrink-0">
+              ${
+                r.is_checked_in
+                  ? `<span class="px-2.5 py-1 bg-amber-400/20 text-amber-300 rounded-xl font-bold text-[11px]">เข้าแล้ว</span>`
+                  : `<span class="px-2.5 py-1 bg-indigo-900/60 text-indigo-300 rounded-xl text-[11px]">ยังไม่เข้า</span>`
+              }
+            </div>
           </div>
-          <div>
-            ${r.is_checked_in ? `<span class="px-2 py-1 bg-amber-400/20 text-amber-300 rounded-xl font-bold">เข้าแล้ว</span>` : `<span class="px-2 py-1 bg-indigo-900/60 text-indigo-300 rounded-xl">ยังไม่เข้า</span>`}
-          </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
+    // อัปโหลดไฟล์ CSV ใหม่ พร้อมดึงคอลัมน์ C (รหัสบัตรเข้างาน) และเรียงลำดับตามคอลัมน์ S (วันที่จอง) อัตโนมัติ
     function importCSVFile() {
       const fileInput = document.getElementById("csvFileInput");
       const statusEl = document.getElementById("importStatus");
       if (!fileInput.files.length) return alert("กรุณาเลือกไฟล์ .csv");
 
-      statusEl.innerHTML = `<span class="text-amber-300">กำลังอัปเดตข้อมูล...</span>`;
+      statusEl.innerHTML = `<span class="text-amber-300">กำลังอ่านไฟล์และจัดเรียงตามวันเวลาที่จอง (คอลัมน์ S)...</span>`;
       Papa.parse(fileInput.files[0], {
         header: true,
         skipEmptyLines: true,
         complete: async function (results) {
-          const payload = results.data.map(r => ({
-            booking_code: (r["รหัสการจอง"] || "").trim(),
-            person_order: (r["คนที่"] || "1/1").trim(),
-            full_name: r["ชื่อ-นามสกุล (ภาษาไทย)"] || "-",
-            school: r["โรงเรียน/มหาวิทยาลัย"] || "-",
-            phone: String(r["เบอร์โทรศัพท์"] || "-"),
-            emergency_phone: String(r["เบอร์โทรฉุกเฉิน"] || "-"),
-            emergency_relation: r["เกี่ยวข้องกับผู้สมัครเป็น"] || "-",
-            ticket_type: r["ชุดบัตร"] || "-",
-            amount: parseFloat(r["ยอดที่ต้องจ่าย"]) || 0,
-            contact_name: r["ผู้ติดต่อ"] || "-",
-            contact_phone: String(r["เบอร์ผู้ติดต่อ"] || "-"),
-            email: r["อีเมลบัญชี"] || "-",
-            booking_status: r["สถานะ"] || "-",
-            payment_status: r["สถานะการชำระเงิน"] || "-",
-            qr_code: (r["QR"] || r["รหัสการจอง"] || "").trim(),
-          })).filter(r => r.booking_code);
+          const rawRows = results.data.map((r) => {
+            const bCode = (r["รหัสการจอง"] || "").trim();
+            const pOrder = (r["คนที่"] || "1/1").trim();
+            const tCode = (r["รหัสบัตรเข้างาน"] || "").trim();
+            const bDate = (r["วันที่จอง"] || "").trim();
+            const bDateIso = parseThaiDateToISO(bDate);
 
-          const { error } = await supabaseClient.from("attendees").upsert(payload, { onConflict: "booking_code,person_order" });
-          if (error) statusEl.innerHTML = `<span class="text-rose-400">❌ ${error.message}</span>`;
-          else {
-            statusEl.innerHTML = `<span class="text-amber-300 font-bold">✅ อัปเดตสำเร็จ ${payload.length} รายชื่อ!</span>`;
+            return {
+              booking_code: bCode,
+              person_order: pOrder,
+              ticket_code: tCode,
+              full_name: (r["ชื่อ-นามสกุล (ภาษาไทย)"] || "-").trim(),
+              school: (r["โรงเรียน/มหาวิทยาลัย"] || "-").trim(),
+              phone: String(r["เบอร์โทรศัพท์"] || "-").trim(),
+              emergency_phone: String(r["เบอร์โทรฉุกเฉิน"] || "-").trim(),
+              emergency_relation: (r["เกี่ยวข้องกับผู้สมัครเป็น"] || "-").trim(),
+              ticket_type: (r["ชุดบัตร"] || "-").trim(),
+              amount: parseFloat(r["ยอดที่ต้องจ่าย"]) || 0,
+              contact_name: (r["ผู้ติดต่อ"] || "-").trim(),
+              contact_phone: String(r["เบอร์ผู้ติดต่อ"] || "-").trim(),
+              email: (r["อีเมลบัญชี"] || "-").trim(),
+              booking_status: (r["สถานะ"] || "-").trim(),
+              payment_status: (r["สถานะการชำระเงิน"] || "-").trim(),
+              booking_date: bDate || "-",
+              booking_date_iso: bDateIso,
+              qr_code: tCode || bCode,
+            };
+          }).filter((r) => r.booking_code);
+
+          // จัดเรียงตามคอลัมน์ S (วันที่จอง) จากเก่าไปใหม่ และเรียงคนที่ 1, 2, 3, 4 ก่อนบันทึกเข้าฐานข้อมูล
+          const sortedPayload = sortAttendeeRows(rawRows, true);
+
+          const { error } = await supabaseClient
+            .from("attendees")
+            .upsert(sortedPayload, { onConflict: "booking_code,person_order" });
+
+          if (error) {
+            statusEl.innerHTML = `<span class="text-rose-400">❌ ${error.message}</span>`;
+          } else {
+            statusEl.innerHTML = `<span class="text-amber-300 font-bold">✅ อัปเดตและจัดเรียงตามเวลาจองสำเร็จ ${sortedPayload.length} รายชื่อ!</span>`;
             loadAllStatsAndList();
           }
-        }
+        },
       });
     }
   </script>

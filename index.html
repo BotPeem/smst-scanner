@@ -17,144 +17,308 @@
 </head>
 <body class="theme-bg text-slate-100 min-h-screen pb-14">
 
-  <!-- แถบหัวเว็บ -->
-  <header class="bg-indigo-950/85 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-20">
-    <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5">
-        <span class="text-2xl">🌙</span>
+  <!-- ================= หน้าจอ LOGIN ================= -->
+  <div id="loginScreen" class="fixed inset-0 z-50 theme-bg flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-indigo-950/80 backdrop-blur-xl border border-indigo-700/60 p-6 rounded-3xl card-glow space-y-5">
+      <div class="text-center space-y-1">
+        <div class="text-4xl mb-2">🌙</div>
+        <h1 class="text-lg font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
+        <p class="text-xs text-indigo-200/80">เข้าสู่ระบบสำหรับฝ่ายทะเบียนและสตาฟ</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)" class="space-y-3.5">
         <div>
-          <h1 class="text-base font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
-          <p class="text-[11px] text-indigo-200/80">ระบบสแกนรหัสบัตรเข้างาน & เช็กอิน</p>
-        </div>
-      </div>
-
-      <div class="text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50 shrink-0">
-        <p class="text-[10px] text-indigo-300">เข้างานแล้ว</p>
-        <p class="text-sm font-extrabold text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span> คน</p>
-      </div>
-    </div>
-
-    <!-- ปุ่มสลับหน้า (ไม่มีระบบ Login) -->
-    <div class="max-w-lg mx-auto px-4 pb-2.5 flex gap-2 text-xs font-semibold">
-      <button onclick="switchTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold shadow-md transition">
-        📷 สแกนบัตร
-      </button>
-      <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
-        📋 รายชื่อ (เรียงตามเวลาจอง)
-      </button>
-      <button onclick="switchTab('import')" id="tab-import" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
-        📂 อัปเดต CSV
-      </button>
-    </div>
-  </header>
-
-  <main class="max-w-lg mx-auto px-4 mt-4 space-y-4">
-
-    <!-- แท็บที่ 1: หน้าสแกนตั๋ว -->
-    <section id="view-scan" class="space-y-4">
-      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl card-glow">
-        <div id="cameraStartArea">
-          <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-            <span class="text-xl">✨</span> เปิดกล้องสแกน QR รหัสบัตรเข้างาน
-          </button>
-        </div>
-
-        <div id="cameraActiveArea" class="hidden space-y-3">
-          <div id="qr-reader" class="w-full rounded-2xl overflow-hidden bg-black border border-indigo-700"></div>
-          <button onclick="stopScanner()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-2xl">
-            ✕ ปิดกล้อง
-          </button>
-        </div>
-
-        <form onsubmit="handleSearchSubmit(event)" class="mt-4 flex gap-2">
+          <label class="block text-xs text-indigo-200 mb-1 font-medium">Username</label>
           <input
-            id="searchInput"
+            id="loginUsername"
             type="text"
-            placeholder="พิมพ์รหัสบัตร (SMST-...), รหัสจอง หรือชื่อน้อง..."
-            class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-indigo-800/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/50"
+            required
+            placeholder="กรอกชื่อผู้ใช้งาน..."
+            class="w-full px-4 py-2.5 rounded-2xl bg-slate-950/90 border border-indigo-700/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/40"
           />
-          <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl text-sm shadow-md transition">
-            ค้นหา
-          </button>
-        </form>
-      </div>
-
-      <div id="loadingIndicator" class="hidden text-center py-6 text-indigo-300 text-sm animate-pulse">
-        กำลังค้นหาข้อมูลบัตรเข้างาน...
-      </div>
-
-      <div id="resultContainer"></div>
-    </section>
-
-    <!-- แท็บที่ 2: รายชื่อทั้งหมด -->
-    <section id="view-list" class="hidden space-y-3">
-      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl">
-        <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
-          <div>
-            <h2 class="font-bold text-sm text-amber-300">รายชื่อผู้สมัคร (เรียงตามเวลาจอง)</h2>
-            <p class="text-[11px] text-indigo-300">แตะที่รายชื่อเพื่อเปิดการ์ดเช็กอินหรือยกเลิกรายบุคคล</p>
-          </div>
-          <div class="flex gap-1.5">
-            <button onclick="toggleSortOrder()" id="sortOrderBtn" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
-              🕒 จองก่อน → ล่าสุด
-            </button>
-            <button onclick="loadAllStatsAndList()" class="text-xs px-2.5 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-indigo-200 border border-indigo-700/50">
-              🔄
-            </button>
-          </div>
         </div>
-        <div id="allAttendeesList" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
-      </div>
-    </section>
-
-    <!-- แท็บที่ 3: อัปโหลด CSV & รีเซ็ตระบบ -->
-    <section id="view-import" class="hidden space-y-4">
-      <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
-        <h2 class="font-bold text-base text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV</h2>
-        <div class="text-xs text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-3.5 rounded-2xl border border-indigo-800/50">
-          <p>✅ <b>ดึงคอลัมน์ C (รหัสบัตรเข้างาน):</b> ใช้สแกน QR เข้างานเป็นรหัสหลัก</p>
-          <p>✅ <b>แก้ช่องขยับจาก ID Line อัตโนมัติ:</b> ขยับข้อมูลที่เลื่อนกลับเข้าที่เดิมให้ถูกต้อง</p>
-          <p>✅ <b>เรียงลำดับตามวันที่จองอัตโนมัติ:</b> เรียงจากคนจองก่อน → ล่าสุดเสมอ</p>
+        <div>
+          <label class="block text-xs text-indigo-200 mb-1 font-medium">Password</label>
+          <input
+            id="loginPassword"
+            type="password"
+            required
+            placeholder="กรอกรหัสผ่าน..."
+            class="w-full px-4 py-2.5 rounded-2xl bg-slate-950/90 border border-indigo-700/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/40"
+          />
         </div>
 
-        <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/40">
-          <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
-          <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl text-sm shadow-md transition">
-            ⬆️ อัปโหลดและจัดเรียงข้อมูลอัตโนมัติ
-          </button>
-        </div>
+        <p id="loginError" class="text-xs text-rose-400 text-center hidden"></p>
 
-        <div id="importStatus" class="text-xs text-center"></div>
-      </div>
-
-      <div class="bg-rose-950/40 backdrop-blur-md border border-rose-700/50 p-5 rounded-3xl space-y-3">
-        <h2 class="font-bold text-sm text-rose-300 flex items-center gap-1.5">
-          <span>🔄</span> รีเซ็ตสถานะการเช็กอินทั้งหมด (สำหรับล้างข้อมูลหลังเทสต์ระบบ)
-        </h2>
-        <p class="text-xs text-rose-200/80 leading-relaxed">
-          ปุ่มนี้จะล้างสถานะ <b>"เข้างานแล้ว"</b> ของผู้สมัครทุกคนให้กลับเป็น <b>0 (ยังไม่เข้างาน)</b> โดยที่รายชื่อยังอยู่ครบ
-        </p>
         <button
-          onclick="resetAllCheckIns()"
-          class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs shadow-lg transition"
+          type="submit"
+          id="loginBtn"
+          class="w-full py-3 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 text-slate-950 font-bold rounded-2xl text-sm shadow-lg transition"
         >
-          ⚠️ กดรีเซ็ตสถานะเช็กอินทุกคนกลับเป็น 0
+          🔐 เข้าสู่ระบบ
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= หน้าจอหลักของแอป ================= -->
+  <div id="appScreen" class="hidden">
+    <header class="bg-indigo-950/85 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-20">
+      <div class="max-w-lg mx-auto px-4 pt-3 pb-2 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🌙</span>
+          <div>
+            <h1 class="text-sm sm:text-base font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
+            <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+              <span id="currentUserBadge" class="text-[11px] bg-indigo-900/90 text-amber-200 px-2 py-0.5 rounded-lg border border-indigo-700/60 font-medium">
+                👤 -
+              </span>
+              <button onclick="handleLogout()" class="text-[10px] bg-rose-950/80 hover:bg-rose-900 text-rose-300 px-2 py-0.5 rounded-lg border border-rose-700/50 transition">
+                ออกจากระบบ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50 shrink-0">
+          <p class="text-[10px] text-indigo-300">เข้างานแล้ว</p>
+          <p class="text-sm font-extrabold text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span> คน</p>
+        </div>
+      </div>
+
+      <div class="max-w-lg mx-auto px-4 pb-2.5 pt-1 grid grid-cols-2 sm:flex gap-1.5 text-xs font-semibold">
+        <button onclick="switchTab('scan')" id="tab-scan" class="flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 shadow-md transition font-bold">
+          📷 สแกนบัตร
+        </button>
+        <button onclick="switchTab('list')" id="tab-list" class="flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+          📋 รายชื่อ
+        </button>
+        <button onclick="switchTab('staff')" id="tab-staff" class="hidden flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+          👥 จัดการสตาฟ
+        </button>
+        <button onclick="switchTab('import')" id="tab-import" class="hidden flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+          📂 อัปเดต CSV
         </button>
       </div>
-    </section>
+    </header>
 
-  </main>
+    <main class="max-w-lg mx-auto px-4 mt-4 space-y-4">
+
+      <!-- แท็บที่ 1: หน้าสแกนตั๋ว -->
+      <section id="view-scan" class="space-y-4">
+        <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl card-glow">
+          <div id="cameraStartArea">
+            <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+              <span class="text-xl">✨</span> เปิดกล้องสแกน QR รหัสบัตรเข้างาน
+            </button>
+          </div>
+
+          <div id="cameraActiveArea" class="hidden space-y-3">
+            <div id="qr-reader" class="w-full rounded-2xl overflow-hidden bg-black border border-indigo-700"></div>
+            <button onclick="stopScanner()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-2xl">
+              ✕ ปิดกล้อง
+            </button>
+          </div>
+
+          <form onsubmit="handleSearchSubmit(event)" class="mt-4 flex gap-2">
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="พิมพ์รหัสบัตร (SMST-...), รหัสจอง หรือชื่อน้อง..."
+              class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-950/80 border border-indigo-800/80 text-white text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/50"
+            />
+            <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl text-sm shadow-md transition">
+              ค้นหา
+            </button>
+          </form>
+        </div>
+
+        <div id="loadingIndicator" class="hidden text-center py-6 text-indigo-300 text-sm animate-pulse">
+          กำลังค้นหาข้อมูลบัตรเข้างาน...
+        </div>
+
+        <div id="resultContainer"></div>
+      </section>
+
+      <!-- แท็บที่ 2: รายชื่อทั้งหมด -->
+      <section id="view-list" class="hidden space-y-3">
+        <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 rounded-3xl">
+          <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+            <div>
+              <h2 class="font-bold text-sm text-amber-300">รายชื่อผู้สมัคร (เรียงตามเวลาจอง)</h2>
+              <p class="text-[11px] text-indigo-300">แตะที่รายชื่อเพื่อเปิดการ์ดเช็กอินหรือยกเลิกรายบุคคล</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="toggleSortOrder()" id="sortOrderBtn" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
+                🕒 จองก่อน → ล่าสุด
+              </button>
+              <button onclick="loadAllStatsAndList()" class="text-xs px-2.5 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-indigo-200 border border-indigo-700/50">
+                🔄
+              </button>
+            </div>
+          </div>
+          <div id="allAttendeesList" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
+        </div>
+      </section>
+
+      <!-- แท็บที่ 3: จัดการสตาฟ (เฉพาะ Admin) -->
+      <section id="view-staff" class="hidden space-y-4">
+        <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 id="staffFormTitle" class="font-bold text-base text-amber-300">➕ เพิ่มสตาฟ / แก้ไขข้อมูลสตาฟ</h2>
+              <p class="text-[11px] text-indigo-300">กำหนดชื่อ-นามสกุล สถาบัน ชั้นปี และรหัสเข้าใช้งาน (Admin แก้ไขกันเองได้)</p>
+            </div>
+            <button onclick="resetStaffForm()" id="cancelEditStaffBtn" class="hidden text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-600">
+              ยกเลิกแก้ไข
+            </button>
+          </div>
+
+          <form onsubmit="handleSaveStaff(event)" class="space-y-3 bg-indigo-900/30 p-4 rounded-2xl border border-indigo-800/50">
+            <input type="hidden" id="staffEditId" value="" />
+
+            <div>
+              <label class="block text-xs text-indigo-200 mb-1">ชื่อ - นามสกุล</label>
+              <input
+                id="staffFullName"
+                type="text"
+                required
+                oninput="updateStaffPreview()"
+                placeholder="กรอกชื่อ-นามสกุลจริง..."
+                class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs focus:outline-none focus:border-amber-400"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-xs text-indigo-200 mb-1">สถาบัน (ตัวย่อ)</label>
+                <input
+                  id="staffInstitution"
+                  type="text"
+                  required
+                  oninput="updateStaffPreview()"
+                  placeholder="เช่น BM, SI, RA"
+                  class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-indigo-200 mb-1">ชั้นปี</label>
+                <input
+                  id="staffYearLevel"
+                  type="text"
+                  required
+                  oninput="updateStaffPreview()"
+                  placeholder="เช่น 1, 2, 3"
+                  class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                />
+              </div>
+            </div>
+
+            <div class="bg-indigo-950/80 px-3 py-2 rounded-xl border border-amber-400/30 flex items-center justify-between text-xs">
+              <span class="text-indigo-300">ชื่อที่แสดงตอนอนุมัติ:</span>
+              <span id="staffDisplayPreview" class="font-bold text-amber-300">ชื่อ-นามสกุล สถาบัน#ชั้นปี</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+              <div>
+                <label class="block text-xs text-indigo-200 mb-1">Username</label>
+                <input
+                  id="staffUsername"
+                  type="text"
+                  required
+                  placeholder="ตั้งชื่อผู้ใช้งาน..."
+                  class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs font-mono focus:outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-indigo-200 mb-1">Password</label>
+                <input
+                  id="staffPassword"
+                  type="text"
+                  required
+                  placeholder="ตั้งรหัสผ่าน..."
+                  class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs font-mono focus:outline-none focus:border-amber-400"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-indigo-200 mb-1">ระดับสิทธิ์ (Role)</label>
+              <select
+                id="staffRole"
+                class="w-full px-3.5 py-2 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-xs focus:outline-none focus:border-amber-400"
+              >
+                <option value="staff">Staff (สแกนบัตร & ดูรายชื่ออย่างเดียว)</option>
+                <option value="admin">Admin (จัดการสตาฟ / อัปเดต CSV / รีเซ็ตระบบได้)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              id="saveStaffBtn"
+              class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs shadow-md transition"
+            >
+              💾 บันทึกข้อมูลสตาฟ
+            </button>
+          </form>
+
+          <div class="space-y-2 pt-2">
+            <h3 class="font-bold text-xs text-indigo-200">รายชื่อผู้ใช้งานในระบบทั้งหมด (กด ✏️ เพื่อแก้ไขได้ทุกคน):</h3>
+            <div id="staffListContainer" class="space-y-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- แท็บที่ 4: อัปโหลด CSV & รีเซ็ตระบบ (เฉพาะ Admin) -->
+      <section id="view-import" class="hidden space-y-4">
+        <div class="bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
+          <h2 class="font-bold text-base text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV</h2>
+          <div class="text-xs text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-3.5 rounded-2xl border border-indigo-800/50">
+            <p>✅ <b>ดึงคอลัมน์ C (รหัสบัตรเข้างาน):</b> ใช้สแกน QR เข้างานเป็นรหัสหลัก</p>
+            <p>✅ <b>แก้ช่องขยับจาก ID Line อัตโนมัติ:</b> ขยับข้อมูลที่เลื่อนกลับเข้าที่เดิมให้ถูกต้อง</p>
+            <p>✅ <b>เรียงลำดับตามวันที่จองอัตโนมัติ:</b> เรียงจากคนจองก่อน → ล่าสุดเสมอ</p>
+          </div>
+
+          <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/40">
+            <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
+            <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl text-sm shadow-md transition">
+              ⬆️ อัปโหลดและจัดเรียงข้อมูลอัตโนมัติ
+            </button>
+          </div>
+
+          <div id="importStatus" class="text-xs text-center"></div>
+        </div>
+
+        <div class="bg-rose-950/40 backdrop-blur-md border border-rose-700/50 p-5 rounded-3xl space-y-3">
+          <h2 class="font-bold text-sm text-rose-300 flex items-center gap-1.5">
+            <span>🔄</span> รีเซ็ตสถานะการเช็กอินทั้งหมด (สำหรับล้างข้อมูลหลังเทสต์ระบบ)
+          </h2>
+          <p class="text-xs text-rose-200/80 leading-relaxed">
+            ปุ่มนี้จะล้างสถานะ <b>"เข้างานแล้ว"</b>, <b>"เวลาที่เช็กอิน"</b> และ <b>"ชื่อสตาฟผู้อนุมัติ"</b> ของผู้สมัครทุกคนให้กลับเป็น <b>0 (ยังไม่เข้างาน)</b> โดยที่รายชื่อยังอยู่ครบ
+          </p>
+          <button
+            onclick="resetAllCheckIns()"
+            class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs shadow-lg transition"
+          >
+            ⚠️ กดรีเซ็ตสถานะเช็กอินทุกคนกลับเป็น 0
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
 
   <script>
     const SUPABASE_URL = "https://ebgauldhvwxoqczbdzic.supabase.co";
     const SUPABASE_KEY = "sb_publishable_CWarN4yQwi30TiIFP6Utxw_OCkkdbem";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let currentUser = null;
     let html5QrCode = null;
     let currentSearchQuery = null;
     let sortAscending = true;
+    let staffUsersCache = [];
 
-    // ฟังก์ชันช่วยคืนค่าข้อความปลอดภัย (ไม่ต้องพึ่งเครื่องหมายไปป์คู่)
     function valOr(v, fallback) {
       if (v === undefined) return fallback;
       if (v === null) return fallback;
@@ -162,9 +326,95 @@
       return s !== "" ? s : fallback;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAllStatsAndList();
+    window.addEventListener("DOMContentLoaded", async () => {
+      const savedUser = localStorage.getItem("smst_current_user");
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          if (parsed && parsed.username) {
+            const { data } = await supabaseClient
+              .from("staff_users")
+              .select("*")
+              .ilike("username", parsed.username)
+              .maybeSingle();
+            if (data) {
+              loginSuccess(data);
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+      showLoginScreen();
     });
+
+    function showLoginScreen() {
+      stopScanner();
+      document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("appScreen").classList.add("hidden");
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById("loginUsername").value.trim();
+      const passwordInput = document.getElementById("loginPassword").value.trim();
+      const errEl = document.getElementById("loginError");
+      const btnEl = document.getElementById("loginBtn");
+
+      errEl.classList.add("hidden");
+      btnEl.innerText = "กำลังตรวจสอบ...";
+
+      const { data, error } = await supabaseClient
+        .from("staff_users")
+        .select("*")
+        .ilike("username", usernameInput)
+        .eq("password", passwordInput)
+        .maybeSingle();
+
+      btnEl.innerText = "🔐 เข้าสู่ระบบ";
+
+      if (error) {
+        errEl.innerText = "⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล: " + error.message;
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      if (!data) {
+        errEl.innerText = "❌ Username หรือ Password ไม่ถูกต้อง";
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      loginSuccess(data);
+    }
+
+    function loginSuccess(userObj) {
+      currentUser = userObj;
+      localStorage.setItem("smst_current_user", JSON.stringify(userObj));
+
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appScreen").classList.remove("hidden");
+
+      const roleLabel = userObj.role === "admin" ? "ADMIN" : "STAFF";
+      document.getElementById("currentUserBadge").innerText = "👤 " + userObj.display_name + " (" + roleLabel + ")";
+
+      if (userObj.role === "admin") {
+        document.getElementById("tab-staff").classList.remove("hidden");
+        document.getElementById("tab-import").classList.remove("hidden");
+      } else {
+        document.getElementById("tab-staff").classList.add("hidden");
+        document.getElementById("tab-import").classList.add("hidden");
+      }
+
+      switchTab("scan");
+      loadAllStatsAndList();
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem("smst_current_user");
+      document.getElementById("loginPassword").value = "";
+      showLoginScreen();
+    }
 
     function parseThaiDateToISO(dateStr) {
       if (!dateStr) return "9999-99-99 99:99:99";
@@ -205,11 +455,12 @@
     }
 
     function switchTab(tab) {
-      ["scan", "list", "import"].forEach((t) => {
+      ["scan", "list", "staff", "import"].forEach((t) => {
         document.getElementById("view-" + t).classList.add("hidden");
         const btn = document.getElementById("tab-" + t);
         if (btn) {
-          btn.className = "flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
+          const isHidden = btn.classList.contains("hidden");
+          btn.className = (isHidden ? "hidden " : "") + "flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
         }
       });
 
@@ -221,6 +472,7 @@
 
       if (tab !== "scan") stopScanner();
       if (tab === "list") loadAllStatsAndList();
+      if (tab === "staff") loadStaffList();
     }
 
     function toggleSortOrder() {
@@ -400,7 +652,7 @@
 
         const checkedInfo = isChecked
           ? '<div class="mt-1.5 inline-block bg-emerald-950/80 border border-emerald-600/50 px-2.5 py-1 rounded-xl text-[11px] text-emerald-300 font-medium">' +
-              '✔ เช็กอินเมื่อ ' + valOr(person.checked_in_at, "-") +
+              '✔ เช็กอินเมื่อ ' + valOr(person.checked_in_at, "-") + ' • อนุมัติโดย: <b class="text-amber-300">' + valOr(person.checked_in_by, "-") + '</b>' +
             '</div>'
           : '';
 
@@ -474,12 +726,14 @@
       const nowStr = checkInState
         ? new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น."
         : null;
+      const approverName = checkInState && currentUser ? currentUser.display_name : null;
 
       await supabaseClient
         .from("attendees")
         .update({
           is_checked_in: checkInState,
           checked_in_at: nowStr,
+          checked_in_by: approverName,
         })
         .eq("id", rowId);
 
@@ -489,12 +743,14 @@
 
     async function checkInAllRemaining(bookingCode) {
       const nowStr = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น.";
+      const approverName = currentUser ? currentUser.display_name : "-";
 
       await supabaseClient
         .from("attendees")
         .update({
           is_checked_in: true,
           checked_in_at: nowStr,
+          checked_in_by: approverName,
         })
         .eq("booking_code", bookingCode)
         .eq("is_checked_in", false);
@@ -504,8 +760,12 @@
     }
 
     async function resetAllCheckIns() {
+      if (!currentUser ? true : currentUser.role !== "admin") {
+        return alert("เฉพาะ Admin เท่านั้นที่สามารถรีเซ็ตระบบได้");
+      }
+
       const confirmText = prompt(
-        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะการเช็กอินของทุกคนกลับเป็น 0 (รายชื่อผู้สมัครไม่หาย)\n\nพิมพ์คำว่า RESET เพื่อยืนยัน:"
+        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะการเช็กอินของทุกคนกลับเป็น 0 (รายชื่อผู้สมัครไม่หาย) — พิมพ์คำว่า RESET เพื่อยืนยัน:"
       );
       if (confirmText !== "RESET") {
         if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
@@ -517,6 +777,7 @@
         .update({
           is_checked_in: false,
           checked_in_at: null,
+          checked_in_by: null,
         })
         .gte("id", 0);
 
@@ -555,7 +816,7 @@
           : '<span class="px-2.5 py-1 bg-indigo-900/60 text-indigo-300 rounded-xl text-[11px]">ยังไม่เข้า</span>';
 
         const checkTimeInfo = r.is_checked_in
-          ? '<p class="text-[10px] text-emerald-300 mt-0.5">✔ เช็กอินเมื่อ: ' + valOr(r.checked_in_at, "-") + '</p>'
+          ? '<p class="text-[10px] text-emerald-300 mt-0.5">✔ อนุมัติโดย: <b class="text-amber-300">' + valOr(r.checked_in_by, "-") + '</b> (' + valOr(r.checked_in_at, "-") + ')</p>'
           : '';
 
         return (
@@ -576,6 +837,160 @@
           '</div>'
         );
       }).join("");
+    }
+
+    function updateStaffPreview() {
+      const fName = valOr(document.getElementById("staffFullName").value, "ชื่อ-นามสกุล");
+      const inst = valOr(document.getElementById("staffInstitution").value, "สถาบัน");
+      const yr = valOr(document.getElementById("staffYearLevel").value, "ชั้นปี");
+      document.getElementById("staffDisplayPreview").innerText = fName + " " + inst + "#" + yr;
+    }
+
+    async function loadStaffList() {
+      const { data } = await supabaseClient
+        .from("staff_users")
+        .select("*")
+        .order("id", { ascending: true });
+      if (!data) return;
+
+      staffUsersCache = data;
+
+      document.getElementById("staffListContainer").innerHTML = data.map((u) => {
+        const isAdmin = u.role === "admin";
+        const roleBadge = isAdmin
+          ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-400 text-slate-950">ADMIN</span>'
+          : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-800 text-indigo-200">STAFF</span>';
+
+        return (
+          '<div class="p-3.5 rounded-2xl bg-indigo-900/40 border border-indigo-700/60 flex items-center justify-between gap-2 text-xs">' +
+            '<div class="min-w-0 flex-1">' +
+              '<div class="flex flex-wrap items-center gap-1.5">' +
+                roleBadge +
+                '<span class="font-bold text-white truncate">' + valOr(u.display_name, "-") + '</span>' +
+              '</div>' +
+              '<p class="text-[11px] text-indigo-300 mt-1 font-mono">' +
+                'User: <b class="text-amber-300">' + valOr(u.username, "-") + '</b> • Pass: <span class="text-indigo-200">' + valOr(u.password, "-") + '</span>' +
+              '</p>' +
+            '</div>' +
+            '<div class="flex gap-1.5 shrink-0">' +
+              '<button onclick="editStaffById(' + u.id + ')" class="px-2.5 py-1.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-xl text-[11px] font-semibold transition">' +
+                '✏️ แก้ไข' +
+              '</button>' +
+              '<button onclick="deleteStaffById(' + u.id + ')" class="px-2.5 py-1.5 bg-rose-900/80 hover:bg-rose-800 text-rose-200 rounded-xl text-[11px] font-semibold transition">' +
+                '🗑️' +
+              '</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function editStaffById(id) {
+      const userObj = staffUsersCache.find((u) => u.id === id);
+      if (!userObj) return;
+
+      document.getElementById("staffEditId").value = userObj.id;
+      document.getElementById("staffFullName").value = valOr(userObj.full_name, "");
+      document.getElementById("staffInstitution").value = valOr(userObj.institution, "");
+      document.getElementById("staffYearLevel").value = valOr(userObj.year_level, "");
+      document.getElementById("staffUsername").value = valOr(userObj.username, "");
+      document.getElementById("staffPassword").value = valOr(userObj.password, "");
+      document.getElementById("staffRole").value = valOr(userObj.role, "staff");
+
+      updateStaffPreview();
+      document.getElementById("staffFormTitle").innerText = "✏️ แก้ไขข้อมูล: " + valOr(userObj.display_name, "");
+      document.getElementById("saveStaffBtn").innerText = "💾 บันทึกการแก้ไข";
+      document.getElementById("cancelEditStaffBtn").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function resetStaffForm() {
+      document.getElementById("staffEditId").value = "";
+      document.getElementById("staffFullName").value = "";
+      document.getElementById("staffInstitution").value = "";
+      document.getElementById("staffYearLevel").value = "";
+      document.getElementById("staffUsername").value = "";
+      document.getElementById("staffPassword").value = "";
+      document.getElementById("staffRole").value = "staff";
+      updateStaffPreview();
+      document.getElementById("staffFormTitle").innerText = "➕ เพิ่มสตาฟ / แก้ไขข้อมูลสตาฟ";
+      document.getElementById("saveStaffBtn").innerText = "💾 บันทึกข้อมูลสตาฟ";
+      document.getElementById("cancelEditStaffBtn").classList.add("hidden");
+    }
+
+    async function handleSaveStaff(e) {
+      e.preventDefault();
+      const editId = document.getElementById("staffEditId").value;
+      const fullName = document.getElementById("staffFullName").value.trim();
+      const institution = document.getElementById("staffInstitution").value.trim();
+      const yearLevel = document.getElementById("staffYearLevel").value.trim();
+      const username = document.getElementById("staffUsername").value.trim();
+      const password = document.getElementById("staffPassword").value.trim();
+      const role = document.getElementById("staffRole").value;
+
+      const displayName = fullName + " " + institution + "#" + yearLevel;
+
+      const payload = {
+        username: username,
+        password: password,
+        full_name: fullName,
+        institution: institution,
+        year_level: yearLevel,
+        display_name: displayName,
+        role: role,
+      };
+
+      let error = null;
+      if (editId) {
+        const res = await supabaseClient.from("staff_users").update(payload).eq("id", editId);
+        error = res.error;
+      } else {
+        const res = await supabaseClient.from("staff_users").insert([payload]);
+        error = res.error;
+      }
+
+      if (error) {
+        alert("ไม่สามารถบันทึกได้ (Username อาจซ้ำ): " + error.message);
+        return;
+      }
+
+      const isSelfEdit = currentUser
+        ? String(currentUser.id) === String(editId)
+          ? true
+          : currentUser.username.toLowerCase() === username.toLowerCase()
+        : false;
+
+      if (isSelfEdit) {
+        const { data: updatedMe } = await supabaseClient
+          .from("staff_users")
+          .select("*")
+          .ilike("username", username)
+          .maybeSingle();
+        if (updatedMe) {
+          currentUser = updatedMe;
+          localStorage.setItem("smst_current_user", JSON.stringify(updatedMe));
+          const roleLabel = updatedMe.role === "admin" ? "ADMIN" : "STAFF";
+          document.getElementById("currentUserBadge").innerText = "👤 " + updatedMe.display_name + " (" + roleLabel + ")";
+        }
+      }
+
+      resetStaffForm();
+      loadStaffList();
+      alert('✅ บันทึกข้อมูล "' + displayName + '" เรียบร้อยแล้ว!');
+    }
+
+    async function deleteStaffById(id) {
+      const userObj = staffUsersCache.find((u) => u.id === id);
+      if (!userObj) return;
+
+      if (currentUser && currentUser.username.toLowerCase() === userObj.username.toLowerCase()) {
+        return alert("ไม่สามารถลบบัญชีที่ตัวเองกำลังล็อกอินใช้งานอยู่ได้ครับ");
+      }
+      if (!confirm('ยืนยันการลบบัญชี "' + userObj.username + '" (' + userObj.display_name + ') ?')) return;
+
+      const { error } = await supabaseClient.from("staff_users").delete().eq("id", id);
+      if (error) alert("เกิดข้อผิดพลาด: " + error.message);
+      else loadStaffList();
     }
 
     function cleanCsvVal(val) {
@@ -637,7 +1052,7 @@
             const amount = isNaN(parsedAmt) ? 0 : parsedAmt;
             const cName = valOr(cleanCsvVal(r["ผู้ติดต่อ"]), "-");
             let cPhone = valOr(cleanCsvVal(r["เบอร์ผู้ติดต่อ"]), "-");
-            if (cPhone !== "-" && !cPhone.startsWith("0") && cPhone.length === 9 && /^\d+$/.test(cPhone)) {
+            if (cPhone !== "-" && !cPhone.startsWith("0") && cPhone.length === 9 && !isNaN(Number(cPhone))) {
               cPhone = "0" + cPhone;
             }
             const email = valOr(cleanCsvVal(r["อีเมลบัญชี"]), "-");

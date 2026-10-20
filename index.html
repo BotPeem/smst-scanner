@@ -578,8 +578,9 @@
       const remainingPax = totalPax - checkedInPax;
 
       const statusText = first.booking_status || "-";
+      const payStatusText = first.payment_status || "-";
       const isCancelled = statusText.startsWith("ยกเลิก");
-      const isUnpaid = statusText === "รอชำระเงิน";
+      const isUnpaid = statusText === "รอชำระเงิน" || payStatusText === "รอตรวจสอบ";
 
       let borderClass = "border-indigo-700/60 bg-indigo-950/40";
       let statusBanner = "";
@@ -594,7 +595,7 @@
         borderClass = "border-amber-500/80 bg-amber-950/60";
         statusBanner = `
           <div class="bg-amber-500 text-slate-950 p-3 rounded-2xl font-bold text-center text-xs mb-4">
-            ⚠️ รายการนี้ "รอชำระเงิน" กรุณาตรวจสอบหลักฐานการโอนก่อน
+            ⚠️ สถานะ "${statusText}" (การเงิน: ${payStatusText}) กรุณาตรวจสอบหลักฐานการโอนก่อน
           </div>`;
       } else if (remainingPax === 0) {
         borderClass = "border-amber-400/80 bg-indigo-950/60";
@@ -715,7 +716,7 @@
                 ผู้ติดต่อ: ${first.contact_name || "-"} (${first.contact_phone || "-"})
               </p>
               <p class="text-[11px] text-indigo-300/80">
-                สถานะ: <b class="text-white">${statusText}</b> • การเงิน: <b class="text-amber-300">${first.payment_status || "-"}</b>
+                สถานะ: <b class="text-white">${statusText}</b> • การเงิน: <b class="text-amber-300">${payStatusText}</b>
               </p>
             </div>
             <div class="text-right bg-indigo-950/80 px-3.5 py-2 rounded-2xl border border-indigo-800/80 shrink-0">

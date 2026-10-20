@@ -119,4 +119,577 @@
 
         <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/40">
           <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
-          <button onclick="importCSVFile()" class="w-full
+          <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl text-sm shadow-md transition">
+            ⬆️ อัปโหลดและจัดเรียงข้อมูลอัตโนมัติ
+          </button>
+        </div>
+
+        <div id="importStatus" class="text-xs text-center"></div>
+      </div>
+
+      <div class="bg-rose-950/40 backdrop-blur-md border border-rose-700/50 p-5 rounded-3xl space-y-3">
+        <h2 class="font-bold text-sm text-rose-300 flex items-center gap-1.5">
+          <span>🔄</span> รีเซ็ตสถานะการเช็กอินทั้งหมด (สำหรับล้างข้อมูลหลังเทสต์ระบบ)
+        </h2>
+        <p class="text-xs text-rose-200/80 leading-relaxed">
+          ปุ่มนี้จะล้างสถานะ <b>"เข้างานแล้ว"</b> ของผู้สมัครทุกคนให้กลับเป็น <b>0 (ยังไม่เข้างาน)</b> โดยที่รายชื่อยังอยู่ครบ
+        </p>
+        <button
+          onclick="resetAllCheckIns()"
+          class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs shadow-lg transition"
+        >
+          ⚠️ กดรีเซ็ตสถานะเช็กอินทุกคนกลับเป็น 0
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://ebgauldhvwxoqczbdzic.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_CWarN4yQwi30TiIFP6Utxw_OCkkdbem";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let html5QrCode = null;
+    let currentSearchQuery = null;
+    let sortAscending = true;
+
+    // ฟังก์ชันช่วยคืนค่าข้อความปลอดภัย (ไม่ต้องพึ่งเครื่องหมายไปป์คู่)
+    function valOr(v, fallback) {
+      if (v === undefined) return fallback;
+      if (v === null) return fallback;
+      const s = String(v).trim();
+      return s !== "" ? s : fallback;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadAllStatsAndList();
+    });
+
+    function parseThaiDateToISO(dateStr) {
+      if (!dateStr) return "9999-99-99 99:99:99";
+      const s = String(dateStr).trim();
+      const parts = s.split(" ");
+      const dParts = parts[0].split("/");
+      if (dParts.length === 3) {
+        const day = dParts[0].padStart(2, "0");
+        const month = dParts[1].padStart(2, "0");
+        const year = dParts[2];
+        const timePart = parts[1] ? parts[1] : "00:00:00";
+        return year + "-" + month + "-" + day + " " + timePart;
+      }
+      return s;
+    }
+
+    function parsePersonOrderNum(orderStr) {
+      if (!orderStr) return 1;
+      const num = parseInt(String(orderStr).split("/")[0], 10);
+      return isNaN(num) ? 1 : num;
+    }
+
+    function sortAttendeeRows(rows, asc) {
+      const isAsc = asc !== false;
+      return rows.slice().sort((a, b) => {
+        const isoA = a.booking_date_iso ? a.booking_date_iso : parseThaiDateToISO(a.booking_date);
+        const isoB = b.booking_date_iso ? b.booking_date_iso : parseThaiDateToISO(b.booking_date);
+        if (isoA !== isoB) {
+          return isAsc ? isoA.localeCompare(isoB) : isoB.localeCompare(isoA);
+        }
+        const codeA = valOr(a.booking_code, "");
+        const codeB = valOr(b.booking_code, "");
+        if (codeA !== codeB) {
+          return codeA.localeCompare(codeB);
+        }
+        return parsePersonOrderNum(a.person_order) - parsePersonOrderNum(b.person_order);
+      });
+    }
+
+    function switchTab(tab) {
+      ["scan", "list", "import"].forEach((t) => {
+        document.getElementById("view-" + t).classList.add("hidden");
+        const btn = document.getElementById("tab-" + t);
+        if (btn) {
+          btn.className = "flex-1 py-2 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
+        }
+      });
+
+      document.getElementById("view-" + tab).classList.remove("hidden");
+      const activeBtn = document.getElementById("tab-" + tab);
+      if (activeBtn) {
+        activeBtn.className = "flex-1 py-2 rounded-xl bg-amber-400 text-slate-950 shadow-md transition font-bold";
+      }
+
+      if (tab !== "scan") stopScanner();
+      if (tab === "list") loadAllStatsAndList();
+    }
+
+    function toggleSortOrder() {
+      sortAscending = !sortAscending;
+      document.getElementById("sortOrderBtn").innerText = sortAscending
+        ? "🕒 จองก่อน → ล่าสุด"
+        : "🕒 ล่าสุด → จองก่อน";
+      loadAllStatsAndList();
+    }
+
+    async function startScanner() {
+      document.getElementById("cameraStartArea").classList.add("hidden");
+      document.getElementById("cameraActiveArea").classList.remove("hidden");
+
+      try {
+        html5QrCode = new Html5Qrcode("qr-reader");
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 240, height: 240 } },
+          (decodedText) => {
+            if (navigator.vibrate) navigator.vibrate(200);
+            stopScanner();
+            searchTicket(decodedText);
+          },
+          () => {}
+        );
+      } catch (err) {
+        alert("ไม่สามารถเปิดกล้องได้ กรุณากดอนุญาตการใช้กล้องบนเบราว์เซอร์");
+        stopScanner();
+      }
+    }
+
+    async function stopScanner() {
+      if (html5QrCode) {
+        try {
+          await html5QrCode.stop();
+          html5QrCode.clear();
+        } catch (e) {}
+        html5QrCode = null;
+      }
+      const activeArea = document.getElementById("cameraActiveArea");
+      const startArea = document.getElementById("cameraStartArea");
+      if (activeArea) activeArea.classList.add("hidden");
+      if (startArea) startArea.classList.remove("hidden");
+    }
+
+    function handleSearchSubmit(e) {
+      e.preventDefault();
+      const val = document.getElementById("searchInput").value;
+      if (val.trim()) searchTicket(val.trim());
+    }
+
+    async function searchTicket(queryText) {
+      const cleanQuery = queryText.trim();
+      currentSearchQuery = cleanQuery;
+      document.getElementById("searchInput").value = cleanQuery;
+      document.getElementById("loadingIndicator").classList.remove("hidden");
+      document.getElementById("resultContainer").innerHTML = "";
+
+      let matchedBookingCode = null;
+      let scannedTicketCode = null;
+
+      const { data: codeMatches } = await supabaseClient
+        .from("attendees")
+        .select("*")
+        .or("ticket_code.ilike." + cleanQuery + ",qr_code.ilike." + cleanQuery + ",booking_code.ilike." + cleanQuery);
+
+      if (codeMatches && codeMatches.length > 0) {
+        matchedBookingCode = codeMatches[0].booking_code;
+        const exactTicket = codeMatches.find(
+          (r) => r.ticket_code && r.ticket_code.toLowerCase() === cleanQuery.toLowerCase()
+        );
+        if (exactTicket) scannedTicketCode = exactTicket.ticket_code;
+      } else {
+        const { data: nameMatches } = await supabaseClient
+          .from("attendees")
+          .select("booking_code")
+          .ilike("full_name", "%" + cleanQuery + "%")
+          .limit(1);
+
+        if (nameMatches && nameMatches.length > 0) {
+          matchedBookingCode = nameMatches[0].booking_code;
+        }
+      }
+
+      if (!matchedBookingCode) {
+        document.getElementById("loadingIndicator").classList.add("hidden");
+        renderNotFound(cleanQuery);
+        return;
+      }
+
+      const { data: groupRows, error } = await supabaseClient
+        .from("attendees")
+        .select("*")
+        .eq("booking_code", matchedBookingCode);
+
+      document.getElementById("loadingIndicator").classList.add("hidden");
+
+      if (error ? true : !groupRows ? true : groupRows.length === 0) {
+        renderNotFound(cleanQuery);
+        return;
+      }
+
+      const sortedGroup = sortAttendeeRows(groupRows, true);
+      renderTicketGroup(sortedGroup, scannedTicketCode);
+    }
+
+    function renderNotFound(code) {
+      document.getElementById("resultContainer").innerHTML =
+        '<div class="bg-rose-950/80 border border-rose-500/60 p-6 rounded-3xl text-center shadow-xl">' +
+          '<div class="text-4xl mb-2">❌</div>' +
+          '<h2 class="text-lg font-bold text-rose-200">ไม่พบรหัสบัตรเข้างานนี้ในระบบ!</h2>' +
+          '<p class="text-xs text-rose-300 mt-1">คำค้นหา: <span class="font-mono font-bold">"' + code + '"</span></p>' +
+        '</div>';
+    }
+
+    function renderTicketGroup(rows, scannedTicketCode) {
+      const first = rows[0];
+      const totalPax = rows.length;
+      const checkedInPax = rows.filter((r) => r.is_checked_in).length;
+      const remainingPax = totalPax - checkedInPax;
+
+      const statusText = valOr(first.booking_status, "-");
+      const isCancelled = statusText.startsWith("ยกเลิก");
+      const isUnpaid = statusText === "รอชำระเงิน";
+
+      let borderClass = "border-indigo-700/60 bg-indigo-950/40";
+      let statusBanner = "";
+
+      if (isCancelled) {
+        borderClass = "border-rose-500/80 bg-rose-950/60";
+        statusBanner =
+          '<div class="bg-rose-600 text-white p-3 rounded-2xl font-bold text-center text-xs mb-4">' +
+            '⛔ บัตรนี้ถูกยกเลิกแล้ว (' + statusText + ') ห้ามเช็กอินเข้างาน!' +
+          '</div>';
+      } else if (isUnpaid) {
+        borderClass = "border-amber-500/80 bg-amber-950/60";
+        statusBanner =
+          '<div class="bg-amber-500 text-slate-950 p-3 rounded-2xl font-bold text-center text-xs mb-4">' +
+            '⚠️ รายการนี้ "รอชำระเงิน" กรุณาตรวจสอบหลักฐานการโอนก่อน' +
+          '</div>';
+      } else if (remainingPax === 0) {
+        borderClass = "border-amber-400/80 bg-indigo-950/60";
+        statusBanner =
+          '<div class="bg-amber-400/20 border border-amber-400/50 text-amber-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">' +
+            '🎉 เช็กอินเข้างานครบทั้ง ' + totalPax + ' คนแล้ว' +
+          '</div>';
+      } else {
+        statusBanner =
+          '<div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-2xl font-bold text-center text-xs mb-4">' +
+            '✅ บัตรถูกต้อง (' + statusText + ') • เช็กอินได้อีก ' + remainingPax + ' คน' +
+          '</div>';
+      }
+
+      const membersHtml = rows.map((person) => {
+        const isChecked = person.is_checked_in;
+        const tCode = valOr(person.ticket_code, "-");
+        const hasTicketCode = tCode !== "-";
+        const isScannedMatch =
+          scannedTicketCode &&
+          hasTicketCode &&
+          tCode.toLowerCase() === scannedTicketCode.toLowerCase();
+
+        const cardStyle = isScannedMatch
+          ? "bg-amber-400/15 border-amber-400 shadow-lg"
+          : isChecked
+          ? "bg-slate-950/60 border-indigo-900/50 opacity-85"
+          : "bg-indigo-900/40 border-indigo-700/60";
+
+        const badgeTicket = hasTicketCode
+          ? '<span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">🎫 ' + tCode + '</span>'
+          : '<span class="px-2 py-0.5 text-[10px] rounded-lg bg-slate-800 text-slate-400">ยังไม่ออกรหัสบัตร</span>';
+
+        const badgeScanned = isScannedMatch
+          ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-amber-400 text-slate-950">🎯 บัตรใบที่สแกน</span>'
+          : '';
+
+        const checkedInfo = isChecked
+          ? '<div class="mt-1.5 inline-block bg-emerald-950/80 border border-emerald-600/50 px-2.5 py-1 rounded-xl text-[11px] text-emerald-300 font-medium">' +
+              '✔ เช็กอินเมื่อ ' + valOr(person.checked_in_at, "-") +
+            '</div>'
+          : '';
+
+        const actionBtn = !isChecked
+          ? '<button onclick="togglePersonCheckIn(' + person.id + ', true)" ' + (isCancelled ? "disabled" : "") +
+              ' class="px-4 py-2.5 rounded-xl font-bold text-xs shadow transition ' +
+              (isCancelled ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-amber-300 hover:bg-amber-200 text-slate-950 active:scale-95") + '">' +
+              'เช็กอิน' +
+            '</button>'
+          : '<button onclick="togglePersonCheckIn(' + person.id + ', false)"' +
+              ' class="px-3 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 text-xs font-semibold transition">' +
+              '↩️ ยกเลิก' +
+            '</button>';
+
+        return (
+          '<div class="p-3.5 rounded-2xl border ' + cardStyle + ' flex items-center justify-between gap-3">' +
+            '<div class="min-w-0 flex-1">' +
+              '<div class="flex flex-wrap items-center gap-1.5">' +
+                '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-800 text-indigo-200">คนที่ ' + valOr(person.person_order, "1/1") + '</span>' +
+                badgeTicket +
+                badgeScanned +
+              '</div>' +
+              '<p class="font-bold text-sm mt-1.5 truncate ' + (isChecked ? "line-through text-indigo-300" : "text-white") + '">' +
+                valOr(person.full_name, "-") +
+              '</p>' +
+              '<p class="text-[11px] text-indigo-200/70 mt-0.5 truncate">' +
+                '🏫 ' + valOr(person.school, "-") + ' • 📞 ' + valOr(person.phone, "-") + ' • 💬 Line: ' + valOr(person.line_id, "-") +
+              '</p>' +
+              '<p class="text-[10px] text-indigo-300/60 mt-0.5 truncate">' +
+                '🚨 ฉุกเฉิน: ' + valOr(person.emergency_phone, "-") + ' (' + valOr(person.emergency_relation, "-") + ')' +
+              '</p>' +
+              checkedInfo +
+            '</div>' +
+            '<div class="shrink-0">' + actionBtn + '</div>' +
+          '</div>'
+        );
+      }).join("");
+
+      const checkInAllBtn =
+        !isCancelled && remainingPax > 1
+          ? '<button onclick="checkInAllRemaining(\'' + first.booking_code + '\')" class="w-full mt-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-xs shadow-lg transition">' +
+              '✨ เช็กอินคนที่เหลือทั้งหมดพร้อมกัน (' + remainingPax + ' คน)' +
+            '</button>'
+          : "";
+
+      document.getElementById("resultContainer").innerHTML =
+        '<div class="border-2 ' + borderClass + ' p-5 rounded-3xl shadow-xl backdrop-blur-md">' +
+          statusBanner +
+          '<div class="flex justify-between items-start border-b border-indigo-800/60 pb-3 mb-4">' +
+            '<div class="space-y-1">' +
+              '<div class="flex flex-wrap items-center gap-1.5">' +
+                '<span class="text-xs font-mono bg-indigo-900/80 px-2.5 py-1 rounded-xl text-amber-300 border border-indigo-700/50">รหัสจอง: ' + first.booking_code + '</span>' +
+                '<span class="text-[11px] bg-indigo-950/80 px-2.5 py-1 rounded-xl text-indigo-200 border border-indigo-800">🕒 จองเมื่อ: ' + valOr(first.booking_date, "-") + '</span>' +
+              '</div>' +
+              '<h3 class="text-xs font-semibold text-indigo-200 pt-1">' + valOr(first.ticket_type, "-") + '</h3>' +
+              '<p class="text-[11px] text-indigo-300/80">ผู้ติดต่อ: ' + valOr(first.contact_name, "-") + ' (' + valOr(first.contact_phone, "-") + ')</p>' +
+              '<p class="text-[11px] text-indigo-300/80">สถานะ: <b class="text-white">' + statusText + '</b> • การเงิน: <b class="text-amber-300">' + valOr(first.payment_status, "-") + '</b></p>' +
+            '</div>' +
+            '<div class="text-right bg-indigo-950/80 px-3.5 py-2 rounded-2xl border border-indigo-800/80 shrink-0">' +
+              '<p class="text-[10px] text-indigo-300">เข้าแล้ว</p>' +
+              '<p class="text-xl font-extrabold text-amber-300">' + checkedInPax + '/' + totalPax + '</p>' +
+            '</div>' +
+          '</div>' +
+          '<p class="text-xs font-semibold text-indigo-200 mb-2">รายชื่อผู้สมัครในกลุ่มนี้:</p>' +
+          '<div class="space-y-2">' + membersHtml + '</div>' +
+          checkInAllBtn +
+        '</div>';
+    }
+
+    async function togglePersonCheckIn(rowId, checkInState) {
+      const nowStr = checkInState
+        ? new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น."
+        : null;
+
+      await supabaseClient
+        .from("attendees")
+        .update({
+          is_checked_in: checkInState,
+          checked_in_at: nowStr,
+        })
+        .eq("id", rowId);
+
+      if (currentSearchQuery) searchTicket(currentSearchQuery);
+      loadAllStatsAndList();
+    }
+
+    async function checkInAllRemaining(bookingCode) {
+      const nowStr = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น.";
+
+      await supabaseClient
+        .from("attendees")
+        .update({
+          is_checked_in: true,
+          checked_in_at: nowStr,
+        })
+        .eq("booking_code", bookingCode)
+        .eq("is_checked_in", false);
+
+      searchTicket(bookingCode);
+      loadAllStatsAndList();
+    }
+
+    async function resetAllCheckIns() {
+      const confirmText = prompt(
+        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะการเช็กอินของทุกคนกลับเป็น 0 (รายชื่อผู้สมัครไม่หาย)\n\nพิมพ์คำว่า RESET เพื่อยืนยัน:"
+      );
+      if (confirmText !== "RESET") {
+        if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("attendees")
+        .update({
+          is_checked_in: false,
+          checked_in_at: null,
+        })
+        .gte("id", 0);
+
+      if (error) {
+        alert("เกิดข้อผิดพลาดในการรีเซ็ต: " + error.message);
+      } else {
+        alert("✅ รีเซ็ตสถานะการเช็กอินทั้งหมดกลับเป็น 0 เรียบร้อยแล้ว!");
+        if (currentSearchQuery) searchTicket(currentSearchQuery);
+        loadAllStatsAndList();
+      }
+    }
+
+    async function loadAllStatsAndList() {
+      const { data } = await supabaseClient.from("attendees").select("*");
+      if (!data) return;
+
+      const sortedData = sortAttendeeRows(data, sortAscending);
+
+      const validRows = sortedData.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
+      const checkedCount = validRows.filter((r) => r.is_checked_in).length;
+
+      document.getElementById("checkedInCount").innerText = checkedCount;
+      document.getElementById("totalCount").innerText = validRows.length;
+
+      document.getElementById("allAttendeesList").innerHTML = sortedData.map((r, idx) => {
+        const tCode = valOr(r.ticket_code, "-");
+        const hasTicket = tCode !== "-";
+        const searchKey = hasTicket ? tCode : r.booking_code;
+
+        const codeBadge = hasTicket
+          ? '<span class="font-mono text-amber-300 font-bold">🎫 ' + tCode + '</span>'
+          : '<span class="font-mono text-indigo-300 font-semibold">จอง: ' + r.booking_code + '</span>';
+
+        const statusBadge = r.is_checked_in
+          ? '<span class="px-2.5 py-1 bg-amber-400/20 text-amber-300 rounded-xl font-bold text-[11px]">เข้าแล้ว</span>'
+          : '<span class="px-2.5 py-1 bg-indigo-900/60 text-indigo-300 rounded-xl text-[11px]">ยังไม่เข้า</span>';
+
+        const checkTimeInfo = r.is_checked_in
+          ? '<p class="text-[10px] text-emerald-300 mt-0.5">✔ เช็กอินเมื่อ: ' + valOr(r.checked_in_at, "-") + '</p>'
+          : '';
+
+        return (
+          '<div onclick="switchTab(\'scan\'); searchTicket(\'' + searchKey + '\')" class="p-3 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 hover:border-amber-400/50 cursor-pointer flex justify-between items-center gap-2 text-xs transition">' +
+            '<div class="min-w-0 flex-1">' +
+              '<div class="flex flex-wrap items-center gap-1.5">' +
+                '<span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-300 rounded font-mono">#' + (idx + 1) + '</span>' +
+                codeBadge +
+                '<span class="text-indigo-300 text-[11px]">(' + valOr(r.person_order, "1/1") + ')</span>' +
+                '<span class="font-semibold text-white truncate">' + valOr(r.full_name, "-") + '</span>' +
+              '</div>' +
+              '<p class="text-[10px] text-indigo-300/70 mt-1 truncate">' +
+                '🕒 ' + valOr(r.booking_date, "-") + ' • 🏫 ' + valOr(r.school, "-") + ' • สถานะ: ' + valOr(r.booking_status, "-") +
+              '</p>' +
+              checkTimeInfo +
+            '</div>' +
+            '<div class="shrink-0">' + statusBadge + '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function cleanCsvVal(val) {
+      if (val === undefined) return "";
+      if (val === null) return "";
+      const s = String(val).trim();
+      if (s === "'-") return "";
+      if (s === "-") return "";
+      if (s === "nan") return "";
+      if (s === "NaN") return "";
+      return s;
+    }
+
+    function importCSVFile() {
+      const fileInput = document.getElementById("csvFileInput");
+      const statusEl = document.getElementById("importStatus");
+      if (!fileInput.files.length) return alert("กรุณาเลือกไฟล์ .csv");
+
+      statusEl.innerHTML = '<span class="text-amber-300">กำลังอ่านไฟล์ แก้ช่องขยับจาก ID Line และจัดเรียงตามเวลาจอง...</span>';
+      Papa.parse(fileInput.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: async function (results) {
+          let shiftedCount = 0;
+          const hasLineColumn =
+            results.meta && results.meta.fields && results.meta.fields.includes("ID Line");
+
+          const rawRows = results.data.map((r) => {
+            const bCode = cleanCsvVal(r["รหัสการจอง"]);
+            if (!bCode) return null;
+
+            const pOrder = valOr(cleanCsvVal(r["คนที่"]), "1/1");
+            const tCode = cleanCsvVal(r["รหัสบัตรเข้างาน"]);
+            let fName = cleanCsvVal(r["ชื่อ-นามสกุล (ภาษาไทย)"]);
+            const school = valOr(cleanCsvVal(r["โรงเรียน/มหาวิทยาลัย"]), "-");
+            const phone = valOr(cleanCsvVal(r["เบอร์โทรศัพท์"]), "-");
+
+            const rawG = hasLineColumn ? cleanCsvVal(r["ID Line"]) : "";
+            const rawH = cleanCsvVal(r["เบอร์โทรฉุกเฉิน"]);
+            const rawI = cleanCsvVal(r["เกี่ยวข้องกับผู้สมัครเป็น"]);
+            const rawJ = cleanCsvVal(r["มหาวิทยาลัยที่อยากศึกษาต่อ"]);
+            const rawK = cleanCsvVal(r["รู้จักโครงการผ่านช่องทางไหน"]);
+
+            let isShifted = false;
+            const hasAnyMiddle = (rawG !== "") ? true : (rawH !== "") ? true : (rawI !== "") ? true : (rawJ !== "");
+            if (hasLineColumn && rawK === "" && hasAnyMiddle) {
+              isShifted = true;
+              shiftedCount++;
+            }
+
+            const lineId = isShifted ? "-" : valOr(rawG, "-");
+            const emPhone = isShifted ? valOr(rawG, "-") : valOr(rawH, "-");
+            const emRel = isShifted ? valOr(rawH, "-") : valOr(rawI, "-");
+            const targetUni = isShifted ? valOr(rawI, "-") : valOr(rawJ, "-");
+            const channel = isShifted ? valOr(rawJ, "-") : valOr(rawK, "-");
+
+            const tType = valOr(cleanCsvVal(r["ชุดบัตร"]), "-");
+            const parsedAmt = parseFloat(r["ยอดที่ต้องจ่าย"]);
+            const amount = isNaN(parsedAmt) ? 0 : parsedAmt;
+            const cName = valOr(cleanCsvVal(r["ผู้ติดต่อ"]), "-");
+            let cPhone = valOr(cleanCsvVal(r["เบอร์ผู้ติดต่อ"]), "-");
+            if (cPhone !== "-" && !cPhone.startsWith("0") && cPhone.length === 9 && /^\d+$/.test(cPhone)) {
+              cPhone = "0" + cPhone;
+            }
+            const email = valOr(cleanCsvVal(r["อีเมลบัญชี"]), "-");
+            const bStatus = valOr(cleanCsvVal(r["สถานะ"]), "-");
+            const pStatus = valOr(cleanCsvVal(r["สถานะการชำระเงิน"]), "-");
+            const bDate = valOr(cleanCsvVal(r["วันที่จอง"]), "-");
+            const bDateIso = parseThaiDateToISO(bDate);
+
+            if (!fName) {
+              fName = cName !== "-" ? cName + " (ไม่ระบุชื่อผู้สมัคร)" : "-";
+            }
+
+            return {
+              booking_code: bCode,
+              person_order: pOrder,
+              ticket_code: tCode,
+              full_name: fName,
+              school: school,
+              phone: phone,
+              line_id: lineId,
+              emergency_phone: emPhone,
+              emergency_relation: emRel,
+              target_uni: targetUni,
+              channel: channel,
+              ticket_type: tType,
+              amount: amount,
+              contact_name: cName,
+              contact_phone: cPhone,
+              email: email,
+              booking_status: bStatus,
+              payment_status: pStatus,
+              booking_date: bDate,
+              booking_date_iso: bDateIso,
+              qr_code: tCode !== "" ? tCode : bCode,
+            };
+          }).filter(Boolean);
+
+          const sortedPayload = sortAttendeeRows(rawRows, true);
+
+          const { error } = await supabaseClient
+            .from("attendees")
+            .upsert(sortedPayload, { onConflict: "booking_code,person_order" });
+
+          if (error) {
+            statusEl.innerHTML = '<span class="text-rose-400">❌ เกิดข้อผิดพลาด: ' + error.message + '</span>';
+          } else {
+            statusEl.innerHTML = '<span class="text-amber-300 font-bold">✅ อัปเดตสำเร็จ ' + sortedPayload.length + ' รายชื่อ! (ดึงช่องที่ขยับจาก ID Line กลับเข้าที่อัตโนมัติ ' + shiftedCount + ' รายชื่อ)</span>';
+            loadAllStatsAndList();
+          }
+        },
+      });
+    }
+  </script>
+</body>
+</html>

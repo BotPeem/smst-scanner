@@ -12,7 +12,7 @@
   <style>
     body {
       font-family: 'Prompt', sans-serif;
-      transition: background 0.35s ease, color 0.35s ease;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     /* ================= DARK MODE (ค่าเริ่มต้น) ================= */
@@ -29,75 +29,101 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
       user-select: none;
     }
     .theme-toggle-btn:hover {
-      transform: scale(1.15) rotate(15deg);
+      transform: scale(1.12) rotate(12deg);
     }
     .theme-toggle-btn.sun-active {
       transform: rotate(360deg);
     }
 
-    /* ================= LIGHT MODE (Celestial Voyage: #DEC0FF, #FFF8DC, #273990, #FBC80E) ================= */
+    /* ================= LIGHT MODE (แก้คอนทราสต์คมชัด 100% ตามธีม Celestial Voyage) ================= */
     body.light-mode.theme-bg,
     body.light-mode .theme-bg {
-      background: linear-gradient(135deg, #FFF8DC 0%, #F3E8FF 50%, #DEC0FF 100%) !important;
-      color: #273990 !important;
+      background: linear-gradient(135deg, #FFFDF5 0%, #F5EEFF 55%, #E9D5FF 100%) !important;
+      color: #1e1b4b !important;
     }
     body.light-mode .card-glow {
-      box-shadow: 0 12px 32px -8px rgba(39, 57, 144, 0.18) !important;
+      box-shadow: 0 10px 28px -6px rgba(39, 57, 144, 0.14) !important;
     }
     body.light-mode header {
-      background: rgba(255, 255, 255, 0.9) !important;
-      border-color: #DEC0FF !important;
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: #D8B4FE !important;
+      box-shadow: 0 4px 20px -4px rgba(39, 57, 144, 0.08);
     }
     body.light-mode .surface-card {
-      background: rgba(255, 255, 255, 0.88) !important;
+      background: #FFFFFF !important;
       border-color: #C4B5FD !important;
-      color: #273990 !important;
+      color: #1e1b4b !important;
     }
     body.light-mode .surface-subcard {
-      background: rgba(245, 240, 255, 0.9) !important;
-      border-color: #C4B5FD !important;
-      color: #273990 !important;
+      background: #FAF7FF !important;
+      border-color: #D8B4FE !important;
+      color: #1e1b4b !important;
+    }
+    body.light-mode .surface-subcard:hover {
+      background: #F3E8FF !important;
+      border-color: #8B5CF6 !important;
     }
     body.light-mode .surface-input {
       background: #FFFFFF !important;
-      border-color: #A78BFA !important;
+      border-color: #9333EA !important;
       color: #1e1b4b !important;
+      font-weight: 500;
     }
     body.light-mode .surface-input::placeholder {
-      color: #7C3AED !important;
-      opacity: 0.55;
+      color: #6B7280 !important;
     }
-    body.light-mode .text-amber-300 {
+    body.light-mode .control-btn {
+      background: #F3E8FF !important;
       color: #273990 !important;
+      border-color: #A855F7 !important;
+      font-weight: 600 !important;
     }
-    body.light-mode .text-indigo-200,
-    body.light-mode .text-indigo-200\/80,
-    body.light-mode .text-indigo-200\/90,
-    body.light-mode .text-indigo-300,
-    body.light-mode .text-indigo-300\/80,
-    body.light-mode .text-indigo-300\/70,
-    body.light-mode .text-indigo-300\/60 {
-      color: #3730A3 !important;
-    }
-    body.light-mode .text-white {
-      color: #1e1b4b !important;
+    body.light-mode .control-btn:hover {
+      background: #E9D5FF !important;
     }
     body.light-mode .tab-inactive {
-      background: rgba(222, 192, 255, 0.45) !important;
+      background: #F3E8FF !important;
       color: #273990 !important;
       border-color: #C4B5FD !important;
+    }
+    body.light-mode .tab-inactive:hover {
+      background: #E9D5FF !important;
     }
     body.light-mode .tab-active {
       background: #FBC80E !important;
       color: #1e1b4b !important;
+      border: 1px solid #D97706 !important;
     }
     body.light-mode .stat-box {
-      background: #FFF8DC !important;
-      border-color: #FBC80E !important;
+      background: #FFFBEB !important;
+      border-color: #F59E0B !important;
+    }
+    body.light-mode .user-badge {
+      background: #EDE9FE !important;
+      color: #273990 !important;
+      border-color: #A78BFA !important;
+      font-weight: 700 !important;
+    }
+    body.light-mode .theme-toggle-btn {
+      background: #FEF3C7 !important;
+      border-color: #F59E0B !important;
+    }
+    body.light-mode .title-highlight {
+      color: #273990 !important;
+    }
+    body.light-mode .subtitle-muted {
+      color: #4338CA !important;
+    }
+    body.light-mode .meta-text {
+      color: #334155 !important;
+      font-weight: 500;
+    }
+    body.light-mode .primary-name {
+      color: #0F172A !important;
     }
   </style>
 </head>
@@ -111,18 +137,18 @@
           type="button"
           onclick="toggleTheme()"
           title="คลิกเพื่อสลับโหมด 🌙 Dark / ☀️ Light"
-          class="theme-toggle-btn text-4xl mb-1 p-2 rounded-full bg-indigo-900/40 border border-indigo-700/40"
+          class="theme-toggle-btn text-4xl mb-1 p-2.5 rounded-full bg-indigo-900/50 border border-indigo-700/50 shadow"
         >
           <span id="loginThemeIcon">🌙</span>
         </button>
-        <p class="text-[10px] text-indigo-300">แตะที่ดวงจันทร์/ดวงอาทิตย์เพื่อสลับโหมดสี</p>
-        <h1 class="text-lg sm:text-xl font-bold text-amber-300 tracking-wide pt-1">SMST OPEN HOUSE 2026</h1>
-        <p class="text-xs text-indigo-200/80">ระบบฝ่ายทะเบียน (เช็กอิน) และฝ่าย Marketing (ส่วนลด)</p>
+        <p class="text-[11px] subtitle-muted text-indigo-300 font-medium">แตะที่ดวงจันทร์/ดวงอาทิตย์เพื่อสลับโหมดสี</p>
+        <h1 class="text-lg sm:text-xl font-extrabold title-highlight text-amber-300 tracking-wide pt-1">SMST OPEN HOUSE 2026</h1>
+        <p class="text-xs subtitle-muted text-indigo-200/80">ระบบฝ่ายทะเบียน (เช็กอิน) และฝ่าย Marketing (ส่วนลด)</p>
       </div>
 
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs text-indigo-200 mb-1 font-medium">Username</label>
+          <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">Username</label>
           <input
             id="loginUsername"
             type="text"
@@ -132,7 +158,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs text-indigo-200 mb-1 font-medium">Password</label>
+          <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">Password</label>
           <input
             id="loginPassword"
             type="password"
@@ -142,12 +168,12 @@
           />
         </div>
 
-        <p id="loginError" class="text-xs text-rose-400 text-center hidden font-medium"></p>
+        <p id="loginError" class="text-xs text-rose-500 text-center hidden font-bold"></p>
 
         <button
           type="submit"
           id="loginBtn"
-          class="w-full py-3.5 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 text-slate-950 font-bold rounded-2xl text-sm shadow-lg transition active:scale-[0.99]"
+          class="w-full py-3.5 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 text-slate-950 font-extrabold rounded-2xl text-sm shadow-lg transition active:scale-[0.99]"
         >
           🔐 เข้าสู่ระบบ
         </button>
@@ -157,24 +183,24 @@
 
   <!-- ================= หน้าจอหลักของแอป ================= -->
   <div id="appScreen" class="hidden">
-    <header class="bg-indigo-950/85 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-20 transition">
-      <div class="max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto px-4 pt-3 pb-2 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
+    <header class="bg-indigo-950/85 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-30 transition">
+      <div class="max-w-6xl mx-auto px-4 md:px-6 pt-3 pb-2.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
           <button
             type="button"
             onclick="toggleTheme()"
             title="คลิกเพื่อสลับโหมด 🌙 Dark / ☀️ Light"
-            class="theme-toggle-btn text-2xl sm:text-3xl p-1.5 rounded-2xl bg-indigo-900/50 border border-indigo-700/50"
+            class="theme-toggle-btn text-2xl sm:text-3xl p-2 rounded-2xl bg-indigo-900/60 border border-indigo-700/60 shadow-sm"
           >
             <span id="headerThemeIcon">🌙</span>
           </button>
           <div>
-            <h1 class="text-sm sm:text-base font-bold text-amber-300 tracking-wide">SMST OPEN HOUSE 2026</h1>
-            <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-              <span id="currentUserBadge" class="text-[11px] bg-indigo-900/90 text-amber-200 px-2.5 py-0.5 rounded-lg border border-indigo-700/60 font-medium">
+            <h1 class="text-base sm:text-lg font-extrabold title-highlight text-amber-300 tracking-wide leading-tight">SMST OPEN HOUSE 2026</h1>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+              <span id="currentUserBadge" class="user-badge text-xs bg-indigo-900/90 text-amber-200 px-2.5 py-0.5 rounded-lg border border-indigo-700/60 font-semibold">
                 👤 -
               </span>
-              <button onclick="handleLogout()" class="text-[10px] bg-rose-950/80 hover:bg-rose-900 text-rose-200 px-2 py-0.5 rounded-lg border border-rose-700/50 transition">
+              <button onclick="handleLogout()" class="text-xs bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-0.5 rounded-lg font-semibold shadow-sm transition">
                 ออกจากระบบ
               </button>
             </div>
@@ -182,22 +208,22 @@
         </div>
 
         <!-- กล่องสถิติมุมขวาบน -->
-        <div class="flex items-center gap-1.5 shrink-0">
-          <div id="statBoxCheckin" class="stat-box text-right bg-indigo-900/80 px-2.5 sm:px-3 py-1.5 rounded-2xl border border-indigo-700/50">
-            <p class="text-[10px] text-indigo-300">เข้างานแล้ว</p>
-            <p class="text-xs sm:text-sm font-extrabold text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span></p>
+        <div class="flex items-center gap-2 shrink-0">
+          <div id="statBoxCheckin" class="stat-box text-right bg-indigo-900/80 px-3.5 py-1.5 rounded-2xl border border-indigo-700/50">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-medium">เข้างานแล้ว</p>
+            <p class="text-sm sm:text-base font-extrabold title-highlight text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span></p>
           </div>
-          <div id="statBoxDiscount" class="stat-box text-right bg-indigo-900/80 px-2.5 sm:px-3 py-1.5 rounded-2xl border border-indigo-700/50">
-            <p class="text-[10px] text-indigo-300">ใช้ส่วนลดแล้ว</p>
-            <p class="text-xs sm:text-sm font-extrabold text-amber-300"><span id="discountUsedCount">0</span> / <span id="discountEligibleCount">0</span></p>
+          <div id="statBoxDiscount" class="stat-box text-right bg-indigo-900/80 px-3.5 py-1.5 rounded-2xl border border-indigo-700/50">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-medium">ใช้ส่วนลดแล้ว</p>
+            <p class="text-sm sm:text-base font-extrabold title-highlight text-amber-300"><span id="discountUsedCount">0</span> / <span id="discountEligibleCount">0</span></p>
           </div>
         </div>
       </div>
 
-      <!-- แถบปุ่มสลับหน้า (รองรับทั้งมือถือและ iPad) -->
-      <div class="max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto px-4 pb-2.5 pt-1 grid grid-cols-2 sm:flex gap-1.5 text-xs font-semibold">
-        <button onclick="switchTab('scan')" id="tab-scan" class="tab-active flex-1 py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition font-bold">
-          📷 สแกนบัตร
+      <!-- แถบปุ่มสลับหน้า -->
+      <div class="max-w-6xl mx-auto px-4 md:px-6 pb-3 pt-1 grid grid-cols-2 sm:flex gap-2 text-xs sm:text-sm font-bold">
+        <button onclick="switchTab('scan')" id="tab-scan" class="tab-active flex-1 py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition">
+          📷 สแกนบัตร / ค้นหา
         </button>
         <button onclick="switchTab('list')" id="tab-list" class="tab-inactive flex-1 py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
           📋 รายชื่อทั้งหมด
@@ -211,94 +237,112 @@
       </div>
     </header>
 
-    <main class="max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto px-4 mt-4 space-y-4">
+    <main class="max-w-6xl mx-auto px-4 md:px-6 mt-4 space-y-4">
 
       <!-- ป้ายบอกโหมดการทำงานตาม Role ของผู้ล็อกอิน -->
-      <div id="roleModeBanner" class="px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center justify-between border"></div>
+      <div id="roleModeBanner" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-between border shadow-sm"></div>
 
-      <!-- แท็บที่ 1: หน้าสแกนตั๋ว -->
-      <section id="view-scan" class="space-y-4">
-        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-5 rounded-3xl card-glow">
+      <!-- ================= แท็บที่ 1: หน้าสแกนตั๋ว (Optimize สำหรับ iPad เป็น 2 คอลัมน์ ซ้าย-ขวา) ================= -->
+      <section id="view-scan" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- ฝั่งซ้ายบน iPad: กล้องสแกน + ช่องค้นหา -->
+        <div class="lg:col-span-5 lg:sticky lg:top-36 surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-5 rounded-3xl card-glow space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm sm:text-base font-extrabold title-highlight text-amber-300">🔍 สแกน QR หรือค้นหารายชื่อ</h2>
+            <span class="text-[11px] subtitle-muted text-indigo-300">รองรับรหัสบัตร / รหัสจอง / ชื่อ</span>
+          </div>
+
           <div id="cameraStartArea">
-            <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-bold text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-              <span class="text-xl">✨</span> <span id="scanBtnLabel">เปิดกล้องสแกน QR รหัสบัตรเข้างาน</span>
+            <button onclick="startScanner()" class="w-full py-4 bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 active:scale-[0.99] text-slate-950 font-extrabold text-sm sm:text-base rounded-2xl shadow-lg transition flex items-center justify-center gap-2 border border-amber-500/40">
+              <span class="text-xl">📷</span> <span id="scanBtnLabel">เปิดกล้องสแกน QR รหัสบัตรเข้างาน</span>
             </button>
           </div>
 
           <div id="cameraActiveArea" class="hidden space-y-3">
-            <div id="qr-reader" class="w-full max-w-md mx-auto rounded-2xl overflow-hidden bg-black border border-indigo-700"></div>
-            <button onclick="stopScanner()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-2xl">
-              ✕ ปิดกล้อง
+            <div id="qr-reader" class="w-full max-w-sm mx-auto rounded-2xl overflow-hidden bg-black border-2 border-indigo-500"></div>
+            <button onclick="stopScanner()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl shadow">
+              ✕ ปิดกล้องสแกน
             </button>
           </div>
 
-          <form onsubmit="handleSearchSubmit(event)" class="mt-4 flex flex-col sm:flex-row gap-2">
+          <form onsubmit="handleSearchSubmit(event)" class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 pt-1">
             <input
               id="searchInput"
               type="text"
               placeholder="พิมพ์รหัสบัตร (SMST-...), รหัสจอง หรือชื่อน้อง..."
               class="surface-input flex-1 px-4 py-3 rounded-2xl bg-slate-950/80 border border-indigo-800/80 text-white text-base sm:text-sm focus:outline-none focus:border-amber-400 placeholder-indigo-400/50"
             />
-            <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl text-sm shadow-md transition shrink-0">
-              🔍 ค้นหา
+            <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-sm shadow-md transition shrink-0">
+              ค้นหา
             </button>
           </form>
         </div>
 
-        <div id="loadingIndicator" class="hidden text-center py-6 text-indigo-300 text-sm animate-pulse">
-          กำลังค้นหาข้อมูลบัตรและตรวจสอบสิทธิ์...
-        </div>
+        <!-- ฝั่งขวาบน iPad: การ์ดผลลัพธ์การสแกน -->
+        <div class="lg:col-span-7 space-y-4">
+          <div id="loadingIndicator" class="hidden surface-card bg-indigo-950/60 border border-indigo-800/50 rounded-3xl text-center py-12 subtitle-muted text-indigo-300 text-sm font-semibold animate-pulse">
+            ⏳ กำลังค้นหาข้อมูลบัตรและตรวจสอบสิทธิ์...
+          </div>
 
-        <div id="resultContainer"></div>
+          <div id="resultContainer">
+            <!-- ค่าเริ่มต้นก่อนสแกน (ช่วยให้หน้าจอ iPad ดูเต็มและสมดุล) -->
+            <div class="surface-card bg-indigo-950/40 border border-dashed border-indigo-700/60 p-8 sm:p-10 rounded-3xl text-center space-y-2">
+              <div class="text-4xl">🎫</div>
+              <h3 class="text-sm sm:text-base font-bold title-highlight text-amber-300">พร้อมสแกนตรวจสอบบัตรเข้างานและสิทธิ์ส่วนลด</h3>
+              <p class="text-xs subtitle-muted text-indigo-300 max-w-md mx-auto">
+                กดปุ่มเปิดกล้องสแกน QR Code หรือพิมพ์รหัสบัตร / ชื่อ-นามสกุล หรือแตะเลือกรายชื่อจากแท็บ <b>"📋 รายชื่อทั้งหมด"</b> เพื่อแสดงการ์ดข้อมูลตรงนี้
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- แท็บที่ 2: รายชื่อทั้งหมด -->
+      <!-- ================= แท็บที่ 2: รายชื่อทั้งหมด ================= -->
       <section id="view-list" class="hidden space-y-3">
-        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-5 rounded-3xl">
-          <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-6 rounded-3xl card-glow">
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-4 pb-3 border-b border-indigo-800/40">
             <div>
-              <h2 class="font-bold text-sm sm:text-base text-amber-300">รายชื่อผู้สมัครทั้งหมด (เรียงตามเวลาจอง)</h2>
-              <p class="text-[11px] text-indigo-300">แตะที่รายชื่อเพื่อเปิดการ์ดเช็กอิน หรือตัดสิทธิ์ส่วนลดรายบุคคล</p>
+              <h2 class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">รายชื่อผู้สมัครทั้งหมด (เรียงตามเวลาจอง)</h2>
+              <p class="text-xs subtitle-muted text-indigo-300">แตะที่รายชื่อเพื่อเปิดการ์ดเช็กอิน หรือตัดสิทธิ์ส่วนลดรายบุคคล</p>
             </div>
-            <div class="flex flex-wrap gap-1.5">
-              <select id="roundFilterSelect" onchange="loadAllStatsAndList()" class="surface-input text-xs px-2.5 py-1.5 bg-indigo-900 rounded-xl text-amber-300 border border-indigo-700/50">
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="roundFilterSelect" onchange="loadAllStatsAndList()" class="control-btn text-xs sm:text-sm px-3 py-2 bg-indigo-900 rounded-xl text-amber-300 border border-indigo-700/60 focus:outline-none">
                 <option value="all">🎫 ทุกรอบบัตร</option>
                 <option value="early">🚀 รอบ Early Bird</option>
                 <option value="morning">🌅 รอบทั่วไป - เช้า</option>
                 <option value="afternoon">☀️ รอบทั่วไป - บ่าย</option>
                 <option value="walkin">🚶 รอบ Walk-in</option>
               </select>
-              <button onclick="toggleSortOrder()" id="sortOrderBtn" class="text-xs px-3 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/50">
+              <button onclick="toggleSortOrder()" id="sortOrderBtn" class="control-btn text-xs sm:text-sm px-3.5 py-2 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-amber-300 border border-indigo-700/60 transition">
                 🕒 จองก่อน → ล่าสุด
               </button>
-              <button onclick="loadAllStatsAndList()" class="text-xs px-2.5 py-1.5 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-indigo-200 border border-indigo-700/50">
-                🔄
+              <button onclick="loadAllStatsAndList()" title="รีเฟรชข้อมูล" class="control-btn text-xs sm:text-sm px-3 py-2 bg-indigo-900 hover:bg-indigo-800 rounded-xl text-indigo-200 border border-indigo-700/60 transition">
+                🔄 รีเฟรช
               </button>
             </div>
           </div>
-          <div id="allAttendeesList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-[72vh] overflow-y-auto pr-1"></div>
+          <div id="allAttendeesList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[74vh] overflow-y-auto pr-1"></div>
         </div>
       </section>
 
-      <!-- แท็บที่ 3: จัดการสตาฟ (เฉพาะ Admin) -->
+      <!-- ================= แท็บที่ 3: จัดการสตาฟ (เฉพาะ Admin) ================= -->
       <section id="view-staff" class="hidden space-y-4">
-        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
+        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 sm:p-6 rounded-3xl card-glow space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h2 id="staffFormTitle" class="font-bold text-base text-amber-300">➕ เพิ่มสตาฟ / แก้ไขข้อมูลสตาฟ</h2>
-              <p class="text-[11px] text-indigo-300">กำหนดชื่อ-นามสกุล สถาบัน ชั้นปี และเลือกฝ่าย (ทะเบียน / Marketing / Admin)</p>
+              <h2 id="staffFormTitle" class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">➕ เพิ่มสตาฟ / แก้ไขข้อมูลสตาฟ</h2>
+              <p class="text-xs subtitle-muted text-indigo-300">กำหนดชื่อ-นามสกุล สถาบัน ชั้นปี และเลือกฝ่าย (ทะเบียน / Marketing / Admin)</p>
             </div>
-            <button onclick="resetStaffForm()" id="cancelEditStaffBtn" class="hidden text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-slate-600">
-              ยกเลิกแก้ไข
+            <button onclick="resetStaffForm()" id="cancelEditStaffBtn" class="hidden text-xs px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow">
+              ✕ ยกเลิกแก้ไข
             </button>
           </div>
 
-          <form onsubmit="handleSaveStaff(event)" class="surface-subcard space-y-3 bg-indigo-900/30 p-4 rounded-2xl border border-indigo-800/50">
+          <form onsubmit="handleSaveStaff(event)" class="surface-subcard space-y-3.5 bg-indigo-900/30 p-4 sm:p-5 rounded-2xl border border-indigo-800/50">
             <input type="hidden" id="staffEditId" value="" />
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <div class="sm:col-span-1">
-                <label class="block text-xs text-indigo-200 mb-1">ชื่อ - นามสกุล</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">ชื่อ - นามสกุล</label>
                 <input
                   id="staffFullName"
                   type="text"
@@ -309,7 +353,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-indigo-200 mb-1">สถาบัน (ตัวย่อ)</label>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">สถาบัน (ตัวย่อ)</label>
                 <input
                   id="staffInstitution"
                   type="text"
@@ -320,7 +364,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-indigo-200 mb-1">ชั้นปี</label>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">ชั้นปี</label>
                 <input
                   id="staffYearLevel"
                   type="text"
@@ -332,14 +376,14 @@
               </div>
             </div>
 
-            <div class="surface-card bg-indigo-950/80 px-3.5 py-2 rounded-xl border border-amber-400/30 flex items-center justify-between text-xs">
-              <span class="text-indigo-300">ชื่อที่แสดงตอนอนุมัติ:</span>
-              <span id="staffDisplayPreview" class="font-bold text-amber-300">ชื่อ-นามสกุล สถาบัน#ชั้นปี</span>
+            <div class="surface-card bg-indigo-950/80 px-4 py-2.5 rounded-xl border border-amber-400/40 flex items-center justify-between text-xs sm:text-sm">
+              <span class="subtitle-muted text-indigo-300 font-medium">ชื่อที่แสดงตอนอนุมัติ:</span>
+              <span id="staffDisplayPreview" class="font-extrabold title-highlight text-amber-300">ชื่อ-นามสกุล สถาบัน#ชั้นปี</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <div>
-                <label class="block text-xs text-indigo-200 mb-1">Username</label>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">Username</label>
                 <input
                   id="staffUsername"
                   type="text"
@@ -349,7 +393,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-indigo-200 mb-1">Password</label>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">Password</label>
                 <input
                   id="staffPassword"
                   type="text"
@@ -359,7 +403,7 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-indigo-200 mb-1">ฝ่าย / ระดับสิทธิ์ (Role)</label>
+                <label class="block text-xs subtitle-muted text-indigo-200 mb-1 font-semibold">ฝ่าย / ระดับสิทธิ์ (Role)</label>
                 <select
                   id="staffRole"
                   class="surface-input w-full px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-indigo-700 text-white text-base sm:text-xs focus:outline-none focus:border-amber-400"
@@ -374,46 +418,46 @@
             <button
               type="submit"
               id="saveStaffBtn"
-              class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs shadow-md transition"
+              class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-xl text-xs sm:text-sm shadow-md transition"
             >
               💾 บันทึกข้อมูลสตาฟ
             </button>
           </form>
 
-          <div class="space-y-2 pt-2">
-            <h3 class="font-bold text-xs text-indigo-200">รายชื่อผู้ใช้งานในระบบทั้งหมด (กด ✏️ เพื่อแก้ไขได้ทุกคน):</h3>
-            <div id="staffListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+          <div class="space-y-2.5 pt-2">
+            <h3 class="font-bold text-xs sm:text-sm subtitle-muted text-indigo-200">รายชื่อผู้ใช้งานในระบบทั้งหมด (กด ✏️ เพื่อแก้ไขได้ทุกคน):</h3>
+            <div id="staffListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
           </div>
         </div>
       </section>
 
-      <!-- แท็บที่ 4: อัปโหลด CSV & รีเซ็ตระบบ (เฉพาะ Admin) -->
+      <!-- ================= แท็บที่ 4: อัปโหลด CSV & รีเซ็ตระบบ (เฉพาะ Admin) ================= -->
       <section id="view-import" class="hidden space-y-4">
-        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 rounded-3xl space-y-4">
-          <h2 class="font-bold text-base text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV (รองรับทั้ง Early Bird 20 คอลัมน์ & รอบทั่วไป 23 คอลัมน์)</h2>
-          <div class="surface-subcard text-xs text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-3.5 rounded-2xl border border-indigo-800/50">
+        <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 sm:p-6 rounded-3xl card-glow space-y-4">
+          <h2 class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV (รองรับทั้ง Early Bird 20 คอลัมน์ & รอบทั่วไป 23 คอลัมน์)</h2>
+          <div class="surface-subcard text-xs sm:text-sm meta-text text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50">
             <p>✅ <b>รวมข้อมูลไร้รอยต่อ:</b> อัปโหลดได้ทั้งไฟล์รอบ Early Bird (20 คอลัมน์) และรอบทั่วไป เช้า/บ่าย (23 คอลัมน์) โดยข้อมูลไม่ทับกันมั่ว</p>
             <p>✅ <b>ตรวจจับรอบบัตรและประเภทอัตโนมัติ:</b> แยก 🎓 ผู้เข้าร่วม / 👪 ผู้ปกครอง และแปลงคำว่า "รอบเย็น" เป็น "รอบบ่าย" ให้อัตโนมัติ</p>
             <p>✅ <b>รักษาสถานะเดิม:</b> คนที่เช็กอินเข้างานหรือใช้ส่วนลด Marketing ไปแล้ว สถานะจะไม่ถูกล้างตอนอัปเดต CSV</p>
           </div>
 
-          <div class="border-2 border-dashed border-indigo-700/60 rounded-2xl p-5 text-center space-y-3 bg-indigo-950/30">
-            <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-indigo-200 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200 cursor-pointer" />
-            <button onclick="importCSVFile()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-sm shadow-md transition">
+          <div class="surface-subcard border-2 border-dashed border-indigo-500/60 rounded-2xl p-6 text-center space-y-3 bg-indigo-950/30">
+            <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs sm:text-sm meta-text text-indigo-200 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-400 file:text-slate-950 hover:file:bg-amber-300 cursor-pointer" />
+            <button onclick="importCSVFile()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-sm shadow-md transition">
               ⬆️ อัปโหลดและจัดเรียงข้อมูลตามเวลาจองอัตโนมัติ
             </button>
           </div>
 
-          <div id="importStatus" class="text-xs text-center"></div>
+          <div id="importStatus" class="text-xs sm:text-sm text-center font-bold"></div>
         </div>
 
         <!-- โซนรีเซ็ตระบบสำหรับ Admin -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-rose-950/40 backdrop-blur-md border border-rose-700/50 p-5 rounded-3xl space-y-3">
-            <h2 class="font-bold text-sm text-rose-300 flex items-center gap-1.5">
+          <div class="surface-card bg-rose-950/40 backdrop-blur-md border-2 border-rose-500/60 p-5 rounded-3xl space-y-3">
+            <h2 class="font-extrabold text-sm sm:text-base text-rose-500 flex items-center gap-1.5">
               <span>🔄</span> รีเซ็ตสถานะ "เช็กอินเข้างาน" (ฝ่ายทะเบียน)
             </h2>
-            <p class="text-xs text-rose-200/80 leading-relaxed">
+            <p class="text-xs meta-text text-rose-200/90 leading-relaxed">
               ล้างสถานะการเช็กอินเข้างานของทุกคนกลับเป็น <b>0 (ยังไม่เข้างาน)</b> โดยรายชื่อและสิทธิ์ส่วนลดไม่หาย
             </p>
             <button
@@ -424,16 +468,16 @@
             </button>
           </div>
 
-          <div class="bg-amber-950/40 backdrop-blur-md border border-amber-700/50 p-5 rounded-3xl space-y-3">
-            <h2 class="font-bold text-sm text-amber-300 flex items-center gap-1.5">
+          <div class="surface-card bg-amber-950/40 backdrop-blur-md border-2 border-amber-500/60 p-5 rounded-3xl space-y-3">
+            <h2 class="font-extrabold text-sm sm:text-base text-amber-600 dark:text-amber-300 flex items-center gap-1.5">
               <span>🛍️</span> รีเซ็ตสถานะ "สิทธิ์ส่วนลด" (ฝ่าย Marketing)
             </h2>
-            <p class="text-xs text-amber-200/80 leading-relaxed">
+            <p class="text-xs meta-text text-amber-200/90 leading-relaxed">
               ล้างสถานะการใช้ส่วนลดซื้อของหน้างานของทุกคนกลับเป็น <b>0 (ยังไม่ได้ใช้สิทธิ์)</b> หลังเทสต์ระบบเสร็จ
             </p>
             <button
               onclick="resetAllDiscounts()"
-              class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl text-xs shadow-lg transition"
+              class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-2xl text-xs shadow-lg transition"
             >
               ⚠️ รีเซ็ตสิทธิ์ส่วนลดทุกคนเป็น 0
             </button>
@@ -474,6 +518,10 @@
       isLightMode = !isLightMode;
       localStorage.setItem("smst_theme_mode", isLightMode ? "light" : "dark");
       applyThemeUI();
+      updateRoleBannerUI();
+      if (currentSearchQuery) searchTicket(currentSearchQuery);
+      loadAllStatsAndList();
+      if (currentUser && currentUser.role === "admin") loadStaffList();
     }
 
     function applyThemeUI() {
@@ -495,7 +543,7 @@
       }
     }
 
-    // ================= 2. ฟังก์ชันจำแนกรอบบัตร และคำนวณสิทธิ์ส่วนลดรายบุคคล =================
+    // ================= 2. ฟังก์ชันสร้างป้าย Badge ที่อ่านชัดทั้ง Dark Mode & Light Mode =================
     function normalizeTicketTypeText(rawType) {
       const s = valOr(rawType, "-");
       return s.replace(/รอบเย็น/g, "รอบบ่าย").replace(/\(เย็น\)/g, "(บ่าย)");
@@ -508,49 +556,61 @@
       if (lower.includes("early bird")) {
         return {
           key: "early",
-          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-amber-300 to-amber-400 text-slate-950 shadow">🚀 [รอบ Early Bird]</span>',
-          shortBadge: '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">🚀 Early Bird</span>'
+          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-amber-300 to-amber-400 text-slate-950 border border-amber-500 shadow-sm">🚀 [รอบ Early Bird]</span>',
+          shortBadge: isLightMode
+            ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-400">🚀 Early Bird</span>'
+            : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">🚀 Early Bird</span>'
         };
       }
       if (t.includes("เช้า") || lower.includes("morning")) {
         return {
           key: "morning",
-          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-sky-300 to-indigo-300 text-slate-950 shadow">🌅 [รอบทั่วไป - รอบเช้า]</span>',
-          shortBadge: '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-sky-400/20 text-sky-300 border border-sky-400/40">🌅 ทั่วไป-เช้า</span>'
+          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-sky-300 to-indigo-300 text-slate-950 border border-sky-500 shadow-sm">🌅 [รอบทั่วไป - รอบเช้า]</span>',
+          shortBadge: isLightMode
+            ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-sky-100 text-sky-900 border border-sky-400">🌅 ทั่วไป-เช้า</span>'
+            : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-sky-400/20 text-sky-300 border border-sky-400/40">🌅 ทั่วไป-เช้า</span>'
         };
       }
       if (t.includes("บ่าย") || t.includes("เย็น") || lower.includes("afternoon")) {
         return {
           key: "afternoon",
-          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-violet-300 to-fuchsia-300 text-slate-950 shadow">☀️ [รอบทั่วไป - รอบบ่าย]</span>',
-          shortBadge: '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-violet-400/20 text-violet-300 border border-violet-400/40">☀️ ทั่วไป-บ่าย</span>'
+          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-violet-300 to-fuchsia-300 text-slate-950 border border-violet-500 shadow-sm">☀️ [รอบทั่วไป - รอบบ่าย]</span>',
+          shortBadge: isLightMode
+            ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-400">☀️ ทั่วไป-บ่าย</span>'
+            : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-violet-400/20 text-violet-300 border border-violet-400/40">☀️ ทั่วไป-บ่าย</span>'
         };
       }
       if (lower.includes("walk-in") || lower.includes("walk in") || t.includes("หน้างาน")) {
         return {
           key: "walkin",
-          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 shadow">🚶 [รอบ Walk-in]</span>',
-          shortBadge: '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40">🚶 Walk-in</span>'
+          badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 border border-emerald-600 shadow-sm">🚶 [รอบ Walk-in]</span>',
+          shortBadge: isLightMode
+            ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-400">🚶 Walk-in</span>'
+            : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40">🚶 Walk-in</span>'
         };
       }
       return {
         key: "other",
-        badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-800 text-indigo-100">🎫 [' + t + ']</span>',
-        shortBadge: '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-800 text-indigo-200">🎫 รอบทั่วไป</span>'
+        badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-700 text-white">🎫 [' + t + ']</span>',
+        shortBadge: isLightMode
+          ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-100 text-indigo-900 border border-indigo-300">🎫 รอบทั่วไป</span>'
+          : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-800 text-indigo-200">🎫 รอบทั่วไป</span>'
       };
     }
 
     function getPersonCategoryBadge(person) {
       const cat = valOr(person.ticket_type_category, "ผู้เข้าร่วม");
       if (cat.includes("ผู้ปกครอง")) {
-        return '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/40">👪 ผู้ปกครอง</span>';
+        return isLightMode
+          ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-fuchsia-100 text-fuchsia-900 border border-fuchsia-400">👪 ผู้ปกครอง</span>'
+          : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/40">👪 ผู้ปกครอง</span>';
       }
-      return '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-500/25 text-sky-200 border border-sky-400/40">🎓 ผู้เข้าร่วม</span>';
+      return isLightMode
+        ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-100 text-sky-900 border border-sky-400">🎓 ผู้เข้าร่วม</span>'
+        : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-500/25 text-sky-200 border border-sky-400/40">🎓 ผู้เข้าร่วม</span>';
     }
 
     // ตรวจสอบสิทธิ์ส่วนลดซื้อของหน้างาน (แยกรายบุคคล)
-    // เงื่อนไข: สมัครเดี่ยวคนเดียวเพียวๆ (Solo pack 1 ใบ ไม่มีผู้ปกครองพ่วง) = ไม่ได้ส่วนลด (0%)
-    // ถ้ามาตั้งแต่ 2 คนขึ้นไป (Duo, Trio, Group หรือ Solo + ผู้ปกครอง 1 ท่าน) = Early Bird ลด 10%, รอบทั่วไป ลด 7%
     function getDiscountEligibility(person, groupSize) {
       const t = normalizeTicketTypeText(person.ticket_type);
       const lower = t.toLowerCase();
@@ -579,7 +639,7 @@
         return {
           eligible: true,
           percent: 10,
-          label: "🎁 ได้รับส่วนลดซื้อของหน้างาน 10% (รอบ Early Bird • ใช้ได้ 1 ครั้ง)"
+          label: "🎁 ได้รับส่วนลดซื้อของหน้างาน 10% (รอบ Early Bird • ใช้ได้ 1 ครั้ง/คน)"
         };
       }
 
@@ -594,11 +654,10 @@
       return {
         eligible: true,
         percent: 7,
-        label: "🎁 ได้รับส่วนลดซื้อของหน้างาน 7% (รอบทั่วไป • ใช้ได้ 1 ครั้ง)"
+        label: "🎁 ได้รับส่วนลดซื้อของหน้างาน 7% (รอบทั่วไป • ใช้ได้ 1 ครั้ง/คน)"
       };
     }
 
-    // ตรวจสอบสิทธิ์การกดปุ่มตาม Role
     function canUserCheckIn() {
       if (!currentUser) return false;
       return currentUser.role === "admin" || currentUser.role === "registration" || currentUser.role === "staff";
@@ -613,6 +672,33 @@
       if (role === "admin") return "👑 ADMIN";
       if (role === "marketing") return "🛍️ MARKETING";
       return "📋 ทะเบียน (REG)";
+    }
+
+    function updateRoleBannerUI() {
+      if (!currentUser) return;
+      const bannerEl = document.getElementById("roleModeBanner");
+      const scanLabelEl = document.getElementById("scanBtnLabel");
+      if (!bannerEl) return;
+
+      if (currentUser.role === "admin") {
+        bannerEl.className = isLightMode
+          ? "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 bg-amber-100 border-2 border-amber-400 text-amber-950"
+          : "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 bg-amber-400/15 border border-amber-400/50 text-amber-300";
+        bannerEl.innerHTML = "<span>👑 <b>โหมด Admin:</b> สามารถกดเช็กอินเข้างาน (ทะเบียน) และกดตัดสิทธิ์ส่วนลด (Marketing) ได้ครบทุกปุ่ม</span>";
+        if (scanLabelEl) scanLabelEl.innerText = "เปิดกล้องสแกน QR (เช็กอิน & ส่วนลด)";
+      } else if (currentUser.role === "marketing") {
+        bannerEl.className = isLightMode
+          ? "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 bg-fuchsia-100 border-2 border-fuchsia-400 text-fuchsia-950"
+          : "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 bg-fuchsia-500/15 border border-fuchsia-400/50 text-fuchsia-200";
+        bannerEl.innerHTML = "<span>🛍️ <b>โหมดฝ่าย Marketing:</b> สำหรับสแกนตรวจสอบและกดตัดสิทธิ์ส่วนลดซื้อของหน้างาน (1 คน / 1 สิทธิ์)</span>";
+        if (scanLabelEl) scanLabelEl.innerText = "เปิดกล้องสแกน QR ตรวจสอบส่วนลดหน้างาน";
+      } else {
+        bannerEl.className = isLightMode
+          ? "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 bg-emerald-100 border-2 border-emerald-400 text-emerald-950"
+          : "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 bg-emerald-500/15 border border-emerald-400/50 text-emerald-300";
+        bannerEl.innerHTML = "<span>📋 <b>โหมดฝ่ายทะเบียน:</b> สำหรับสแกนตรวจสอบรอบบัตรและกดเช็กอินเข้างาน</span>";
+        if (scanLabelEl) scanLabelEl.innerText = "เปิดกล้องสแกน QR เช็กอินเข้างาน";
+      }
     }
 
     // ================= 3. เริ่มต้นระบบ & LOGIN =================
@@ -688,30 +774,15 @@
       const rLabel = getRoleLabel(userObj.role);
       document.getElementById("currentUserBadge").innerText = "👤 " + userObj.display_name + " (" + rLabel + ")";
 
-      // ตั้งค่าแบนเนอร์บอกโหมดตาม Role
-      const bannerEl = document.getElementById("roleModeBanner");
-      const scanLabelEl = document.getElementById("scanBtnLabel");
-
       if (userObj.role === "admin") {
         document.getElementById("tab-staff").classList.remove("hidden");
         document.getElementById("tab-import").classList.remove("hidden");
-        bannerEl.className = "px-4 py-2.5 rounded-2xl text-xs font-semibold flex flex-wrap items-center justify-between gap-2 bg-amber-400/15 border border-amber-400/50 text-amber-300";
-        bannerEl.innerHTML = "<span>👑 <b>โหมด Admin:</b> สามารถกดเช็กอินเข้างาน (ทะเบียน) และกดตัดสิทธิ์ส่วนลด (Marketing) ได้ครบทุกปุ่ม</span>";
-        scanLabelEl.innerText = "เปิดกล้องสแกน QR (เช็กอิน & ส่วนลด)";
-      } else if (userObj.role === "marketing") {
-        document.getElementById("tab-staff").classList.add("hidden");
-        document.getElementById("tab-import").classList.add("hidden");
-        bannerEl.className = "px-4 py-2.5 rounded-2xl text-xs font-semibold flex flex-wrap items-center justify-between gap-2 bg-fuchsia-500/15 border border-fuchsia-400/50 text-fuchsia-200";
-        bannerEl.innerHTML = "<span>🛍️ <b>โหมดฝ่าย Marketing:</b> สำหรับสแกนตรวจสอบและกดตัดสิทธิ์ส่วนลดซื้อของหน้างาน (1 คน / 1 สิทธิ์)</span>";
-        scanLabelEl.innerText = "เปิดกล้องสแกน QR ตรวจสอบส่วนลดหน้างาน";
       } else {
         document.getElementById("tab-staff").classList.add("hidden");
         document.getElementById("tab-import").classList.add("hidden");
-        bannerEl.className = "px-4 py-2.5 rounded-2xl text-xs font-semibold flex flex-wrap items-center justify-between gap-2 bg-emerald-500/15 border border-emerald-400/50 text-emerald-300";
-        bannerEl.innerHTML = "<span>📋 <b>โหมดฝ่ายทะเบียน:</b> สำหรับสแกนตรวจสอบรอบบัตรและกดเช็กอินเข้างาน</span>";
-        scanLabelEl.innerText = "เปิดกล้องสแกน QR เช็กอินเข้างาน";
       }
 
+      updateRoleBannerUI();
       switchTab("scan");
       loadAllStatsAndList();
     }
@@ -892,10 +963,10 @@
 
     function renderNotFound(code) {
       document.getElementById("resultContainer").innerHTML =
-        '<div class="surface-card bg-rose-950/80 border border-rose-500/60 p-6 rounded-3xl text-center shadow-xl">' +
+        '<div class="surface-card bg-rose-950/80 border-2 border-rose-500 p-6 rounded-3xl text-center shadow-xl">' +
           '<div class="text-4xl mb-2">❌</div>' +
-          '<h2 class="text-lg font-bold text-rose-200">ไม่พบรหัสบัตรหรือรายชื่อนี้ในระบบ!</h2>' +
-          '<p class="text-xs text-rose-300 mt-1">คำค้นหา: <span class="font-mono font-bold">"' + code + '"</span></p>' +
+          '<h2 class="text-lg font-extrabold text-rose-500">ไม่พบรหัสบัตรหรือรายชื่อนี้ในระบบ!</h2>' +
+          '<p class="text-xs meta-text text-rose-300 mt-1">คำค้นหา: <span class="font-mono font-bold">"' + code + '"</span></p>' +
         '</div>';
     }
 
@@ -918,55 +989,75 @@
       let statusBanner = "";
 
       if (isCancelled) {
-        borderClass = "border-rose-500/80 bg-rose-950/60";
+        borderClass = "border-rose-500 bg-rose-950/60";
         statusBanner =
-          '<div class="bg-rose-600 text-white p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
+          '<div class="bg-rose-600 text-white p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3 shadow">' +
             '⛔ บัตรนี้ถูกยกเลิกแล้ว (' + statusText + ') ห้ามเช็กอินและห้ามใช้ส่วนลด!' +
           '</div>';
       } else if (isUnpaid) {
-        borderClass = "border-amber-500/80 bg-amber-950/60";
+        borderClass = "border-amber-500 bg-amber-950/60";
         statusBanner =
-          '<div class="bg-amber-500 text-slate-950 p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
+          '<div class="bg-amber-500 text-slate-950 p-3 rounded-2xl font-extrabold text-center text-xs sm:text-sm mb-3 shadow">' +
             '⚠️ รายการนี้ "รอชำระเงิน" กรุณาตรวจสอบหลักฐานการโอนก่อน' +
           '</div>';
       } else if (currentUser && currentUser.role === "marketing") {
-        // แบนเนอร์เน้นสำหรับฝ่าย Marketing
         if (!groupDiscountCheck.eligible) {
-          statusBanner =
-            '<div class="bg-slate-800 border border-slate-600 text-slate-200 p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
-              groupDiscountCheck.label +
-            '</div>';
+          statusBanner = isLightMode
+            ? '<div class="bg-slate-200 border border-slate-400 text-slate-800 p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3">' + groupDiscountCheck.label + '</div>'
+            : '<div class="bg-slate-800 border border-slate-600 text-slate-200 p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3">' + groupDiscountCheck.label + '</div>';
         } else {
-          statusBanner =
-            '<div class="bg-gradient-to-r from-amber-400/25 to-fuchsia-500/25 border border-amber-400/60 text-amber-200 p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
-              groupDiscountCheck.label + ' • ใช้สิทธิ์ไปแล้ว ' + usedDiscountPax + '/' + totalPax + ' คน' +
-            '</div>';
+          statusBanner = isLightMode
+            ? '<div class="bg-amber-100 border-2 border-amber-400 text-amber-950 p-3 rounded-2xl font-extrabold text-center text-xs sm:text-sm mb-3">' +
+                groupDiscountCheck.label + ' • ใช้สิทธิ์ไปแล้ว ' + usedDiscountPax + '/' + totalPax + ' คน' +
+              '</div>'
+            : '<div class="bg-gradient-to-r from-amber-400/25 to-fuchsia-500/25 border border-amber-400/60 text-amber-200 p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3">' +
+                groupDiscountCheck.label + ' • ใช้สิทธิ์ไปแล้ว ' + usedDiscountPax + '/' + totalPax + ' คน' +
+              '</div>';
         }
       } else if (remainingPax === 0) {
         borderClass = "border-amber-400/80 bg-indigo-950/60";
-        statusBanner =
-          '<div class="bg-amber-400/20 border border-amber-400/50 text-amber-300 p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
-            '🎉 เช็กอินเข้างานครบทั้ง ' + totalPax + ' คนแล้ว' +
-          '</div>';
+        statusBanner = isLightMode
+          ? '<div class="bg-amber-100 border-2 border-amber-400 text-amber-950 p-3 rounded-2xl font-extrabold text-center text-xs sm:text-sm mb-3">' +
+              '🎉 เช็กอินเข้างานครบทั้ง ' + totalPax + ' คนแล้ว' +
+            '</div>'
+          : '<div class="bg-amber-400/20 border border-amber-400/50 text-amber-300 p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3">' +
+              '🎉 เช็กอินเข้างานครบทั้ง ' + totalPax + ' คนแล้ว' +
+            '</div>';
       } else {
-        statusBanner =
-          '<div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-2xl font-bold text-center text-xs mb-3">' +
-            '✅ บัตรถูกต้อง (' + statusText + ') • เช็กอินเข้างานได้อีก ' + remainingPax + ' คน' +
-          '</div>';
+        statusBanner = isLightMode
+          ? '<div class="bg-emerald-100 border-2 border-emerald-400 text-emerald-950 p-3 rounded-2xl font-extrabold text-center text-xs sm:text-sm mb-3">' +
+              '✅ บัตรถูกต้อง (' + statusText + ') • เช็กอินเข้างานได้อีก ' + remainingPax + ' คน' +
+            '</div>'
+          : '<div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 p-3 rounded-2xl font-bold text-center text-xs sm:text-sm mb-3">' +
+              '✅ บัตรถูกต้อง (' + statusText + ') • เช็กอินเข้างานได้อีก ' + remainingPax + ' คน' +
+            '</div>';
       }
 
-      // ป้ายสรุปสิทธิ์ส่วนลดด้านบนการ์ด (ให้ทั้งฝ่ายทะเบียนและ Marketing เห็นชัดเจน)
+      // ป้ายสรุปสิทธิ์ส่วนลดด้านบนการ์ด
       const summaryDiscountBanner = groupDiscountCheck.eligible
-        ? '<div class="mb-4 px-3.5 py-2.5 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex flex-wrap items-center justify-between gap-2 text-xs">' +
-            '<span class="font-bold text-amber-300">' + groupDiscountCheck.label + '</span>' +
-            '<span class="px-2.5 py-0.5 rounded-lg bg-indigo-950/80 text-indigo-200 border border-indigo-700/60 text-[11px]">ใช้สิทธิ์รายบุคคลแล้ว: <b>' + usedDiscountPax + '/' + totalPax + '</b> คน</span>' +
-          '</div>'
-        : '<div class="mb-4 px-3.5 py-2 rounded-2xl bg-slate-800/70 border border-slate-600/50 text-slate-300 text-xs font-medium">' +
-            groupDiscountCheck.label +
-          '</div>';
+        ? (isLightMode
+            ? '<div class="mb-4 px-4 py-2.5 rounded-2xl bg-amber-50 border-2 border-amber-400 flex flex-wrap items-center justify-between gap-2 text-xs">' +
+                '<span class="font-extrabold text-amber-950">' + groupDiscountCheck.label + '</span>' +
+                '<span class="px-2.5 py-1 rounded-lg bg-white text-indigo-950 border border-amber-400 font-bold text-[11px]">ใช้สิทธิ์รายบุคคลแล้ว: <b>' + usedDiscountPax + '/' + totalPax + '</b> คน</span>' +
+              '</div>'
+            : '<div class="mb-4 px-3.5 py-2.5 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex flex-wrap items-center justify-between gap-2 text-xs">' +
+                '<span class="font-bold text-amber-300">' + groupDiscountCheck.label + '</span>' +
+                '<span class="px-2.5 py-0.5 rounded-lg bg-indigo-950/80 text-indigo-200 border border-indigo-700/60 text-[11px]">ใช้สิทธิ์รายบุคคลแล้ว: <b>' + usedDiscountPax + '/' + totalPax + '</b> คน</span>' +
+              '</div>')
+        : (isLightMode
+            ? '<div class="mb-4 px-4 py-2 rounded-2xl bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold">' +
+                groupDiscountCheck.label +
+              '</div>'
+            : '<div class="mb-4 px-3.5 py-2 rounded-2xl bg-slate-800/70 border border-slate-600/50 text-slate-300 text-xs font-medium">' +
+                groupDiscountCheck.label +
+              '</div>');
 
       const allowCheckin = canUserCheckIn();
       const allowDiscount = canUserManageDiscount();
+
+      const bookingBadgeClass = isLightMode
+        ? "text-xs font-mono font-bold bg-indigo-100 px-3 py-1 rounded-xl text-indigo-950 border border-indigo-300"
+        : "text-xs font-mono bg-indigo-900/80 px-3 py-1 rounded-xl text-amber-300 border border-indigo-700/50";
 
       const membersHtml = rows.map((person) => {
         const isChecked = Boolean(person.is_checked_in);
@@ -981,45 +1072,66 @@
           tCode.toLowerCase() === scannedTicketCode.toLowerCase();
 
         const cardStyle = isScannedMatch
-          ? "bg-amber-400/15 border-amber-400 shadow-lg ring-2 ring-amber-400/40"
-          : "surface-subcard bg-indigo-900/40 border-indigo-700/60";
+          ? (isLightMode ? "bg-amber-50 border-2 border-amber-500 shadow-md" : "bg-amber-400/15 border-2 border-amber-400 shadow-lg")
+          : "surface-subcard bg-indigo-900/40 border border-indigo-700/60";
+
+        const personOrderBadge = isLightMode
+          ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-100 text-indigo-950 border border-indigo-300">คนที่ ' + valOr(person.person_order, "1/1") + '</span>'
+          : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-800 text-indigo-200">คนที่ ' + valOr(person.person_order, "1/1") + '</span>';
 
         const badgeTicket = hasTicketCode
-          ? '<span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">🎫 ' + tCode + '</span>'
-          : '<span class="px-2 py-0.5 text-[10px] rounded-lg bg-slate-800 text-slate-400">ยังไม่ออกรหัสบัตร</span>';
+          ? (isLightMode
+              ? '<span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-amber-100 text-amber-950 border border-amber-400">🎫 ' + tCode + '</span>'
+              : '<span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">🎫 ' + tCode + '</span>')
+          : (isLightMode
+              ? '<span class="px-2 py-0.5 text-[10px] font-semibold rounded-lg bg-slate-200 text-slate-600">ยังไม่ออกรหัสบัตร</span>'
+              : '<span class="px-2 py-0.5 text-[10px] rounded-lg bg-slate-800 text-slate-400">ยังไม่ออกรหัสบัตร</span>');
 
         const badgeScanned = isScannedMatch
-          ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-amber-400 text-slate-950">🎯 ใบที่สแกน</span>'
+          ? '<span class="px-2 py-0.5 text-[10px] font-extrabold rounded-lg bg-amber-400 text-slate-950 border border-amber-600">🎯 ใบที่สแกน</span>'
           : '';
 
         const categoryBadge = getPersonCategoryBadge(person);
 
-        // สถานะเช็กอินเข้างานของคนนี้
+        // สถานะเช็กอินเข้างาน
         const checkedInfo = isChecked
-          ? '<div class="mt-1.5 inline-block bg-emerald-950/85 border border-emerald-600/50 px-2.5 py-1 rounded-xl text-[11px] text-emerald-300 font-medium">' +
-              '✔ เข้างานเมื่อ ' + valOr(person.checked_in_at, "-") + ' • โดย: <b class="text-amber-300">' + valOr(person.checked_in_by, "-") + '</b>' +
-            '</div>'
-          : '<div class="mt-1.5 inline-block bg-slate-900/70 border border-indigo-800/50 px-2.5 py-0.5 rounded-xl text-[10px] text-indigo-300">' +
-              '⏳ ยังไม่เช็กอินเข้างาน' +
-            '</div>';
+          ? (isLightMode
+              ? '<div class="mt-1 inline-block bg-emerald-100 border border-emerald-400 px-2.5 py-1 rounded-xl text-[11px] text-emerald-950 font-bold">' +
+                  '✔ เข้างานเมื่อ ' + valOr(person.checked_in_at, "-") + ' • โดย: <b class="underline">' + valOr(person.checked_in_by, "-") + '</b>' +
+                '</div>'
+              : '<div class="mt-1 inline-block bg-emerald-950/85 border border-emerald-600/50 px-2.5 py-1 rounded-xl text-[11px] text-emerald-300 font-medium">' +
+                  '✔ เข้างานเมื่อ ' + valOr(person.checked_in_at, "-") + ' • โดย: <b class="text-amber-300">' + valOr(person.checked_in_by, "-") + '</b>' +
+                '</div>')
+          : (isLightMode
+              ? '<div class="mt-1 inline-block bg-slate-200 border border-slate-300 px-2.5 py-0.5 rounded-xl text-[10px] text-slate-700 font-semibold">' +
+                  '⏳ ยังไม่เช็กอินเข้างาน' +
+                '</div>'
+              : '<div class="mt-1 inline-block bg-slate-900/70 border border-indigo-800/50 px-2.5 py-0.5 rounded-xl text-[10px] text-indigo-300">' +
+                  '⏳ ยังไม่เช็กอินเข้างาน' +
+                '</div>');
 
-        // สถานะส่วนลด Marketing รายบุคคลของคนนี้
+        // สถานะส่วนลด Marketing รายบุคคล
         let discountStatusHtml = "";
         if (!personDiscount.eligible) {
-          discountStatusHtml =
-            '<div class="mt-1 inline-block bg-slate-800/80 border border-slate-600/50 px-2.5 py-1 rounded-xl text-[10px] text-slate-300">' +
-              '❌ ไม่มีสิทธิ์ส่วนลดซื้อของหน้างาน (บัตรเดี่ยว)' +
-            '</div>';
+          discountStatusHtml = isLightMode
+            ? '<div class="mt-1 inline-block bg-slate-100 border border-slate-300 px-2.5 py-1 rounded-xl text-[10px] text-slate-600 font-semibold">❌ ไม่มีสิทธิ์ส่วนลดซื้อของหน้างาน (บัตรเดี่ยว)</div>'
+            : '<div class="mt-1 inline-block bg-slate-800/80 border border-slate-600/50 px-2.5 py-1 rounded-xl text-[10px] text-slate-300">❌ ไม่มีสิทธิ์ส่วนลดซื้อของหน้างาน (บัตรเดี่ยว)</div>';
         } else if (isDiscountUsed) {
-          discountStatusHtml =
-            '<div class="mt-1 inline-block bg-rose-950/90 border border-rose-500/60 px-2.5 py-1 rounded-xl text-[11px] text-rose-200 font-medium">' +
-              '⚠️ <b>ใช้สิทธิ์ส่วนลด ' + personDiscount.percent + '% ไปแล้ว</b> เมื่อ ' + valOr(person.marketing_discount_used_at, "-") + ' • โดย: <b class="text-amber-300">' + valOr(person.marketing_discount_used_by, "-") + '</b>' +
-            '</div>';
+          discountStatusHtml = isLightMode
+            ? '<div class="mt-1 inline-block bg-rose-100 border border-rose-400 px-2.5 py-1 rounded-xl text-[11px] text-rose-900 font-bold">' +
+                '⚠️ <b>ใช้สิทธิ์ส่วนลด ' + personDiscount.percent + '% ไปแล้ว</b> เมื่อ ' + valOr(person.marketing_discount_used_at, "-") + ' • โดย: <b>' + valOr(person.marketing_discount_used_by, "-") + '</b>' +
+              '</div>'
+            : '<div class="mt-1 inline-block bg-rose-950/90 border border-rose-500/60 px-2.5 py-1 rounded-xl text-[11px] text-rose-200 font-medium">' +
+                '⚠️ <b>ใช้สิทธิ์ส่วนลด ' + personDiscount.percent + '% ไปแล้ว</b> เมื่อ ' + valOr(person.marketing_discount_used_at, "-") + ' • โดย: <b class="text-amber-300">' + valOr(person.marketing_discount_used_by, "-") + '</b>' +
+              '</div>';
         } else {
-          discountStatusHtml =
-            '<div class="mt-1 inline-block bg-amber-400/20 border border-amber-400/50 px-2.5 py-1 rounded-xl text-[11px] text-amber-300 font-bold">' +
-              '🎁 ใช้ส่วนลด ' + personDiscount.percent + '% ได้ (ยังไม่ได้ใช้สิทธิ์)' +
-            '</div>';
+          discountStatusHtml = isLightMode
+            ? '<div class="mt-1 inline-block bg-amber-100 border border-amber-400 px-2.5 py-1 rounded-xl text-[11px] text-amber-950 font-bold">' +
+                '🎁 ใช้ส่วนลด ' + personDiscount.percent + '% ได้ (ยังไม่ได้ใช้สิทธิ์)' +
+              '</div>'
+            : '<div class="mt-1 inline-block bg-amber-400/20 border border-amber-400/50 px-2.5 py-1 rounded-xl text-[11px] text-amber-300 font-bold">' +
+                '🎁 ใช้ส่วนลด ' + personDiscount.percent + '% ได้ (ยังไม่ได้ใช้สิทธิ์)' +
+              '</div>';
         }
 
         // ปุ่มสำหรับฝ่ายทะเบียน (และ Admin)
@@ -1027,47 +1139,47 @@
         if (allowCheckin) {
           checkinActionHtml = !isChecked
             ? '<button onclick="togglePersonCheckIn(' + person.id + ', true)" ' + (isCancelled ? "disabled" : "") +
-                ' class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs shadow transition ' +
-                (isCancelled ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-amber-300 hover:bg-amber-200 text-slate-950 active:scale-95") + '">' +
+                ' class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-extrabold text-xs shadow transition ' +
+                (isCancelled ? "bg-slate-400 text-slate-700 cursor-not-allowed" : "bg-amber-400 hover:bg-amber-300 text-slate-950 border border-amber-500 active:scale-95") + '">' +
                 '✅ เช็กอินเข้างาน' +
               '</button>'
             : '<button onclick="togglePersonCheckIn(' + person.id + ', false)"' +
-                ' class="w-full sm:w-auto px-3 py-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 text-xs font-semibold transition">' +
+                ' class="w-full sm:w-auto px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-sm">' +
                 '↩️ ยกเลิกเช็กอิน' +
               '</button>';
         }
 
-        // ปุ่มสำหรับฝ่าย Marketing (และ Admin) - แยกรายบุคคล
+        // ปุ่มสำหรับฝ่าย Marketing (และ Admin)
         let discountActionHtml = "";
         if (allowDiscount && personDiscount.eligible) {
           discountActionHtml = !isDiscountUsed
             ? '<button onclick="togglePersonDiscount(' + person.id + ', true, ' + personDiscount.percent + ')" ' + (isCancelled ? "disabled" : "") +
-                ' class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs shadow transition ' +
-                (isCancelled ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-gradient-to-r from-fuchsia-500 to-violet-600 hover:from-fuchsia-400 hover:to-violet-500 text-white active:scale-95") + '">' +
+                ' class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-extrabold text-xs shadow transition ' +
+                (isCancelled ? "bg-slate-400 text-slate-700 cursor-not-allowed" : "bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-500 hover:to-violet-500 text-white active:scale-95") + '">' +
                 '🛒 ยืนยันใช้ส่วนลด ' + personDiscount.percent + '%' +
               '</button>'
             : '<button onclick="togglePersonDiscount(' + person.id + ', false, ' + personDiscount.percent + ')"' +
-                ' class="w-full sm:w-auto px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-rose-300 border border-rose-700/50 text-[11px] font-semibold transition">' +
+                ' class="w-full sm:w-auto px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-bold transition">' +
                 '↩️ ยกเลิกตัดสิทธิ์ส่วนลด' +
               '</button>';
         }
 
         return (
-          '<div class="p-4 rounded-2xl border ' + cardStyle + ' flex flex-col sm:flex-row sm:items-center justify-between gap-3">' +
+          '<div class="p-4 rounded-2xl ' + cardStyle + ' flex flex-col sm:flex-row sm:items-center justify-between gap-3">' +
             '<div class="min-w-0 flex-1 space-y-1">' +
               '<div class="flex flex-wrap items-center gap-1.5">' +
-                '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-indigo-800 text-indigo-200">คนที่ ' + valOr(person.person_order, "1/1") + '</span>' +
+                personOrderBadge +
                 categoryBadge +
                 badgeTicket +
                 badgeScanned +
               '</div>' +
-              '<p class="font-bold text-sm sm:text-base pt-0.5 ' + (isChecked && !allowDiscount ? "line-through text-indigo-300" : "text-white") + '">' +
+              '<p class="primary-name font-extrabold text-sm sm:text-base pt-0.5 ' + (isChecked && !allowDiscount ? "line-through opacity-75" : "text-white") + '">' +
                 valOr(person.full_name, "-") +
               '</p>' +
-              '<p class="text-[11px] text-indigo-200/80">' +
+              '<p class="meta-text text-xs text-indigo-200/80">' +
                 '🏫 ' + valOr(person.school, "-") + ' • 📞 ' + valOr(person.phone, "-") + ' • 💬 Line: ' + valOr(person.line_id, "-") +
               '</p>' +
-              '<p class="text-[10px] text-indigo-300/70">' +
+              '<p class="meta-text text-[11px] text-indigo-300/75">' +
                 '🚨 ฉุกเฉิน: ' + valOr(person.emergency_phone, "-") + ' (' + valOr(person.emergency_relation, "-") + ')' +
               '</p>' +
               '<div class="flex flex-col items-start gap-1 pt-1">' +
@@ -1075,7 +1187,7 @@
                 discountStatusHtml +
               '</div>' +
             '</div>' +
-            '<div class="flex flex-row sm:flex-col gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-indigo-800/40">' +
+            '<div class="flex flex-row sm:flex-col gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-indigo-800/30">' +
               checkinActionHtml +
               discountActionHtml +
             '</div>' +
@@ -1085,7 +1197,7 @@
 
       const checkInAllBtn =
         allowCheckin && !isCancelled && remainingPax > 1
-          ? '<button onclick="checkInAllRemaining(\'' + first.booking_code + '\')" class="w-full mt-4 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-xs shadow-lg transition">' +
+          ? '<button onclick="checkInAllRemaining(\'' + first.booking_code + '\')" class="w-full mt-4 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-lg transition">' +
               '✨ เช็กอินเข้างานคนที่เหลือทั้งหมดพร้อมกัน (' + remainingPax + ' คน)' +
             '</button>'
           : "";
@@ -1095,27 +1207,27 @@
           statusBanner +
           '<div class="flex flex-wrap items-center justify-between gap-2 mb-3">' +
             roundInfo.badgeHtml +
-            '<span class="text-xs font-mono bg-indigo-900/80 px-3 py-1 rounded-xl text-amber-300 border border-indigo-700/50">รหัสจอง: ' + first.booking_code + '</span>' +
+            '<span class="' + bookingBadgeClass + '">รหัสจอง: ' + first.booking_code + '</span>' +
           '</div>' +
           summaryDiscountBanner +
-          '<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-indigo-800/60 pb-3 mb-4 gap-3">' +
+          '<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-indigo-800/40 pb-3 mb-4 gap-3">' +
             '<div class="space-y-1">' +
-              '<h3 class="text-xs sm:text-sm font-bold text-indigo-200">' + normalizeTicketTypeText(first.ticket_type) + '</h3>' +
-              '<p class="text-[11px] text-indigo-300/80">🕒 จองเมื่อ: ' + valOr(first.booking_date, "-") + ' • ผู้ติดต่อ: ' + valOr(first.contact_name, "-") + ' (' + valOr(first.contact_phone, "-") + ')</p>' +
-              '<p class="text-[11px] text-indigo-300/80">สถานะ: <b class="text-white">' + statusText + '</b> • การเงิน: <b class="text-amber-300">' + valOr(first.payment_status, "-") + '</b></p>' +
+              '<h3 class="text-xs sm:text-sm font-extrabold title-highlight text-indigo-200">' + normalizeTicketTypeText(first.ticket_type) + '</h3>' +
+              '<p class="meta-text text-xs text-indigo-300/80">🕒 จองเมื่อ: ' + valOr(first.booking_date, "-") + ' • ผู้ติดต่อ: ' + valOr(first.contact_name, "-") + ' (' + valOr(first.contact_phone, "-") + ')</p>' +
+              '<p class="meta-text text-xs text-indigo-300/80">สถานะ: <b class="primary-name text-white">' + statusText + '</b> • การเงิน: <b class="title-highlight text-amber-300">' + valOr(first.payment_status, "-") + '</b></p>' +
             '</div>' +
             '<div class="flex gap-2 shrink-0">' +
               '<div class="stat-box text-center bg-indigo-950/80 px-3 py-1.5 rounded-2xl border border-indigo-800/80">' +
-                '<p class="text-[10px] text-indigo-300">เข้างานแล้ว</p>' +
-                '<p class="text-base font-extrabold text-amber-300">' + checkedInPax + '/' + totalPax + '</p>' +
+                '<p class="text-[10px] subtitle-muted text-indigo-300 font-semibold">เข้างานแล้ว</p>' +
+                '<p class="text-base font-extrabold title-highlight text-amber-300">' + checkedInPax + '/' + totalPax + '</p>' +
               '</div>' +
               '<div class="stat-box text-center bg-indigo-950/80 px-3 py-1.5 rounded-2xl border border-indigo-800/80">' +
-                '<p class="text-[10px] text-indigo-300">ใช้ส่วนลด</p>' +
-                '<p class="text-base font-extrabold text-amber-300">' + usedDiscountPax + '/' + (groupDiscountCheck.eligible ? totalPax : 0) + '</p>' +
+                '<p class="text-[10px] subtitle-muted text-indigo-300 font-semibold">ใช้ส่วนลด</p>' +
+                '<p class="text-base font-extrabold title-highlight text-amber-300">' + usedDiscountPax + '/' + (groupDiscountCheck.eligible ? totalPax : 0) + '</p>' +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<p class="text-xs font-semibold text-indigo-200 mb-2.5">รายชื่อในรหัสการจองนี้ (กดเช็กอิน / ตัดสิทธิ์ส่วนลดแยกรายบุคคล):</p>' +
+          '<p class="text-xs font-bold subtitle-muted text-indigo-200 mb-2.5">รายชื่อในรหัสการจองนี้ (กดเช็กอิน / ตัดสิทธิ์ส่วนลดแยกรายบุคคล):</p>' +
           '<div class="space-y-3">' + membersHtml + '</div>' +
           checkInAllBtn +
         '</div>';
@@ -1165,7 +1277,6 @@
       loadAllStatsAndList();
     }
 
-    // ตัดสิทธิ์ส่วนลดซื้อของหน้างาน แยกรายบุคคล (1 คน = 1 สิทธิ์ ใช้แล้วล็อกทันที)
     async function togglePersonDiscount(rowId, useState, percentVal) {
       if (!canUserManageDiscount()) {
         return alert("เฉพาะสตาฟฝ่าย Marketing หรือ Admin เท่านั้นที่สามารถตัดสิทธิ์ส่วนลดได้ครับ");
@@ -1261,18 +1372,16 @@
       }
     }
 
-    // ================= 9. โหลดสถิติและรายการทั้งหมด =================
+    // ================= 9. โหลดสถิติและรายการทั้งหมด (ปรับสีให้คมชัดทั้ง Dark & Light Mode) =================
     async function loadAllStatsAndList() {
       const { data } = await supabaseClient.from("attendees").select("*");
       if (!data) return;
 
       const sortedData = sortAttendeeRows(data, sortAscending);
 
-      // นับจำนวนรวมเฉพาะบัตรที่ไม่ถูกยกเลิก
       const validRows = sortedData.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
       const checkedCount = validRows.filter((r) => r.is_checked_in).length;
 
-      // นับจำนวนคนที่มีสิทธิ์ได้รับส่วนลด และคนที่ใช้ส่วนลดไปแล้ว
       const bookingCountsMap = {};
       validRows.forEach((r) => {
         bookingCountsMap[r.booking_code] = (bookingCountsMap[r.booking_code] || 0) + 1;
@@ -1289,7 +1398,6 @@
       document.getElementById("discountUsedCount").innerText = usedDiscountCount;
       document.getElementById("discountEligibleCount").innerText = eligibleDiscountRows.length;
 
-      // กรองตามรอบบัตรในหน้ารายชื่อ
       const filterEl = document.getElementById("roundFilterSelect");
       const filterVal = filterEl ? filterEl.value : "all";
 
@@ -1308,36 +1416,51 @@
         const catBadge = getPersonCategoryBadge(r);
         const discInfo = getDiscountEligibility(r, bookingCountsMap[r.booking_code] || 1);
 
+        // ป้ายลำดับ #1, #2 ที่อ่านชัดในโหมดสว่าง
+        const idxBadge = isLightMode
+          ? '<span class="text-[11px] px-2 py-0.5 bg-indigo-100 text-indigo-950 border border-indigo-300 rounded-lg font-mono font-extrabold">#' + (idx + 1) + '</span>'
+          : '<span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-300 rounded font-mono">#' + (idx + 1) + '</span>';
+
         const codeBadge = hasTicket
-          ? '<span class="font-mono text-amber-300 font-bold">🎫 ' + tCode + '</span>'
-          : '<span class="font-mono text-indigo-300 font-semibold">จอง: ' + r.booking_code + '</span>';
+          ? '<span class="font-mono title-highlight text-amber-300 font-extrabold">🎫 ' + tCode + '</span>'
+          : '<span class="font-mono subtitle-muted text-indigo-300 font-bold">จอง: ' + r.booking_code + '</span>';
 
         const checkinBadge = r.is_checked_in
-          ? '<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg font-bold text-[10px]">✔ เข้างานแล้ว</span>'
-          : '<span class="px-2 py-0.5 bg-indigo-900/60 text-indigo-300 rounded-lg text-[10px]">ยังไม่เข้า</span>';
+          ? (isLightMode
+              ? '<span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-400 rounded-lg font-extrabold text-[10px]">✔ เข้างานแล้ว</span>'
+              : '<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg font-bold text-[10px]">✔ เข้างานแล้ว</span>')
+          : (isLightMode
+              ? '<span class="px-2.5 py-0.5 bg-slate-200 text-slate-700 border border-slate-300 rounded-lg font-bold text-[10px]">ยังไม่เข้า</span>'
+              : '<span class="px-2 py-0.5 bg-indigo-900/60 text-indigo-300 rounded-lg text-[10px]">ยังไม่เข้า</span>');
 
         const discountBadge = !discInfo.eligible
-          ? '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded-lg text-[10px]">ไม่มีส่วนลด</span>'
+          ? (isLightMode
+              ? '<span class="px-2.5 py-0.5 bg-slate-100 text-slate-500 border border-slate-300 rounded-lg font-semibold text-[10px]">ไม่มีส่วนลด</span>'
+              : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded-lg text-[10px]">ไม่มีส่วนลด</span>')
           : r.marketing_discount_used
-          ? '<span class="px-2 py-0.5 bg-rose-500/25 text-rose-300 border border-rose-500/40 rounded-lg font-bold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>'
-          : '<span class="px-2 py-0.5 bg-amber-400/20 text-amber-300 border border-amber-400/40 rounded-lg font-bold text-[10px]">🎁 ลด ' + discInfo.percent + '%</span>';
+          ? (isLightMode
+              ? '<span class="px-2.5 py-0.5 bg-rose-100 text-rose-900 border border-rose-400 rounded-lg font-extrabold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>'
+              : '<span class="px-2 py-0.5 bg-rose-500/25 text-rose-300 border border-rose-500/40 rounded-lg font-bold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>')
+          : (isLightMode
+              ? '<span class="px-2.5 py-0.5 bg-amber-100 text-amber-950 border border-amber-400 rounded-lg font-extrabold text-[10px]">🎁 ลด ' + discInfo.percent + '%</span>'
+              : '<span class="px-2 py-0.5 bg-amber-400/20 text-amber-300 border border-amber-400/40 rounded-lg font-bold text-[10px]">🎁 ลด ' + discInfo.percent + '%</span>');
 
         return (
-          '<div onclick="switchTab(\'scan\'); searchTicket(\'' + searchKey + '\')" class="surface-subcard p-3.5 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 hover:border-amber-400/60 cursor-pointer flex justify-between items-center gap-2 text-xs transition">' +
+          '<div onclick="switchTab(\'scan\'); searchTicket(\'' + searchKey + '\')" class="surface-subcard p-4 rounded-2xl bg-indigo-950/60 border border-indigo-800/50 cursor-pointer flex justify-between items-center gap-3 text-xs transition shadow-sm">' +
             '<div class="min-w-0 flex-1 space-y-1">' +
               '<div class="flex flex-wrap items-center gap-1.5">' +
-                '<span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-300 rounded font-mono">#' + (idx + 1) + '</span>' +
+                idxBadge +
                 roundInfo.shortBadge +
                 catBadge +
                 codeBadge +
-                '<span class="text-indigo-300 text-[11px]">(' + valOr(r.person_order, "1/1") + ')</span>' +
+                '<span class="subtitle-muted text-indigo-300 font-bold text-[11px]">(' + valOr(r.person_order, "1/1") + ')</span>' +
               '</div>' +
-              '<p class="font-bold text-white truncate text-sm">' + valOr(r.full_name, "-") + '</p>' +
-              '<p class="text-[10px] text-indigo-300/75 truncate">' +
-                '🕒 ' + valOr(r.booking_date, "-") + ' • 🏫 ' + valOr(r.school, "-") + ' • สถานะ: ' + valOr(r.booking_status, "-") +
+              '<p class="primary-name font-extrabold text-white truncate text-sm sm:text-base">' + valOr(r.full_name, "-") + '</p>' +
+              '<p class="meta-text text-[11px] text-indigo-300/80 truncate">' +
+                '🕒 ' + valOr(r.booking_date, "-") + ' • 🏫 ' + valOr(r.school, "-") + ' • สถานะ: <b>' + valOr(r.booking_status, "-") + '</b>' +
               '</p>' +
             '</div>' +
-            '<div class="flex flex-col items-end gap-1 shrink-0">' +
+            '<div class="flex flex-col items-end gap-1.5 shrink-0">' +
               checkinBadge +
               discountBadge +
             '</div>' +
@@ -1364,29 +1487,34 @@
       staffUsersCache = data;
 
       document.getElementById("staffListContainer").innerHTML = data.map((u) => {
-        let roleBadge = '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">📋 ฝ่ายทะเบียน</span>';
+        let roleBadge = isLightMode
+          ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-400">📋 ฝ่ายทะเบียน</span>'
+          : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">📋 ฝ่ายทะเบียน</span>';
+
         if (u.role === "admin") {
-          roleBadge = '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-400 text-slate-950">👑 ADMIN</span>';
+          roleBadge = '<span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-amber-400 text-slate-950 border border-amber-600">👑 ADMIN</span>';
         } else if (u.role === "marketing") {
-          roleBadge = '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/40">🛍️ ฝ่าย Marketing</span>';
+          roleBadge = isLightMode
+            ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-fuchsia-100 text-fuchsia-900 border border-fuchsia-400">🛍️ ฝ่าย Marketing</span>'
+            : '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/40">🛍️ ฝ่าย Marketing</span>';
         }
 
         return (
-          '<div class="surface-subcard p-3.5 rounded-2xl bg-indigo-900/40 border border-indigo-700/60 flex items-center justify-between gap-2 text-xs">' +
+          '<div class="surface-subcard p-4 rounded-2xl bg-indigo-900/40 border border-indigo-700/60 flex items-center justify-between gap-2 text-xs shadow-sm">' +
             '<div class="min-w-0 flex-1">' +
               '<div class="flex flex-wrap items-center gap-1.5">' +
                 roleBadge +
-                '<span class="font-bold text-white truncate">' + valOr(u.display_name, "-") + '</span>' +
+                '<span class="primary-name font-extrabold text-white truncate text-sm">' + valOr(u.display_name, "-") + '</span>' +
               '</div>' +
-              '<p class="text-[11px] text-indigo-300 mt-1 font-mono">' +
-                'User: <b class="text-amber-300">' + valOr(u.username, "-") + '</b> • Pass: <span class="text-indigo-200">' + valOr(u.password, "-") + '</span>' +
+              '<p class="meta-text text-xs text-indigo-300 mt-1 font-mono">' +
+                'User: <b class="title-highlight text-amber-300">' + valOr(u.username, "-") + '</b> • Pass: <b>' + valOr(u.password, "-") + '</b>' +
               '</p>' +
             '</div>' +
             '<div class="flex gap-1.5 shrink-0">' +
-              '<button onclick="editStaffById(' + u.id + ')" class="px-2.5 py-1.5 bg-indigo-700 hover:bg-indigo-600 text-white rounded-xl text-[11px] font-semibold transition">' +
+              '<button onclick="editStaffById(' + u.id + ')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-sm">' +
                 '✏️ แก้ไข' +
               '</button>' +
-              '<button onclick="deleteStaffById(' + u.id + ')" class="px-2.5 py-1.5 bg-rose-900/80 hover:bg-rose-800 text-rose-200 rounded-xl text-[11px] font-semibold transition">' +
+              '<button onclick="deleteStaffById(' + u.id + ')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow-sm">' +
                 '🗑️' +
               '</button>' +
             '</div>' +
@@ -1501,7 +1629,7 @@
       else loadStaffList();
     }
 
-    // ================= 11. อัปโหลด CSV อัจฉริยะ (รองรับทั้ง 20 คอลัมน์ Early Bird & 23 คอลัมน์ รอบทั่วไป) =================
+    // ================= 11. อัปโหลด CSV อัจฉริยะ (รองรับทั้ง 20 คอลัมน์ & 23 คอลัมน์) =================
     function cleanCsvVal(val) {
       if (val === undefined) return "";
       if (val === null) return "";
@@ -1518,7 +1646,7 @@
       const statusEl = document.getElementById("importStatus");
       if (!fileInput.files.length) return alert("กรุณาเลือกไฟล์ .csv");
 
-      statusEl.innerHTML = '<span class="text-amber-300">กำลังอ่านไฟล์ CSV ตรวจสอบคอลัมน์ และจัดเรียงตามเวลาจอง...</span>';
+      statusEl.innerHTML = '<span class="title-highlight text-amber-300">กำลังอ่านไฟล์ CSV ตรวจสอบคอลัมน์ และจัดเรียงตามเวลาจอง...</span>';
       Papa.parse(fileInput.files[0], {
         header: true,
         skipEmptyLines: true,
@@ -1545,7 +1673,6 @@
             const rawJ = cleanCsvVal(r["มหาวิทยาลัยที่อยากศึกษาต่อ"]);
             const rawK = cleanCsvVal(r["รู้จักโครงการผ่านช่องทางไหน"]);
 
-            // แก้ปัญหาช่องขยับเฉพาะไฟล์ 20 คอลัมน์ที่มีบั๊ก ID Line
             let isShifted = false;
             const hasAnyMiddle = (rawG !== "") ? true : (rawH !== "") ? true : (rawI !== "") ? true : (rawJ !== "");
             if (!hasCategoryColumn && hasLineColumn && rawK === "" && hasAnyMiddle) {
@@ -1562,7 +1689,6 @@
             const rawTicketType = valOr(cleanCsvVal(r["ชุดบัตร"]), "-");
             const tType = normalizeTicketTypeText(rawTicketType);
 
-            // ระบุประเภท ผู้เข้าร่วม / ผู้ปกครอง
             let categoryLabel = valOr(rawCategory, "ผู้เข้าร่วม");
             if (!rawCategory && tType.includes("ผู้ปกครอง") && parsePersonOrderNum(pOrder) > 1) {
               categoryLabel = "ผู้ปกครอง";
@@ -1625,10 +1751,10 @@
             .upsert(sortedPayload, { onConflict: "booking_code,person_order" });
 
           if (error) {
-            statusEl.innerHTML = '<span class="text-rose-400">❌ เกิดข้อผิดพลาด: ' + error.message + '</span>';
+            statusEl.innerHTML = '<span class="text-rose-500">❌ เกิดข้อผิดพลาด: ' + error.message + '</span>';
           } else {
             statusEl.innerHTML =
-              '<span class="text-amber-300 font-bold">✅ อัปเดตสำเร็จ ' + sortedPayload.length + ' รายชื่อ! ' +
+              '<span class="title-highlight text-amber-300 font-extrabold">✅ อัปเดตสำเร็จ ' + sortedPayload.length + ' รายชื่อ! ' +
               (shiftedCount > 0 ? '(ดึงช่องขยับกลับเข้าที่ ' + shiftedCount + ' รายชื่อ)' : '(รูปแบบ 23 คอลัมน์ครบถ้วน)') +
               '</span>';
             loadAllStatsAndList();

@@ -8,14 +8,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Prompt', sans-serif;
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* ================= DARK MODE (ค่าเริ่มต้น) ================= */
+    /* ================= DARK MODE (Default) ================= */
     .theme-bg {
       background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
     }
@@ -23,7 +24,6 @@
       box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.35);
     }
 
-    /* ลูกเล่นปุ่มพระจันทร์ 🌙 <-> พระอาทิตย์ ☀️ */
     .theme-toggle-btn {
       cursor: pointer;
       display: inline-flex;
@@ -39,7 +39,7 @@
       transform: rotate(360deg);
     }
 
-    /* ================= LIGHT MODE (แก้คอนทราสต์คมชัด 100% ตามธีม Celestial Voyage) ================= */
+    /* ================= LIGHT MODE (Celestial Voyage: #DEC0FF, #FFF8DC, #273990, #FBC80E) ================= */
     body.light-mode.theme-bg,
     body.light-mode .theme-bg {
       background: linear-gradient(135deg, #FFFDF5 0%, #F5EEFF 55%, #E9D5FF 100%) !important;
@@ -184,7 +184,7 @@
   <!-- ================= หน้าจอหลักของแอป ================= -->
   <div id="appScreen" class="hidden">
     <header class="bg-indigo-950/85 backdrop-blur-md border-b border-indigo-800/60 sticky top-0 z-30 transition">
-      <div class="max-w-6xl mx-auto px-4 md:px-6 pt-3 pb-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 pt-3 pb-2.5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <button
             type="button"
@@ -203,52 +203,64 @@
               <button onclick="handleLogout()" class="text-xs bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-0.5 rounded-lg font-semibold shadow-sm transition">
                 ออกจากระบบ
               </button>
+              <span id="offlineIndicator" class="hidden text-xs bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg font-extrabold animate-pulse">
+                ⚡ ออฟไลน์ (บันทึกในเครื่อง)
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- กล่องสถิติมุมขวาบน -->
+        <!-- กล่องสถิติมุมขวาบน + ปุ่ม Export ด่วน -->
         <div class="flex items-center gap-2 shrink-0">
-          <div id="statBoxCheckin" class="stat-box text-right bg-indigo-900/80 px-3.5 py-1.5 rounded-2xl border border-indigo-700/50">
-            <p class="text-[11px] subtitle-muted text-indigo-300 font-medium">เข้างานแล้ว</p>
-            <p class="text-sm sm:text-base font-extrabold title-highlight text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span></p>
+          <div id="statBoxCheckin" class="stat-box text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50">
+            <p class="text-[10px] subtitle-muted text-indigo-300 font-medium">เข้างานแล้ว</p>
+            <p class="text-xs sm:text-sm font-extrabold title-highlight text-amber-300"><span id="checkedInCount">0</span> / <span id="totalCount">0</span></p>
           </div>
-          <div id="statBoxDiscount" class="stat-box text-right bg-indigo-900/80 px-3.5 py-1.5 rounded-2xl border border-indigo-700/50">
-            <p class="text-[11px] subtitle-muted text-indigo-300 font-medium">ใช้ส่วนลดแล้ว</p>
-            <p class="text-sm sm:text-base font-extrabold title-highlight text-amber-300"><span id="discountUsedCount">0</span> / <span id="discountEligibleCount">0</span></p>
+          <div id="statBoxDiscount" class="stat-box text-right bg-indigo-900/80 px-3 py-1.5 rounded-2xl border border-indigo-700/50">
+            <p class="text-[10px] subtitle-muted text-indigo-300 font-medium">ใช้ส่วนลดแล้ว</p>
+            <p class="text-xs sm:text-sm font-extrabold title-highlight text-amber-300"><span id="discountUsedCount">0</span> / <span id="discountEligibleCount">0</span></p>
           </div>
+          <button
+            onclick="exportEmergencyCSV()"
+            title="ดาวน์โหลดไฟล์ CSV รายชื่อล่าสุดทันที"
+            class="control-btn px-3 py-2 bg-indigo-900 hover:bg-indigo-800 rounded-2xl text-amber-300 border border-indigo-700/60 text-xs font-bold transition flex items-center gap-1 shadow-sm"
+          >
+            <span>📥</span> <span class="hidden sm:inline">Export CSV</span>
+          </button>
         </div>
       </div>
 
       <!-- แถบปุ่มสลับหน้า -->
-      <div class="max-w-6xl mx-auto px-4 md:px-6 pb-3 pt-1 grid grid-cols-2 sm:flex gap-2 text-xs sm:text-sm font-bold">
-        <button onclick="switchTab('scan')" id="tab-scan" class="tab-active flex-1 py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition">
-          📷 สแกนบัตร / ค้นหา
+      <div class="max-w-7xl mx-auto px-4 md:px-6 pb-3 pt-1 flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold">
+        <button onclick="switchTab('scan')" id="tab-scan" class="tab-active flex-1 min-w-[100px] py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition">
+          📷 สแกนบัตร
         </button>
-        <button onclick="switchTab('list')" id="tab-list" class="tab-inactive flex-1 py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+        <button onclick="switchTab('list')" id="tab-list" class="tab-inactive flex-1 min-w-[100px] py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
           📋 รายชื่อทั้งหมด
         </button>
-        <button onclick="switchTab('staff')" id="tab-staff" class="tab-inactive hidden flex-1 py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-inactive hidden flex-1 min-w-[100px] py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+          📊 Dashboard สรุปยอด
+        </button>
+        <button onclick="switchTab('staff')" id="tab-staff" class="tab-inactive hidden flex-1 min-w-[100px] py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
           👥 จัดการสตาฟ
         </button>
-        <button onclick="switchTab('import')" id="tab-import" class="tab-inactive hidden flex-1 py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
+        <button onclick="switchTab('import')" id="tab-import" class="tab-inactive hidden flex-1 min-w-[100px] py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition">
           📂 อัปเดต CSV
         </button>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 md:px-6 mt-4 space-y-4">
+    <main class="max-w-7xl mx-auto px-4 md:px-6 mt-4 space-y-4">
 
       <!-- ป้ายบอกโหมดการทำงานตาม Role ของผู้ล็อกอิน -->
       <div id="roleModeBanner" class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-between border shadow-sm"></div>
 
-      <!-- ================= แท็บที่ 1: หน้าสแกนตั๋ว (Optimize สำหรับ iPad เป็น 2 คอลัมน์ ซ้าย-ขวา) ================= -->
+      <!-- ================= แท็บที่ 1: หน้าสแกนตั๋ว (Optimize สำหรับ iPad เป็น 2 คอลัมน์) ================= -->
       <section id="view-scan" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        <!-- ฝั่งซ้ายบน iPad: กล้องสแกน + ช่องค้นหา -->
         <div class="lg:col-span-5 lg:sticky lg:top-36 surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-5 rounded-3xl card-glow space-y-4">
           <div class="flex items-center justify-between">
             <h2 class="text-sm sm:text-base font-extrabold title-highlight text-amber-300">🔍 สแกน QR หรือค้นหารายชื่อ</h2>
-            <span class="text-[11px] subtitle-muted text-indigo-300">รองรับรหัสบัตร / รหัสจอง / ชื่อ</span>
+            <span class="text-[11px] subtitle-muted text-indigo-300">รหัสบัตร / รหัสจอง / ชื่อ</span>
           </div>
 
           <div id="cameraStartArea">
@@ -277,14 +289,12 @@
           </form>
         </div>
 
-        <!-- ฝั่งขวาบน iPad: การ์ดผลลัพธ์การสแกน -->
         <div class="lg:col-span-7 space-y-4">
           <div id="loadingIndicator" class="hidden surface-card bg-indigo-950/60 border border-indigo-800/50 rounded-3xl text-center py-12 subtitle-muted text-indigo-300 text-sm font-semibold animate-pulse">
             ⏳ กำลังค้นหาข้อมูลบัตรและตรวจสอบสิทธิ์...
           </div>
 
           <div id="resultContainer">
-            <!-- ค่าเริ่มต้นก่อนสแกน (ช่วยให้หน้าจอ iPad ดูเต็มและสมดุล) -->
             <div class="surface-card bg-indigo-950/40 border border-dashed border-indigo-700/60 p-8 sm:p-10 rounded-3xl text-center space-y-2">
               <div class="text-4xl">🎫</div>
               <h3 class="text-sm sm:text-base font-bold title-highlight text-amber-300">พร้อมสแกนตรวจสอบบัตรเข้างานและสิทธิ์ส่วนลด</h3>
@@ -296,10 +306,10 @@
         </div>
       </section>
 
-      <!-- ================= แท็บที่ 2: รายชื่อทั้งหมด ================= -->
+      <!-- ================= แท็บที่ 2: รายชื่อทั้งหมด (พร้อม Quick Filter Chips) ================= -->
       <section id="view-list" class="hidden space-y-3">
         <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-4 sm:p-6 rounded-3xl card-glow">
-          <div class="flex flex-wrap justify-between items-center gap-3 mb-4 pb-3 border-b border-indigo-800/40">
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-3 pb-3 border-b border-indigo-800/40">
             <div>
               <h2 class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">รายชื่อผู้สมัครทั้งหมด (เรียงตามเวลาจอง)</h2>
               <p class="text-xs subtitle-muted text-indigo-300">แตะที่รายชื่อเพื่อเปิดการ์ดเช็กอิน หรือตัดสิทธิ์ส่วนลดรายบุคคล</p>
@@ -320,11 +330,94 @@
               </button>
             </div>
           </div>
-          <div id="allAttendeesList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[74vh] overflow-y-auto pr-1"></div>
+
+          <!-- Quick Filters: แถบฟิลเตอร์ด่วน -->
+          <div class="flex flex-wrap gap-1.5 pb-2 text-xs">
+            <button onclick="setQuickFilter('all')" id="qf-all" class="px-3 py-1.5 rounded-xl font-bold bg-amber-400 text-slate-950 shadow transition">ทั้งหมด</button>
+            <button onclick="setQuickFilter('uncheck')" id="qf-uncheck" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">⏳ ยังไม่เข้างาน</button>
+            <button onclick="setQuickFilter('checked')" id="qf-checked" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">✔ เข้างานแล้ว</button>
+            <button onclick="setQuickFilter('student')" id="qf-student" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">🎒 เฉพาะนักเรียน</button>
+            <button onclick="setQuickFilter('parent')" id="qf-parent" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">👪 เฉพาะผู้ปกครอง</button>
+            <button onclick="setQuickFilter('disc-unused')" id="qf-disc-unused" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">🎁 ยังไม่ใช้ส่วนลด</button>
+            <button onclick="setQuickFilter('disc-used')" id="qf-disc-used" class="px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition">🛒 ใช้ส่วนลดแล้ว</button>
+          </div>
+
+          <div id="allAttendeesList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[72vh] overflow-y-auto pr-1"></div>
         </div>
       </section>
 
-      <!-- ================= แท็บที่ 3: จัดการสตาฟ (เฉพาะ Admin) ================= -->
+      <!-- ================= แท็บที่ 3: DASHBOARD สรุปยอด Real-time & Deep-Dive Analytics ================= -->
+      <section id="view-dashboard" class="hidden space-y-5">
+        <!-- การ์ดตัวเลขสรุปแยก 4 รอบ -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+          <div class="surface-card p-4 rounded-3xl bg-indigo-950/60 border border-amber-400/40">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-bold">🚀 Early Bird</p>
+            <p class="text-xl sm:text-2xl font-extrabold title-highlight text-amber-300 mt-1"><span id="dashEbCheck">0</span> / <span id="dashEbTotal">0</span></p>
+            <p class="text-[10px] text-emerald-400 mt-0.5">เข้างาน: <b id="dashEbPct">0%</b></p>
+          </div>
+          <div class="surface-card p-4 rounded-3xl bg-indigo-950/60 border border-sky-400/40">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-bold">🌅 ทั่วไป - เช้า</p>
+            <p class="text-xl sm:text-2xl font-extrabold title-highlight text-sky-300 mt-1"><span id="dashMornCheck">0</span> / <span id="dashMornTotal">0</span></p>
+            <p class="text-[10px] text-emerald-400 mt-0.5">เข้างาน: <b id="dashMornPct">0%</b></p>
+          </div>
+          <div class="surface-card p-4 rounded-3xl bg-indigo-950/60 border border-violet-400/40">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-bold">☀️ ทั่วไป - บ่าย</p>
+            <p class="text-xl sm:text-2xl font-extrabold title-highlight text-violet-300 mt-1"><span id="dashAftCheck">0</span> / <span id="dashAftTotal">0</span></p>
+            <p class="text-[10px] text-emerald-400 mt-0.5">เข้างาน: <b id="dashAftPct">0%</b></p>
+          </div>
+          <div class="surface-card p-4 rounded-3xl bg-indigo-950/60 border border-emerald-400/40">
+            <p class="text-[11px] subtitle-muted text-indigo-300 font-bold">🚶 Walk-in</p>
+            <p class="text-xl sm:text-2xl font-extrabold title-highlight text-emerald-300 mt-1"><span id="dashWiCheck">0</span> / <span id="dashWiTotal">0</span></p>
+            <p class="text-[10px] text-emerald-400 mt-0.5">เข้างาน: <b id="dashWiPct">0%</b></p>
+          </div>
+        </div>
+
+        <!-- กราฟหลัก 2 กราฟ: สัดส่วนรอบ + ชั่วโมงพีค (Peak Check-in Hours) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div class="lg:col-span-5 surface-card p-5 rounded-3xl bg-indigo-950/60 border border-indigo-800/50 card-glow flex flex-col justify-between">
+            <h3 class="font-extrabold text-sm sm:text-base title-highlight text-amber-300 mb-2">📊 สัดส่วนผู้เข้างานตามรอบบัตร</h3>
+            <div class="relative w-full aspect-square max-h-64 mx-auto">
+              <canvas id="roundDoughnutChart"></canvas>
+            </div>
+            <div id="doughnutLegend" class="flex flex-wrap justify-center gap-2 text-[11px] mt-3"></div>
+          </div>
+
+          <div class="lg:col-span-7 surface-card p-5 rounded-3xl bg-indigo-950/60 border border-indigo-800/50 card-glow flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-extrabold text-sm sm:text-base title-highlight text-amber-300">⏰ Peak Check-in Hours (ช่วงเวลาที่เด็กมาออ)</h3>
+              <span class="text-[11px] subtitle-muted text-indigo-300">นับตามเวลาจริงที่สแกน</span>
+            </div>
+            <div class="relative w-full h-64">
+              <canvas id="peakHoursBarChart"></canvas>
+            </div>
+            <p id="peakSummaryText" class="text-xs meta-text text-indigo-200 mt-3 text-center"></p>
+          </div>
+        </div>
+
+        <!-- ปุ่มกดวิเคราะห์เชิงลึก (Deep-Dive Analytics) -->
+        <div class="surface-card p-5 rounded-3xl bg-gradient-to-r from-indigo-950/80 to-purple-950/80 border border-amber-400/50 shadow-xl space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-extrabold text-base sm:text-lg text-amber-300 flex items-center gap-2">
+                <span>🔬</span> Executive Deep-Dive Analytics (Data Science Engine)
+              </h3>
+              <p class="text-xs subtitle-muted text-indigo-200">ประมวลผลข้อมูลสถิติเชิงลึก: มหาวิทยาลัยแพทย์ในฝัน, โรงเรียน, ช่องทาง Marketing และ Basket Analysis</p>
+            </div>
+            <button
+              onclick="runDeepDiveAnalytics()"
+              class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-300 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-extrabold text-xs sm:text-sm rounded-2xl shadow-md transition shrink-0 active:scale-95"
+            >
+              ⚡ รันการวิเคราะห์เชิงลึกเดี๋ยวนี้
+            </button>
+          </div>
+
+          <div id="deepDiveResults" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-2">
+            <!-- ผลลัพธ์ 4 ด้านจะถูกเรนเดอร์ตรงนี้ -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= แท็บที่ 4: จัดการสตาฟ (เฉพาะ Admin) ================= -->
       <section id="view-staff" class="hidden space-y-4">
         <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 sm:p-6 rounded-3xl card-glow space-y-4">
           <div class="flex justify-between items-center">
@@ -410,7 +503,7 @@
                 >
                   <option value="registration">📋 Staff - ฝ่ายทะเบียน (เช็กอินเข้างานอย่างเดียว)</option>
                   <option value="marketing">🛍️ Staff - ฝ่าย Marketing (ตัดสิทธิ์ส่วนลดอย่างเดียว)</option>
-                  <option value="admin">👑 Admin (ทำได้ทุกอย่าง + จัดการระบบ)</option>
+                  <option value="admin">👑 Admin (ทำได้ทุกอย่าง + ดู Dashboard + จัดการระบบ)</option>
                 </select>
               </div>
             </div>
@@ -431,14 +524,14 @@
         </div>
       </section>
 
-      <!-- ================= แท็บที่ 4: อัปโหลด CSV & รีเซ็ตระบบ (เฉพาะ Admin) ================= -->
+      <!-- ================= แท็บที่ 5: อัปโหลด CSV & รีเซ็ตระบบ (เฉพาะ Admin) ================= -->
       <section id="view-import" class="hidden space-y-4">
         <div class="surface-card bg-indigo-950/60 backdrop-blur-md border border-indigo-800/50 p-5 sm:p-6 rounded-3xl card-glow space-y-4">
-          <h2 class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV (รองรับทั้ง Early Bird 20 คอลัมน์ & รอบทั่วไป 23 คอลัมน์)</h2>
+          <h2 class="font-extrabold text-base sm:text-lg title-highlight text-amber-300">📂 อัปเดตรายชื่อจากไฟล์ CSV (Early Bird 20 คอลัมน์ & รอบทั่วไป 23 คอลัมน์)</h2>
           <div class="surface-subcard text-xs sm:text-sm meta-text text-indigo-200/90 leading-relaxed space-y-1.5 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50">
-            <p>✅ <b>รวมข้อมูลไร้รอยต่อ:</b> อัปโหลดได้ทั้งไฟล์รอบ Early Bird (20 คอลัมน์) และรอบทั่วไป เช้า/บ่าย (23 คอลัมน์) โดยข้อมูลไม่ทับกันมั่ว</p>
-            <p>✅ <b>ตรวจจับรอบบัตรและประเภทอัตโนมัติ:</b> แยก 🎓 ผู้เข้าร่วม / 👪 ผู้ปกครอง และแปลงคำว่า "รอบเย็น" เป็น "รอบบ่าย" ให้อัตโนมัติ</p>
-            <p>✅ <b>รักษาสถานะเดิม:</b> คนที่เช็กอินเข้างานหรือใช้ส่วนลด Marketing ไปแล้ว สถานะจะไม่ถูกล้างตอนอัปเดต CSV</p>
+            <p>✅ <b>ตรวจจับนักเรียนและผู้ปกครองอัตโนมัติ:</b> Early Bird เป็น 🎒 นักเรียน 100% ส่วนรอบทั่วไป/Walk-in อ่านตรงจากคอลัมน์ "ประเภท" (แยก 👪 ผู้ปกครอง ชัดเจน)</p>
+            <p>✅ <b>แก้ช่องขยับจาก ID Line อัตโนมัติ:</b> ขยับข้อมูลที่เลื่อนกลับเข้าที่เดิมให้อัตโนมัติ</p>
+            <p>✅ <b>รักษาสถานะเดิม:</b> คนที่เช็กอินเข้างานหรือใช้ส่วนลด Marketing ไปแล้ว สถานะจะไม่หายตอนอัปเดตไฟล์ใหม่</p>
           </div>
 
           <div class="surface-subcard border-2 border-dashed border-indigo-500/60 rounded-2xl p-6 text-center space-y-3 bg-indigo-950/30">
@@ -451,7 +544,6 @@
           <div id="importStatus" class="text-xs sm:text-sm text-center font-bold"></div>
         </div>
 
-        <!-- โซนรีเซ็ตระบบสำหรับ Admin -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="surface-card bg-rose-950/40 backdrop-blur-md border-2 border-rose-500/60 p-5 rounded-3xl space-y-3">
             <h2 class="font-extrabold text-sm sm:text-base text-rose-500 flex items-center gap-1.5">
@@ -499,15 +591,76 @@
     let sortAscending = true;
     let staffUsersCache = [];
     let isLightMode = false;
+    let cachedAttendees = [];
+    let activeQuickFilter = "all";
+
+    let roundChartInstance = null;
+    let peakHoursChartInstance = null;
 
     function valOr(v, fallback) {
-      if (v === undefined) return fallback;
-      if (v === null) return fallback;
+      if (v === undefined || v === null) return fallback;
       const s = String(v).trim();
       return s !== "" ? s : fallback;
     }
 
-    // ================= 1. ระบบสลับโหมด 🌙 Dark Mode <-> ☀️ Light Mode =================
+    // ================= SOUND & HAPTIC FEEDBACK (Web Audio API) =================
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function playSuccessBeep() {
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === "suspended") ctx.resume();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.12);
+      } catch (e) {}
+      if (navigator.vibrate) navigator.vibrate(80);
+    }
+
+    function playErrorBeep() {
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === "suspended") ctx.resume();
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = "sawtooth";
+        osc1.frequency.setValueAtTime(220, now);
+        gain1.gain.setValueAtTime(0.2, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.15);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = "sawtooth";
+        osc2.frequency.setValueAtTime(180, now + 0.18);
+        gain2.gain.setValueAtTime(0.2, now + 0.18);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.18);
+        osc2.stop(now + 0.35);
+      } catch (e) {}
+      if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+    }
+
+    // ================= 1. โหมดสี Dark <-> Light =================
     function initTheme() {
       const savedTheme = localStorage.getItem("smst_theme_mode");
       isLightMode = savedTheme === "light";
@@ -521,7 +674,10 @@
       updateRoleBannerUI();
       if (currentSearchQuery) searchTicket(currentSearchQuery);
       loadAllStatsAndList();
-      if (currentUser && currentUser.role === "admin") loadStaffList();
+      if (currentUser && currentUser.role === "admin") {
+        loadStaffList();
+        renderDashboardCharts();
+      }
     }
 
     function applyThemeUI() {
@@ -543,7 +699,7 @@
       }
     }
 
-    // ================= 2. ฟังก์ชันสร้างป้าย Badge ที่อ่านชัดทั้ง Dark Mode & Light Mode =================
+    // ================= 2. จำแนกรอบบัตร และนักเรียน vs ผู้ปกครอง =================
     function normalizeTicketTypeText(rawType) {
       const s = valOr(rawType, "-");
       return s.replace(/รอบเย็น/g, "รอบบ่าย").replace(/\(เย็น\)/g, "(บ่าย)");
@@ -556,6 +712,7 @@
       if (lower.includes("early bird")) {
         return {
           key: "early",
+          name: "รอบ Early Bird",
           badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-amber-300 to-amber-400 text-slate-950 border border-amber-500 shadow-sm">🚀 [รอบ Early Bird]</span>',
           shortBadge: isLightMode
             ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-400">🚀 Early Bird</span>'
@@ -565,6 +722,7 @@
       if (t.includes("เช้า") || lower.includes("morning")) {
         return {
           key: "morning",
+          name: "รอบทั่วไป (เช้า)",
           badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-sky-300 to-indigo-300 text-slate-950 border border-sky-500 shadow-sm">🌅 [รอบทั่วไป - รอบเช้า]</span>',
           shortBadge: isLightMode
             ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-sky-100 text-sky-900 border border-sky-400">🌅 ทั่วไป-เช้า</span>'
@@ -574,6 +732,7 @@
       if (t.includes("บ่าย") || t.includes("เย็น") || lower.includes("afternoon")) {
         return {
           key: "afternoon",
+          name: "รอบทั่วไป (บ่าย)",
           badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-gradient-to-r from-violet-300 to-fuchsia-300 text-slate-950 border border-violet-500 shadow-sm">☀️ [รอบทั่วไป - รอบบ่าย]</span>',
           shortBadge: isLightMode
             ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-400">☀️ ทั่วไป-บ่าย</span>'
@@ -583,6 +742,7 @@
       if (lower.includes("walk-in") || lower.includes("walk in") || t.includes("หน้างาน")) {
         return {
           key: "walkin",
+          name: "รอบ Walk-in",
           badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 border border-emerald-600 shadow-sm">🚶 [รอบ Walk-in]</span>',
           shortBadge: isLightMode
             ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-400">🚶 Walk-in</span>'
@@ -591,6 +751,7 @@
       }
       return {
         key: "other",
+        name: t,
         badgeHtml: '<span class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-700 text-white">🎫 [' + t + ']</span>',
         shortBadge: isLightMode
           ? '<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-100 text-indigo-900 border border-indigo-300">🎫 รอบทั่วไป</span>'
@@ -598,19 +759,23 @@
       };
     }
 
+    // กฎการแยก 🎒 นักเรียน vs 👪 ผู้ปกครอง
     function getPersonCategoryBadge(person) {
-      const cat = valOr(person.ticket_type_category, "ผู้เข้าร่วม");
-      if (cat.includes("ผู้ปกครอง")) {
+      const cat = valOr(person.ticket_type_category, "");
+      const isParent = cat === "ผู้ปกครอง" || cat.includes("ผู้ปกครอง");
+
+      if (isParent) {
         return isLightMode
           ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-fuchsia-100 text-fuchsia-900 border border-fuchsia-400">👪 ผู้ปกครอง</span>'
           : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/40">👪 ผู้ปกครอง</span>';
       }
+
       return isLightMode
-        ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-100 text-sky-900 border border-sky-400">🎓 ผู้เข้าร่วม</span>'
-        : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-500/25 text-sky-200 border border-sky-400/40">🎓 ผู้เข้าร่วม</span>';
+        ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-100 text-sky-900 border border-sky-400">🎒 นักเรียน</span>'
+        : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-sky-500/25 text-sky-200 border border-sky-400/40">🎒 นักเรียน</span>';
     }
 
-    // ตรวจสอบสิทธิ์ส่วนลดซื้อของหน้างาน (แยกรายบุคคล)
+    // สิทธิ์ส่วนลด Marketing ซื้อของหน้างาน (แยกรายคน)
     function getDiscountEligibility(person, groupSize) {
       const t = normalizeTicketTypeText(person.ticket_type);
       const lower = t.toLowerCase();
@@ -684,7 +849,7 @@
         bannerEl.className = isLightMode
           ? "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 bg-amber-100 border-2 border-amber-400 text-amber-950"
           : "px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex flex-wrap items-center justify-between gap-2 bg-amber-400/15 border border-amber-400/50 text-amber-300";
-        bannerEl.innerHTML = "<span>👑 <b>โหมด Admin:</b> สามารถกดเช็กอินเข้างาน (ทะเบียน) และกดตัดสิทธิ์ส่วนลด (Marketing) ได้ครบทุกปุ่ม</span>";
+        bannerEl.innerHTML = "<span>👑 <b>โหมด Admin:</b> มีสิทธิ์เต็ม (เช็กอิน + ส่วนลด Marketing + ดู Dashboard กราฟเรียลไทม์ + จัดการสตาฟ)</span>";
         if (scanLabelEl) scanLabelEl.innerText = "เปิดกล้องสแกน QR (เช็กอิน & ส่วนลด)";
       } else if (currentUser.role === "marketing") {
         bannerEl.className = isLightMode
@@ -701,9 +866,11 @@
       }
     }
 
-    // ================= 3. เริ่มต้นระบบ & LOGIN =================
+    // ================= 3. LOGIN & SESSION =================
     window.addEventListener("DOMContentLoaded", async () => {
       initTheme();
+      initNetworkListeners();
+
       const savedUser = localStorage.getItem("smst_current_user");
       if (savedUser) {
         try {
@@ -750,7 +917,7 @@
       btnEl.innerText = "🔐 เข้าสู่ระบบ";
 
       if (error) {
-        errEl.innerText = "⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล: " + error.message;
+        errEl.innerText = "⚠️ เชื่อมต่อฐานข้อมูลไม่สำเร็จ: " + error.message;
         errEl.classList.remove("hidden");
         return;
       }
@@ -775,9 +942,11 @@
       document.getElementById("currentUserBadge").innerText = "👤 " + userObj.display_name + " (" + rLabel + ")";
 
       if (userObj.role === "admin") {
+        document.getElementById("tab-dashboard").classList.remove("hidden");
         document.getElementById("tab-staff").classList.remove("hidden");
         document.getElementById("tab-import").classList.remove("hidden");
       } else {
+        document.getElementById("tab-dashboard").classList.add("hidden");
         document.getElementById("tab-staff").classList.add("hidden");
         document.getElementById("tab-import").classList.add("hidden");
       }
@@ -794,7 +963,7 @@
       showLoginScreen();
     }
 
-    // ================= 4. การจัดเรียงลำดับตามเวลาจอง =================
+    // ================= 4. SORTING & SWITCH TAB =================
     function parseThaiDateToISO(dateStr) {
       if (!dateStr) return "9999-99-99 99:99:99";
       const s = String(dateStr).trim();
@@ -834,23 +1003,28 @@
     }
 
     function switchTab(tab) {
-      ["scan", "list", "staff", "import"].forEach((t) => {
-        document.getElementById("view-" + t).classList.add("hidden");
+      ["scan", "list", "dashboard", "staff", "import"].forEach((t) => {
+        const viewEl = document.getElementById("view-" + t);
+        if (viewEl) viewEl.classList.add("hidden");
+
         const btn = document.getElementById("tab-" + t);
         if (btn) {
           const isHidden = btn.classList.contains("hidden");
-          btn.className = (isHidden ? "hidden " : "") + "tab-inactive flex-1 py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
+          btn.className = (isHidden ? "hidden " : "") + "tab-inactive flex-1 min-w-[100px] py-2.5 rounded-xl bg-indigo-900/80 text-indigo-200 hover:bg-indigo-800 border border-indigo-700/50 transition";
         }
       });
 
-      document.getElementById("view-" + tab).classList.remove("hidden");
+      const activeView = document.getElementById("view-" + tab);
+      if (activeView) activeView.classList.remove("hidden");
+
       const activeBtn = document.getElementById("tab-" + tab);
       if (activeBtn) {
-        activeBtn.className = "tab-active flex-1 py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition font-bold";
+        activeBtn.className = "tab-active flex-1 min-w-[100px] py-2.5 rounded-xl bg-amber-400 text-slate-950 shadow-md transition font-bold";
       }
 
       if (tab !== "scan") stopScanner();
       if (tab === "list") loadAllStatsAndList();
+      if (tab === "dashboard") renderDashboardCharts();
       if (tab === "staff") loadStaffList();
     }
 
@@ -862,7 +1036,22 @@
       loadAllStatsAndList();
     }
 
-    // ================= 5. ระบบกล้องสแกนและการค้นหา =================
+    function setQuickFilter(filterKey) {
+      activeQuickFilter = filterKey;
+      const allKeys = ["all", "uncheck", "checked", "student", "parent", "disc-unused", "disc-used"];
+      allKeys.forEach((k) => {
+        const btn = document.getElementById("qf-" + k);
+        if (!btn) return;
+        if (k === filterKey) {
+          btn.className = "px-3 py-1.5 rounded-xl font-bold bg-amber-400 text-slate-950 shadow transition";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-xl font-semibold bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 hover:bg-indigo-800 transition";
+        }
+      });
+      loadAllStatsAndList();
+    }
+
+    // ================= 5. SCANNER & SEARCH =================
     async function startScanner() {
       document.getElementById("cameraStartArea").classList.add("hidden");
       document.getElementById("cameraActiveArea").classList.remove("hidden");
@@ -873,7 +1062,6 @@
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 240, height: 240 } },
           (decodedText) => {
-            if (navigator.vibrate) navigator.vibrate(200);
             stopScanner();
             searchTicket(decodedText);
           },
@@ -915,10 +1103,24 @@
       let matchedBookingCode = null;
       let scannedTicketCode = null;
 
-      const { data: codeMatches } = await supabaseClient
-        .from("attendees")
-        .select("*")
-        .or("ticket_code.ilike." + cleanQuery + ",qr_code.ilike." + cleanQuery + ",booking_code.ilike." + cleanQuery);
+      // ค้นหาในแคชหรือ Supabase
+      const sourceData = cachedAttendees.length > 0 ? cachedAttendees : null;
+      let codeMatches = [];
+
+      if (sourceData) {
+        const qLower = cleanQuery.toLowerCase();
+        codeMatches = sourceData.filter((r) =>
+          (r.ticket_code && r.ticket_code.toLowerCase() === qLower) ||
+          (r.qr_code && r.qr_code.toLowerCase() === qLower) ||
+          (r.booking_code && r.booking_code.toLowerCase() === qLower)
+        );
+      } else {
+        const { data } = await supabaseClient
+          .from("attendees")
+          .select("*")
+          .or("ticket_code.ilike." + cleanQuery + ",qr_code.ilike." + cleanQuery + ",booking_code.ilike." + cleanQuery);
+        codeMatches = data || [];
+      }
 
       if (codeMatches && codeMatches.length > 0) {
         matchedBookingCode = codeMatches[0].booking_code;
@@ -927,34 +1129,58 @@
         );
         if (exactTicket) scannedTicketCode = exactTicket.ticket_code;
       } else {
-        const { data: nameMatches } = await supabaseClient
-          .from("attendees")
-          .select("booking_code, ticket_code, full_name")
-          .ilike("full_name", "%" + cleanQuery + "%")
-          .limit(1);
+        // ค้นหาด้วยชื่อ
+        let nameMatch = null;
+        if (sourceData) {
+          nameMatch = sourceData.find((r) => r.full_name && r.full_name.includes(cleanQuery));
+        } else {
+          const { data: nData } = await supabaseClient
+            .from("attendees")
+            .select("booking_code, ticket_code, full_name")
+            .ilike("full_name", "%" + cleanQuery + "%")
+            .limit(1);
+          if (nData && nData.length > 0) nameMatch = nData[0];
+        }
 
-        if (nameMatches && nameMatches.length > 0) {
-          matchedBookingCode = nameMatches[0].booking_code;
-          if (nameMatches[0].ticket_code) scannedTicketCode = nameMatches[0].ticket_code;
+        if (nameMatch) {
+          matchedBookingCode = nameMatch.booking_code;
+          if (nameMatch.ticket_code) scannedTicketCode = nameMatch.ticket_code;
         }
       }
 
       if (!matchedBookingCode) {
         document.getElementById("loadingIndicator").classList.add("hidden");
+        playErrorBeep();
         renderNotFound(cleanQuery);
         return;
       }
 
-      const { data: groupRows, error } = await supabaseClient
-        .from("attendees")
-        .select("*")
-        .eq("booking_code", matchedBookingCode);
+      let groupRows = [];
+      if (sourceData) {
+        groupRows = sourceData.filter((r) => r.booking_code === matchedBookingCode);
+      } else {
+        const { data: gData } = await supabaseClient
+          .from("attendees")
+          .select("*")
+          .eq("booking_code", matchedBookingCode);
+        groupRows = gData || [];
+      }
 
       document.getElementById("loadingIndicator").classList.add("hidden");
 
-      if (error ? true : !groupRows ? true : groupRows.length === 0) {
+      if (!groupRows || groupRows.length === 0) {
+        playErrorBeep();
         renderNotFound(cleanQuery);
         return;
+      }
+
+      // ตรวจสอบเสียงตอบรับ
+      const first = groupRows[0];
+      const isCancelled = (first.booking_status || "").startsWith("ยกเลิก");
+      if (isCancelled) {
+        playErrorBeep();
+      } else {
+        playSuccessBeep();
       }
 
       const sortedGroup = sortAttendeeRows(groupRows, true);
@@ -970,7 +1196,7 @@
         '</div>';
     }
 
-    // ================= 6. แสดงผลการ์ดข้อมูลรอบบัตร + เช็กอิน + สิทธิ์ส่วนลดรายบุคคล =================
+    // ================= 6. CARD RENDERING (สิทธิ์ส่วนลด + เช็กอิน + แยกนักเรียน/ผู้ปกครอง) =================
     function renderTicketGroup(rows, scannedTicketCode) {
       const first = rows[0];
       const totalPax = rows.length;
@@ -1033,7 +1259,6 @@
             '</div>';
       }
 
-      // ป้ายสรุปสิทธิ์ส่วนลดด้านบนการ์ด
       const summaryDiscountBanner = groupDiscountCheck.eligible
         ? (isLightMode
             ? '<div class="mb-4 px-4 py-2.5 rounded-2xl bg-amber-50 border-2 border-amber-400 flex flex-wrap items-center justify-between gap-2 text-xs">' +
@@ -1093,7 +1318,6 @@
 
         const categoryBadge = getPersonCategoryBadge(person);
 
-        // สถานะเช็กอินเข้างาน
         const checkedInfo = isChecked
           ? (isLightMode
               ? '<div class="mt-1 inline-block bg-emerald-100 border border-emerald-400 px-2.5 py-1 rounded-xl text-[11px] text-emerald-950 font-bold">' +
@@ -1110,7 +1334,6 @@
                   '⏳ ยังไม่เช็กอินเข้างาน' +
                 '</div>');
 
-        // สถานะส่วนลด Marketing รายบุคคล
         let discountStatusHtml = "";
         if (!personDiscount.eligible) {
           discountStatusHtml = isLightMode
@@ -1134,7 +1357,6 @@
               '</div>';
         }
 
-        // ปุ่มสำหรับฝ่ายทะเบียน (และ Admin)
         let checkinActionHtml = "";
         if (allowCheckin) {
           checkinActionHtml = !isChecked
@@ -1149,7 +1371,6 @@
               '</button>';
         }
 
-        // ปุ่มสำหรับฝ่าย Marketing (และ Admin)
         let discountActionHtml = "";
         if (allowDiscount && personDiscount.eligible) {
           discountActionHtml = !isDiscountUsed
@@ -1233,7 +1454,7 @@
         '</div>';
     }
 
-    // ================= 7. ฟังก์ชันกดเช็กอิน (ฝ่ายทะเบียน) และกดตัดสิทธิ์ส่วนลด (ฝ่าย Marketing) =================
+    // ================= 7. TOGGLE CHECK-IN & DISCOUNT (รองรับ Offline) =================
     async function togglePersonCheckIn(rowId, checkInState) {
       if (!canUserCheckIn()) {
         return alert("บัญชีฝ่าย Marketing ไม่สามารถกดเช็กอินเข้างานของฝ่ายทะเบียนได้ครับ");
@@ -1244,14 +1465,27 @@
         : null;
       const approverName = checkInState && currentUser ? currentUser.display_name : null;
 
-      await supabaseClient
-        .from("attendees")
-        .update({
-          is_checked_in: checkInState,
-          checked_in_at: nowStr,
-          checked_in_by: approverName,
-        })
-        .eq("id", rowId);
+      // อัปเดตใน Local Memory ทันที
+      const idx = cachedAttendees.findIndex((a) => a.id === rowId);
+      if (idx !== -1) {
+        cachedAttendees[idx].is_checked_in = checkInState;
+        cachedAttendees[idx].checked_in_at = nowStr;
+        cachedAttendees[idx].checked_in_by = approverName;
+        saveLocalCache(cachedAttendees);
+      }
+
+      if (!navigator.onLine) {
+        pushOfflineQueue({ type: "checkin", rowId, checkInState, nowStr, approverName });
+      } else {
+        await supabaseClient
+          .from("attendees")
+          .update({
+            is_checked_in: checkInState,
+            checked_in_at: nowStr,
+            checked_in_by: approverName,
+          })
+          .eq("id", rowId);
+      }
 
       if (currentSearchQuery) searchTicket(currentSearchQuery);
       loadAllStatsAndList();
@@ -1263,15 +1497,28 @@
       const nowStr = new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " น.";
       const approverName = currentUser ? currentUser.display_name : "-";
 
-      await supabaseClient
-        .from("attendees")
-        .update({
-          is_checked_in: true,
-          checked_in_at: nowStr,
-          checked_in_by: approverName,
-        })
-        .eq("booking_code", bookingCode)
-        .eq("is_checked_in", false);
+      cachedAttendees.forEach((a) => {
+        if (a.booking_code === bookingCode && !a.is_checked_in) {
+          a.is_checked_in = true;
+          a.checked_in_at = nowStr;
+          a.checked_in_by = approverName;
+        }
+      });
+      saveLocalCache(cachedAttendees);
+
+      if (!navigator.onLine) {
+        pushOfflineQueue({ type: "checkin_all", bookingCode, nowStr, approverName });
+      } else {
+        await supabaseClient
+          .from("attendees")
+          .update({
+            is_checked_in: true,
+            checked_in_at: nowStr,
+            checked_in_by: approverName,
+          })
+          .eq("booking_code", bookingCode)
+          .eq("is_checked_in", false);
+      }
 
       searchTicket(bookingCode);
       loadAllStatsAndList();
@@ -1291,94 +1538,125 @@
         : null;
       const approverName = useState && currentUser ? currentUser.display_name : null;
 
-      const { error } = await supabaseClient
-        .from("attendees")
-        .update({
-          marketing_discount_used: useState,
-          marketing_discount_used_at: nowStr,
-          marketing_discount_used_by: approverName,
-        })
-        .eq("id", rowId);
+      const idx = cachedAttendees.findIndex((a) => a.id === rowId);
+      if (idx !== -1) {
+        cachedAttendees[idx].marketing_discount_used = useState;
+        cachedAttendees[idx].marketing_discount_used_at = nowStr;
+        cachedAttendees[idx].marketing_discount_used_by = approverName;
+        saveLocalCache(cachedAttendees);
+      }
 
-      if (error) {
-        alert("เกิดข้อผิดพลาดในการบันทึกสิทธิ์ส่วนลด (กรุณารันคำสั่ง SQL อัปเดตตารางใน Supabase ก่อน): " + error.message);
-        return;
+      if (!navigator.onLine) {
+        pushOfflineQueue({ type: "discount", rowId, useState, nowStr, approverName });
+      } else {
+        const { error } = await supabaseClient
+          .from("attendees")
+          .update({
+            marketing_discount_used: useState,
+            marketing_discount_used_at: nowStr,
+            marketing_discount_used_by: approverName,
+          })
+          .eq("id", rowId);
+
+        if (error) {
+          alert("เกิดข้อผิดพลาด: " + error.message);
+          return;
+        }
       }
 
       if (currentSearchQuery) searchTicket(currentSearchQuery);
       loadAllStatsAndList();
     }
 
-    // ================= 8. ฟังก์ชันรีเซ็ตระบบสำหรับ Admin =================
-    async function resetAllCheckIns() {
-      if (!currentUser ? true : currentUser.role !== "admin") {
-        return alert("เฉพาะ Admin เท่านั้นที่สามารถรีเซ็ตระบบได้");
-      }
-
-      const confirmText = prompt(
-        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะ 'เช็กอินเข้างาน' ของทุกคนกลับเป็น 0 — พิมพ์คำว่า RESET เพื่อยืนยัน:"
-      );
-      if (confirmText !== "RESET") {
-        if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
-        return;
-      }
-
-      const { error } = await supabaseClient
-        .from("attendees")
-        .update({
-          is_checked_in: false,
-          checked_in_at: null,
-          checked_in_by: null,
-        })
-        .gte("id", 0);
-
-      if (error) {
-        alert("เกิดข้อผิดพลาดในการรีเซ็ต: " + error.message);
-      } else {
-        alert("✅ รีเซ็ตสถานะการเช็กอินเข้างานทั้งหมดกลับเป็น 0 เรียบร้อยแล้ว!");
-        if (currentSearchQuery) searchTicket(currentSearchQuery);
-        loadAllStatsAndList();
+    // ================= 8. OFFLINE ENGINE (Local Queue & Sync) =================
+    function initNetworkListeners() {
+      window.addEventListener("online", () => {
+        document.getElementById("offlineIndicator").classList.add("hidden");
+        syncOfflineQueue();
+      });
+      window.addEventListener("offline", () => {
+        document.getElementById("offlineIndicator").classList.remove("hidden");
+      });
+      if (!navigator.onLine) {
+        document.getElementById("offlineIndicator").classList.remove("hidden");
       }
     }
 
-    async function resetAllDiscounts() {
-      if (!currentUser ? true : currentUser.role !== "admin") {
-        return alert("เฉพาะ Admin เท่านั้นที่สามารถรีเซ็ตสิทธิ์ส่วนลดได้");
-      }
+    function saveLocalCache(data) {
+      try {
+        localStorage.setItem("smst_attendees_cache", JSON.stringify(data));
+      } catch (e) {}
+    }
 
-      const confirmText = prompt(
-        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะ 'การใช้ส่วนลดซื้อของหน้างาน (Marketing)' ของทุกคนกลับเป็น 0 — พิมพ์คำว่า RESET เพื่อยืนยัน:"
-      );
-      if (confirmText !== "RESET") {
-        if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
-        return;
-      }
-
-      const { error } = await supabaseClient
-        .from("attendees")
-        .update({
-          marketing_discount_used: false,
-          marketing_discount_used_at: null,
-          marketing_discount_used_by: null,
-        })
-        .gte("id", 0);
-
-      if (error) {
-        alert("เกิดข้อผิดพลาดในการรีเซ็ตส่วนลด: " + error.message);
-      } else {
-        alert("✅ รีเซ็ตสิทธิ์ส่วนลดหน้างานทั้งหมดกลับเป็น 0 เรียบร้อยแล้ว!");
-        if (currentSearchQuery) searchTicket(currentSearchQuery);
-        loadAllStatsAndList();
+    function getLocalCache() {
+      try {
+        const c = localStorage.getItem("smst_attendees_cache");
+        return c ? JSON.parse(c) : [];
+      } catch (e) {
+        return [];
       }
     }
 
-    // ================= 9. โหลดสถิติและรายการทั้งหมด (ปรับสีให้คมชัดทั้ง Dark & Light Mode) =================
+    function pushOfflineQueue(actionObj) {
+      try {
+        const q = JSON.parse(localStorage.getItem("smst_offline_queue") || "[]");
+        q.push(actionObj);
+        localStorage.setItem("smst_offline_queue", JSON.stringify(q));
+      } catch (e) {}
+    }
+
+    async function syncOfflineQueue() {
+      try {
+        const q = JSON.parse(localStorage.getItem("smst_offline_queue") || "[]");
+        if (q.length === 0) return;
+
+        for (const act of q) {
+          if (act.type === "checkin") {
+            await supabaseClient.from("attendees").update({
+              is_checked_in: act.checkInState,
+              checked_in_at: act.nowStr,
+              checked_in_by: act.approverName
+            }).eq("id", act.rowId);
+          } else if (act.type === "checkin_all") {
+            await supabaseClient.from("attendees").update({
+              is_checked_in: true,
+              checked_in_at: act.nowStr,
+              checked_in_by: act.approverName
+            }).eq("booking_code", act.bookingCode).eq("is_checked_in", false);
+          } else if (act.type === "discount") {
+            await supabaseClient.from("attendees").update({
+              marketing_discount_used: act.useState,
+              marketing_discount_used_at: act.nowStr,
+              marketing_discount_used_by: act.approverName
+            }).eq("id", act.rowId);
+          }
+        }
+        localStorage.removeItem("smst_offline_queue");
+        loadAllStatsAndList();
+      } catch (e) {}
+    }
+
+    // ================= 9. โหลดสถิติ, รายชื่อ และ Quick Filters =================
     async function loadAllStatsAndList() {
-      const { data } = await supabaseClient.from("attendees").select("*");
+      let data = [];
+      if (navigator.onLine) {
+        const res = await supabaseClient.from("attendees").select("*");
+        if (res.data) {
+          data = res.data;
+          cachedAttendees = data;
+          saveLocalCache(data);
+        } else {
+          data = getLocalCache();
+          cachedAttendees = data;
+        }
+      } else {
+        data = getLocalCache();
+        cachedAttendees = data;
+      }
+
       if (!data) return;
 
       const sortedData = sortAttendeeRows(data, sortAscending);
-
       const validRows = sortedData.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
       const checkedCount = validRows.filter((r) => r.is_checked_in).length;
 
@@ -1398,14 +1676,30 @@
       document.getElementById("discountUsedCount").innerText = usedDiscountCount;
       document.getElementById("discountEligibleCount").innerText = eligibleDiscountRows.length;
 
+      // กรองตามรอบ
       const filterEl = document.getElementById("roundFilterSelect");
       const filterVal = filterEl ? filterEl.value : "all";
 
-      const filteredRows = sortedData.filter((r) => {
+      let filteredRows = sortedData.filter((r) => {
         if (filterVal === "all") return true;
         const rInfo = getTicketRoundInfo(r.ticket_type);
         return rInfo.key === filterVal;
       });
+
+      // กรองตาม Quick Filter
+      if (activeQuickFilter !== "all") {
+        filteredRows = filteredRows.filter((r) => {
+          const disc = getDiscountEligibility(r, bookingCountsMap[r.booking_code] || 1);
+          const isParent = (r.ticket_type_category || "").includes("ผู้ปกครอง");
+          if (activeQuickFilter === "uncheck") return !r.is_checked_in;
+          if (activeQuickFilter === "checked") return r.is_checked_in;
+          if (activeQuickFilter === "student") return !isParent;
+          if (activeQuickFilter === "parent") return isParent;
+          if (activeQuickFilter === "disc-unused") return disc.eligible && !r.marketing_discount_used;
+          if (activeQuickFilter === "disc-used") return disc.eligible && r.marketing_discount_used;
+          return true;
+        });
+      }
 
       document.getElementById("allAttendeesList").innerHTML = filteredRows.map((r, idx) => {
         const tCode = valOr(r.ticket_code, "-");
@@ -1416,7 +1710,6 @@
         const catBadge = getPersonCategoryBadge(r);
         const discInfo = getDiscountEligibility(r, bookingCountsMap[r.booking_code] || 1);
 
-        // ป้ายลำดับ #1, #2 ที่อ่านชัดในโหมดสว่าง
         const idxBadge = isLightMode
           ? '<span class="text-[11px] px-2 py-0.5 bg-indigo-100 text-indigo-950 border border-indigo-300 rounded-lg font-mono font-extrabold">#' + (idx + 1) + '</span>'
           : '<span class="text-[10px] px-1.5 py-0.5 bg-indigo-900 text-indigo-300 rounded font-mono">#' + (idx + 1) + '</span>';
@@ -1436,11 +1729,11 @@
         const discountBadge = !discInfo.eligible
           ? (isLightMode
               ? '<span class="px-2.5 py-0.5 bg-slate-100 text-slate-500 border border-slate-300 rounded-lg font-semibold text-[10px]">ไม่มีส่วนลด</span>'
-              : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded-lg text-[10px]">ไม่มีส่วนลด</span>')
+              : '<span class="px-2.5 py-0.5 bg-slate-800 text-slate-400 rounded-lg text-[10px]">ไม่มีส่วนลด</span>')
           : r.marketing_discount_used
           ? (isLightMode
               ? '<span class="px-2.5 py-0.5 bg-rose-100 text-rose-900 border border-rose-400 rounded-lg font-extrabold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>'
-              : '<span class="px-2 py-0.5 bg-rose-500/25 text-rose-300 border border-rose-500/40 rounded-lg font-bold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>')
+              : '<span class="px-2.5 py-0.5 bg-rose-500/25 text-rose-300 border border-rose-500/40 rounded-lg font-bold text-[10px]">🛒 ใช้ลด ' + discInfo.percent + '% แล้ว</span>')
           : (isLightMode
               ? '<span class="px-2.5 py-0.5 bg-amber-100 text-amber-950 border border-amber-400 rounded-lg font-extrabold text-[10px]">🎁 ลด ' + discInfo.percent + '%</span>'
               : '<span class="px-2 py-0.5 bg-amber-400/20 text-amber-300 border border-amber-400/40 rounded-lg font-bold text-[10px]">🎁 ลด ' + discInfo.percent + '%</span>');
@@ -1467,9 +1760,272 @@
           '</div>'
         );
       }).join("");
+
+      if (currentUser && currentUser.role === "admin") {
+        updateDashboardCounters(validRows);
+      }
     }
 
-    // ================= 10. ระบบจัดการสตาฟ (Admin) =================
+    // ================= 10. DASHBOARD CHARTS & REAL-TIME SUMMARY =================
+    function updateDashboardCounters(validRows) {
+      const counts = {
+        early: { total: 0, checked: 0 },
+        morning: { total: 0, checked: 0 },
+        afternoon: { total: 0, checked: 0 },
+        walkin: { total: 0, checked: 0 },
+      };
+
+      validRows.forEach((r) => {
+        const info = getTicketRoundInfo(r.ticket_type);
+        if (counts[info.key]) {
+          counts[info.key].total++;
+          if (r.is_checked_in) counts[info.key].checked++;
+        }
+      });
+
+      const setCard = (k, prefix) => {
+        const item = counts[k];
+        const pct = item.total > 0 ? Math.round((item.checked / item.total) * 100) : 0;
+        document.getElementById("dash" + prefix + "Check").innerText = item.checked;
+        document.getElementById("dash" + prefix + "Total").innerText = item.total;
+        document.getElementById("dash" + prefix + "Pct").innerText = pct + "%";
+      };
+
+      setCard("early", "Eb");
+      setCard("morning", "Morn");
+      setCard("afternoon", "Aft");
+      setCard("walkin", "Wi");
+    }
+
+    function renderDashboardCharts() {
+      const validRows = cachedAttendees.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
+
+      // 1. DOUGHNUT CHART: สัดส่วนผู้เข้างานตามรอบ
+      const roundCounts = { "Early Bird": 0, "รอบเช้า": 0, "รอบบ่าย": 0, "Walk-in": 0 };
+      validRows.forEach((r) => {
+        const info = getTicketRoundInfo(r.ticket_type);
+        if (info.key === "early") roundCounts["Early Bird"]++;
+        else if (info.key === "morning") roundCounts["รอบเช้า"]++;
+        else if (info.key === "afternoon") roundCounts["รอบบ่าย"]++;
+        else if (info.key === "walkin") roundCounts["Walk-in"]++;
+      });
+
+      const dCanvas = document.getElementById("roundDoughnutChart");
+      if (dCanvas) {
+        if (roundChartInstance) roundChartInstance.destroy();
+        roundChartInstance = new Chart(dCanvas, {
+          type: "doughnut",
+          data: {
+            labels: Object.keys(roundCounts),
+            datasets: [{
+              data: Object.values(roundCounts),
+              backgroundColor: ["#FBBF24", "#38BDF8", "#A855F7", "#34D399"],
+              borderWidth: 2,
+              borderColor: isLightMode ? "#FFFFFF" : "#1e1b4b"
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
+        // Legend
+        const legEl = document.getElementById("doughnutLegend");
+        if (legEl) {
+          legEl.innerHTML = Object.entries(roundCounts).map(([label, cnt], i) => {
+            const colors = ["#FBBF24", "#38BDF8", "#A855F7", "#34D399"];
+            return '<span class="inline-flex items-center gap-1 font-semibold">' +
+              '<span class="w-3 h-3 rounded-full inline-block" style="background:' + colors[i] + '"></span>' +
+              label + ': <b>' + cnt + '</b>' +
+            '</span>';
+          }).join("");
+        }
+      }
+
+      // 2. BAR CHART: Peak Check-in Hours
+      const hourBuckets = {
+        "ก่อน 08:00": 0,
+        "08:00-09:00": 0,
+        "09:00-10:00": 0,
+        "10:00-11:00": 0,
+        "11:00-12:00": 0,
+        "12:00-13:00": 0,
+        "13:00-14:00": 0,
+        "หลัง 14:00": 0,
+      };
+
+      validRows.filter((r) => r.is_checked_in && r.checked_in_at).forEach((r) => {
+        const timePart = r.checked_in_at.split(" ")[0]; // "08:45:12"
+        const hr = parseInt(timePart.split(":")[0], 10);
+        if (isNaN(hr)) return;
+
+        if (hr < 8) hourBuckets["ก่อน 08:00"]++;
+        else if (hr === 8) hourBuckets["08:00-09:00"]++;
+        else if (hr === 9) hourBuckets["09:00-10:00"]++;
+        else if (hr === 10) hourBuckets["10:00-11:00"]++;
+        else if (hr === 11) hourBuckets["11:00-12:00"]++;
+        else if (hr === 12) hourBuckets["12:00-13:00"]++;
+        else if (hr === 13) hourBuckets["13:00-14:00"]++;
+        else hourBuckets["หลัง 14:00"]++;
+      });
+
+      const pCanvas = document.getElementById("peakHoursBarChart");
+      if (pCanvas) {
+        if (peakHoursChartInstance) peakHoursChartInstance.destroy();
+        peakHoursChartInstance = new Chart(pCanvas, {
+          type: "bar",
+          data: {
+            labels: Object.keys(hourBuckets),
+            datasets: [{
+              label: "จำนวนคนที่เช็กอิน (คน)",
+              data: Object.values(hourBuckets),
+              backgroundColor: isLightMode ? "#2563EB" : "#FBBF24",
+              borderRadius: 8,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { precision: 0, color: isLightMode ? "#1E293B" : "#CBD5E1" },
+                grid: { color: isLightMode ? "#E2E8F0" : "#334155" }
+              },
+              x: {
+                ticks: { color: isLightMode ? "#1E293B" : "#CBD5E1", font: { size: 10 } },
+                grid: { display: false }
+              }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
+        // สรุปช่วงพีค
+        const maxVal = Math.max(...Object.values(hourBuckets));
+        const peakHour = Object.keys(hourBuckets).find((k) => hourBuckets[k] === maxVal && maxVal > 0);
+        const sumEl = document.getElementById("peakSummaryText");
+        if (sumEl) {
+          sumEl.innerHTML = peakHour
+            ? '🔥 <b>Peak Window:</b> ช่วงเวลาที่มีการเช็กอินหนาแน่นที่สุดคือ <b>' + peakHour + '</b> (' + maxVal + ' คน)'
+            : 'ยังไม่มีข้อมูลการสแกนเช็กอินเข้างาน (ระบบจะคำนวณกราฟให้อัตโนมัติเมื่อเริ่มสแกน)';
+        }
+      }
+    }
+
+    // ================= 11. DEEP-DIVE ANALYTICS ENGINE =================
+    function runDeepDiveAnalytics() {
+      const validRows = cachedAttendees.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
+      const resContainer = document.getElementById("deepDiveResults");
+      resContainer.classList.remove("hidden");
+
+      // 1. Target Medical School
+      const uniCount = {};
+      validRows.forEach((r) => {
+        const u = valOr(r.target_uni, "").trim();
+        if (u && u !== "-") {
+          uniCount[u] = (uniCount[u] || 0) + 1;
+        }
+      });
+      const topUnis = Object.entries(uniCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const topUniHtml = topUnis.length > 0
+        ? topUnis.map(([u, c], i) => '<li>#' + (i + 1) + ' <b>' + u + '</b> (' + c + ' คน)</li>').join("")
+        : "<li>ยังไม่มีข้อมูลสถาบันในฝัน</li>";
+
+      // 2. Marketing Channels
+      const chCount = {};
+      validRows.forEach((r) => {
+        const ch = valOr(r.channel, "").trim().toLowerCase();
+        if (ch && ch !== "-") {
+          chCount[ch] = (chCount[ch] || 0) + 1;
+        }
+      });
+      const topChannels = Object.entries(chCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const chHtml = topChannels.length > 0
+        ? topChannels.map(([ch, c]) => '<li class="capitalize">📢 <b>' + ch + '</b>: ' + c + ' คน</li>').join("")
+        : "<li>ยังไม่มีข้อมูลช่องทาง</li>";
+
+      // 3. Social Packing & Parent Ratio
+      const totalPax = validRows.length;
+      const parentCount = validRows.filter((r) => (r.ticket_type_category || "").includes("ผู้ปกครอง")).length;
+      const studentCount = totalPax - parentCount;
+      const parentRatio = totalPax > 0 ? Math.round((parentCount / totalPax) * 100) : 0;
+
+      // 4. Discount Conversion Funnel
+      const bookingCountsMap = {};
+      validRows.forEach((r) => {
+        bookingCountsMap[r.booking_code] = (bookingCountsMap[r.booking_code] || 0) + 1;
+      });
+      const eligibleRows = validRows.filter((r) => getDiscountEligibility(r, bookingCountsMap[r.booking_code] || 1).eligible);
+      const usedRows = eligibleRows.filter((r) => r.marketing_discount_used);
+      const discConversion = eligibleRows.length > 0 ? Math.round((usedRows.length / eligibleRows.length) * 100) : 0;
+
+      resContainer.innerHTML =
+        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
+          '<h4 class="font-bold text-xs text-amber-300">🎓 มหาวิทยาลัยแพทย์ในฝัน</h4>' +
+          '<ul class="text-xs space-y-1 text-indigo-100">' + topUniHtml + '</ul>' +
+        '</div>' +
+        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
+          '<h4 class="font-bold text-xs text-sky-300">📢 ช่องทาง Marketing ที่ได้ผลสุด</h4>' +
+          '<ul class="text-xs space-y-1 text-indigo-100">' + chHtml + '</ul>' +
+        '</div>' +
+        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
+          '<h4 class="font-bold text-xs text-violet-300">👥 Demographic สัดส่วนคน</h4>' +
+          '<p class="text-xs text-indigo-100">🎒 นักเรียน: <b>' + studentCount + '</b> คน</p>' +
+          '<p class="text-xs text-indigo-100">👪 ผู้ปกครอง: <b>' + parentCount + '</b> คน (' + parentRatio + '%)</p>' +
+        '</div>' +
+        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
+          '<h4 class="font-bold text-xs text-emerald-300">🛍️ Marketing Discount Funnel</h4>' +
+          '<p class="text-xs text-indigo-100">มีสิทธิ์ส่วนลด: <b>' + eligibleRows.length + '</b> คน</p>' +
+          '<p class="text-xs text-indigo-100">ใช้สิทธิ์แล้ว: <b>' + usedRows.length + '</b> คน (<b>' + discConversion + '%</b>)</p>' +
+        '</div>';
+    }
+
+    // ================= 12. EXPORT CSV ฉุกเฉิน =================
+    function exportEmergencyCSV() {
+      if (cachedAttendees.length === 0) return alert("ไม่มีข้อมูลรายชื่อสำหรับ Export");
+
+      const csvData = cachedAttendees.map((r, idx) => ({
+        "ลำดับ": idx + 1,
+        "รหัสการจอง": r.booking_code,
+        "ลำดับคนที่": r.person_order,
+        "ประเภท": r.ticket_type_category || "นักเรียน",
+        "รหัสบัตรเข้างาน": r.ticket_code || "",
+        "ชื่อ-นามสกุล": r.full_name || "",
+        "โรงเรียน": r.school || "",
+        "เบอร์โทรศัพท์": r.phone || "",
+        "ชุดบัตร": r.ticket_type || "",
+        "สถานะเช็กอิน": r.is_checked_in ? "เข้างานแล้ว" : "ยังไม่เข้างาน",
+        "เวลาที่เช็กอิน": r.checked_in_at || "",
+        "สตาฟผู้อนุมัติ": r.checked_in_by || "",
+        "ใช้ส่วนลดMarketing": r.marketing_discount_used ? "ใช้แล้ว" : "ยังไม่ใช้",
+        "เวลาที่ใช้ส่วนลด": r.marketing_discount_used_at || "",
+        "สตาฟMarketingผู้อนุมัติ": r.marketing_discount_used_by || "",
+        "วันที่จอง": r.booking_date || ""
+      }));
+
+      const csvString = Papa.unparse(csvData);
+      const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 5).replace(":", "-");
+
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "SMST_Checkin_Backup_" + dateStr + "_" + timeStr + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ================= 13. จัดการสตาฟ (Admin) =================
     function updateStaffPreview() {
       const fName = valOr(document.getElementById("staffFullName").value, "ชื่อ-นามสกุล");
       const inst = valOr(document.getElementById("staffInstitution").value, "สถาบัน");
@@ -1629,15 +2185,74 @@
       else loadStaffList();
     }
 
-    // ================= 11. อัปโหลด CSV อัจฉริยะ (รองรับทั้ง 20 คอลัมน์ & 23 คอลัมน์) =================
+    // ================= 14. RESET ENGINE (Admin) =================
+    async function resetAllCheckIns() {
+      if (!currentUser ? true : currentUser.role !== "admin") {
+        return alert("เฉพาะ Admin เท่านั้นที่สามารถรีเซ็ตระบบได้");
+      }
+
+      const confirmText = prompt(
+        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะ 'เช็กอินเข้างาน' ของทุกคนกลับเป็น 0 — พิมพ์คำว่า RESET เพื่อยืนยัน:"
+      );
+      if (confirmText !== "RESET") {
+        if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("attendees")
+        .update({
+          is_checked_in: false,
+          checked_in_at: null,
+          checked_in_by: null,
+        })
+        .gte("id", 0);
+
+      if (error) {
+        alert("เกิดข้อผิดพลาดในการรีเซ็ต: " + error.message);
+      } else {
+        alert("✅ รีเซ็ตสถานะการเช็กอินเข้างานทั้งหมดกลับเป็น 0 เรียบร้อยแล้ว!");
+        if (currentSearchQuery) searchTicket(currentSearchQuery);
+        loadAllStatsAndList();
+      }
+    }
+
+    async function resetAllDiscounts() {
+      if (!currentUser ? true : currentUser.role !== "admin") {
+        return alert("เฉพาะ Admin เท่านั้นที่สามารถรีเซ็ตสิทธิ์ส่วนลดได้");
+      }
+
+      const confirmText = prompt(
+        "⚠️ คำเตือน: การรีเซ็ตจะล้างสถานะ 'การใช้ส่วนลดซื้อของหน้างาน (Marketing)' ของทุกคนกลับเป็น 0 — พิมพ์คำว่า RESET เพื่อยืนยัน:"
+      );
+      if (confirmText !== "RESET") {
+        if (confirmText !== null) alert("ยกเลิกการรีเซ็ต (พิมพ์คำยืนยันไม่ตรง)");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("attendees")
+        .update({
+          marketing_discount_used: false,
+          marketing_discount_used_at: null,
+          marketing_discount_used_by: null,
+        })
+        .gte("id", 0);
+
+      if (error) {
+        alert("เกิดข้อผิดพลาดในการรีเซ็ตส่วนลด: " + error.message);
+      } else {
+        alert("✅ รีเซ็ตสิทธิ์ส่วนลดหน้างานทั้งหมดกลับเป็น 0 เรียบร้อยแล้ว!");
+        if (currentSearchQuery) searchTicket(currentSearchQuery);
+        loadAllStatsAndList();
+      }
+    }
+
+    // ================= 15. CSV IMPORT ENGINE (แก้ประเภทนักเรียน/ผู้ปกครอง + คอลัมน์ขยับ) =================
     function cleanCsvVal(val) {
-      if (val === undefined) return "";
-      if (val === null) return "";
+      if (val === undefined || val === null) return "";
       const s = String(val).trim();
-      if (s === "'-") return "";
-      if (s === "-") return "";
-      if (s === "nan") return "";
-      if (s === "NaN") return "";
+      if (s === "'-" || s === "-" || s === "nan" || s === "NaN") return "";
       return s;
     }
 
@@ -1674,7 +2289,7 @@
             const rawK = cleanCsvVal(r["รู้จักโครงการผ่านช่องทางไหน"]);
 
             let isShifted = false;
-            const hasAnyMiddle = (rawG !== "") ? true : (rawH !== "") ? true : (rawI !== "") ? true : (rawJ !== "");
+            const hasAnyMiddle = (rawG !== "") || (rawH !== "") || (rawI !== "") || (rawJ !== "");
             if (!hasCategoryColumn && hasLineColumn && rawK === "" && hasAnyMiddle) {
               isShifted = true;
               shiftedCount++;
@@ -1689,9 +2304,18 @@
             const rawTicketType = valOr(cleanCsvVal(r["ชุดบัตร"]), "-");
             const tType = normalizeTicketTypeText(rawTicketType);
 
-            let categoryLabel = valOr(rawCategory, "ผู้เข้าร่วม");
-            if (!rawCategory && tType.includes("ผู้ปกครอง") && parsePersonOrderNum(pOrder) > 1) {
-              categoryLabel = "ผู้ปกครอง";
+            // กฎการแยกประเภท นักเรียน vs ผู้ปกครอง
+            let categoryLabel = "นักเรียน";
+            if (tType.toLowerCase().includes("early bird")) {
+              categoryLabel = "นักเรียน";
+            } else {
+              if (rawCategory && rawCategory.includes("ผู้ปกครอง")) {
+                categoryLabel = "ผู้ปกครอง";
+              } else if (tType.includes("ผู้ปกครอง") && parsePersonOrderNum(pOrder) > 1) {
+                categoryLabel = "ผู้ปกครอง";
+              } else {
+                categoryLabel = "นักเรียน";
+              }
             }
 
             const parsedAmt = parseFloat(r["ยอดที่ต้องจ่าย"]);

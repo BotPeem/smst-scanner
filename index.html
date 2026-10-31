@@ -1919,37 +1919,61 @@
       }
     }
 
-    // ================= 11. DEEP-DIVE ANALYTICS ENGINE =================
+    // ================= 11. DEEP-DIVE ANALYTICS ENGINE (ปรับสีรองรับ Light/Dark Mode) =================
     function runDeepDiveAnalytics() {
       const validRows = cachedAttendees.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
       const resContainer = document.getElementById("deepDiveResults");
       resContainer.classList.remove("hidden");
 
-      // 1. Target Medical School
+      // คลาสสไตล์ข้อความและหัวข้อตามโหมดสี
+      const textPrimaryClass = isLightMode ? "text-slate-900 font-bold" : "text-white font-semibold";
+      const textSecondaryClass = isLightMode ? "text-slate-700 font-medium" : "text-indigo-200";
+      const cardBorderClass = isLightMode ? "border-2 border-indigo-200 bg-white shadow-sm" : "border border-indigo-700/50 bg-indigo-950/60";
+
+      const title1Class = isLightMode ? "text-amber-800 font-extrabold" : "text-amber-300 font-bold";
+      const title2Class = isLightMode ? "text-sky-800 font-extrabold" : "text-sky-300 font-bold";
+      const title3Class = isLightMode ? "text-purple-800 font-extrabold" : "text-violet-300 font-bold";
+      const title4Class = isLightMode ? "text-emerald-800 font-extrabold" : "text-emerald-300 font-bold";
+
+      // 1. Target Medical School (จัดกลุ่มชื่อที่เหมือนกัน เช่น มหิดล = มหาวิทยาลัยมหิดล)
       const uniCount = {};
       validRows.forEach((r) => {
-        const u = valOr(r.target_uni, "").trim();
+        let u = valOr(r.target_uni, "").trim();
         if (u && u !== "-") {
+          if (u.includes("มหิดล")) u = "มหาวิทยาลัยมหิดล";
+          if (u.includes("จุฬา")) u = "จุฬาลงกรณ์มหาวิทยาลัย";
+          if (u.includes("เชียงใหม่") || u.toLowerCase() === "cmu") u = "มหาวิทยาลัยเชียงใหม่";
+          if (u.includes("ธรรมศาสตร์") || u.toLowerCase() === "tu") u = "มหาวิทยาลัยธรรมศาสตร์";
+          if (u.includes("ขอนแก่น") || u.toLowerCase() === "kku") u = "มหาวิทยาลัยขอนแก่น";
+          if (u.includes("สงขลา") || u.toLowerCase() === "psu") u = "มหาวิทยาลัยสงขลานครินทร์";
+          if (u.includes("วชิระ")) u = "คณะแพทยศาสตร์วชิรพยาบาล";
+          if (u.includes("มศว")) u = "มศว";
           uniCount[u] = (uniCount[u] || 0) + 1;
         }
       });
       const topUnis = Object.entries(uniCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
       const topUniHtml = topUnis.length > 0
-        ? topUnis.map(([u, c], i) => '<li>#' + (i + 1) + ' <b>' + u + '</b> (' + c + ' คน)</li>').join("")
-        : "<li>ยังไม่มีข้อมูลสถาบันในฝัน</li>";
+        ? topUnis.map(([u, c], i) => '<li class="' + textSecondaryClass + '">#' + (i + 1) + ' <b class="' + textPrimaryClass + '">' + u + '</b> (' + c + ' คน)</li>').join("")
+        : '<li class="' + textSecondaryClass + '">ยังไม่มีข้อมูลสถาบันในฝัน</li>';
 
       // 2. Marketing Channels
       const chCount = {};
       validRows.forEach((r) => {
-        const ch = valOr(r.channel, "").trim().toLowerCase();
+        let ch = valOr(r.channel, "").trim();
         if (ch && ch !== "-") {
+          const lower = ch.toLowerCase();
+          if (lower.includes("fb") || lower.includes("facebook") || ch.includes("เฟส")) ch = "Facebook";
+          else if (lower.includes("ig") || lower.includes("instagram") || ch.includes("ไอจี")) ch = "Instagram";
+          else if (lower.includes("tiktok") || ch.includes("ติ๊กต๊อก")) ch = "TikTok";
+          else if (ch.includes("เพื่อน") || ch.includes("รุ่นพี่")) ch = "คนรู้จัก / เพื่อนแนะนำ";
+          else if (ch.includes("โรงเรียน") || ch.includes("ครู")) ch = "โรงเรียน / อาจารย์แนะแนว";
           chCount[ch] = (chCount[ch] || 0) + 1;
         }
       });
       const topChannels = Object.entries(chCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
       const chHtml = topChannels.length > 0
-        ? topChannels.map(([ch, c]) => '<li class="capitalize">📢 <b>' + ch + '</b>: ' + c + ' คน</li>').join("")
-        : "<li>ยังไม่มีข้อมูลช่องทาง</li>";
+        ? topChannels.map(([ch, c]) => '<li class="' + textSecondaryClass + '">📢 <b class="' + textPrimaryClass + '">' + ch + '</b>: ' + c + ' คน</li>').join("")
+        : '<li class="' + textSecondaryClass + '">ยังไม่มีข้อมูลช่องทาง</li>';
 
       // 3. Social Packing & Parent Ratio
       const totalPax = validRows.length;
@@ -1967,26 +1991,25 @@
       const discConversion = eligibleRows.length > 0 ? Math.round((usedRows.length / eligibleRows.length) * 100) : 0;
 
       resContainer.innerHTML =
-        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
-          '<h4 class="font-bold text-xs text-amber-300">🎓 มหาวิทยาลัยแพทย์ในฝัน</h4>' +
-          '<ul class="text-xs space-y-1 text-indigo-100">' + topUniHtml + '</ul>' +
+        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+          '<h4 class="text-xs ' + title1Class + ' flex items-center gap-1.5">🎓 <span>มหาวิทยาลัยแพทย์ในฝัน</span></h4>' +
+          '<ul class="text-xs space-y-1.5">' + topUniHtml + '</ul>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
-          '<h4 class="font-bold text-xs text-sky-300">📢 ช่องทาง Marketing ที่ได้ผลสุด</h4>' +
-          '<ul class="text-xs space-y-1 text-indigo-100">' + chHtml + '</ul>' +
+        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+          '<h4 class="text-xs ' + title2Class + ' flex items-center gap-1.5">📢 <span>ช่องทาง Marketing ที่ได้ผลสุด</span></h4>' +
+          '<ul class="text-xs space-y-1.5">' + chHtml + '</ul>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
-          '<h4 class="font-bold text-xs text-violet-300">👥 Demographic สัดส่วนคน</h4>' +
-          '<p class="text-xs text-indigo-100">🎒 นักเรียน: <b>' + studentCount + '</b> คน</p>' +
-          '<p class="text-xs text-indigo-100">👪 ผู้ปกครอง: <b>' + parentCount + '</b> คน (' + parentRatio + '%)</p>' +
+        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+          '<h4 class="text-xs ' + title3Class + ' flex items-center gap-1.5">👥 <span>Demographic สัดส่วนคน</span></h4>' +
+          '<p class="text-xs ' + textSecondaryClass + '">🎒 นักเรียน: <b class="' + textPrimaryClass + '">' + studentCount + '</b> คน</p>' +
+          '<p class="text-xs ' + textSecondaryClass + '">👪 ผู้ปกครอง: <b class="' + textPrimaryClass + '">' + parentCount + '</b> คน (' + parentRatio + '%)</p>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl border border-indigo-700/50 space-y-2">' +
-          '<h4 class="font-bold text-xs text-emerald-300">🛍️ Marketing Discount Funnel</h4>' +
-          '<p class="text-xs text-indigo-100">มีสิทธิ์ส่วนลด: <b>' + eligibleRows.length + '</b> คน</p>' +
-          '<p class="text-xs text-indigo-100">ใช้สิทธิ์แล้ว: <b>' + usedRows.length + '</b> คน (<b>' + discConversion + '%</b>)</p>' +
+        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+          '<h4 class="text-xs ' + title4Class + ' flex items-center gap-1.5">🛍️ <span>Marketing Discount Funnel</span></h4>' +
+          '<p class="text-xs ' + textSecondaryClass + '">มีสิทธิ์ส่วนลด: <b class="' + textPrimaryClass + '">' + eligibleRows.length + '</b> คน</p>' +
+          '<p class="text-xs ' + textSecondaryClass + '">ใช้สิทธิ์แล้ว: <b class="' + textPrimaryClass + '">' + usedRows.length + '</b> คน (<b class="' + (isLightMode ? 'text-emerald-700' : 'text-emerald-400') + '">' + discConversion + '%</b>)</p>' +
         '</div>';
     }
-
     // ================= 12. EXPORT CSV ฉุกเฉิน =================
     function exportEmergencyCSV() {
       if (cachedAttendees.length === 0) return alert("ไม่มีข้อมูลรายชื่อสำหรับ Export");

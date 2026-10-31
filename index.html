@@ -1919,16 +1919,19 @@
       }
     }
 
-    // ================= 11. DEEP-DIVE ANALYTICS ENGINE (ปรับสีรองรับ Light/Dark Mode) =================
+    // ================= 11. DEEP-DIVE ANALYTICS ENGINE (แก้สี Dark/Light Mode สมบูรณ์) =================
     function runDeepDiveAnalytics() {
       const validRows = cachedAttendees.filter((r) => !valOr(r.booking_status, "").startsWith("ยกเลิก"));
       const resContainer = document.getElementById("deepDiveResults");
       resContainer.classList.remove("hidden");
 
-      // คลาสสไตล์ข้อความและหัวข้อตามโหมดสี
-      const textPrimaryClass = isLightMode ? "text-slate-900 font-bold" : "text-white font-semibold";
-      const textSecondaryClass = isLightMode ? "text-slate-700 font-medium" : "text-indigo-200";
-      const cardBorderClass = isLightMode ? "border-2 border-indigo-200 bg-white shadow-sm" : "border border-indigo-700/50 bg-indigo-950/60";
+      // กำหนดสีพื้นหลัง ขอบ และตัวหนังสือแยกตามโหมดสีอย่างชัดเจน
+      const cardBoxClass = isLightMode
+        ? "bg-white border-2 border-purple-200 shadow-sm"
+        : "bg-indigo-950/80 border border-indigo-700/70 backdrop-blur-md shadow-lg";
+
+      const textPrimaryClass = isLightMode ? "text-slate-900 font-bold" : "text-amber-200 font-bold";
+      const textSecondaryClass = isLightMode ? "text-slate-700 font-medium" : "text-indigo-200 font-medium";
 
       const title1Class = isLightMode ? "text-amber-800 font-extrabold" : "text-amber-300 font-bold";
       const title2Class = isLightMode ? "text-sky-800 font-extrabold" : "text-sky-300 font-bold";
@@ -1942,6 +1945,7 @@
         if (u && u !== "-") {
           if (u.includes("มหิดล")) u = "มหาวิทยาลัยมหิดล";
           if (u.includes("จุฬา")) u = "จุฬาลงกรณ์มหาวิทยาลัย";
+          if (u.includes("พระมงกุฎ") || u.includes("pcm")) u = "วิทยาลัยแพทยศาสตร์พระมงกุฎเกล้า";
           if (u.includes("เชียงใหม่") || u.toLowerCase() === "cmu") u = "มหาวิทยาลัยเชียงใหม่";
           if (u.includes("ธรรมศาสตร์") || u.toLowerCase() === "tu") u = "มหาวิทยาลัยธรรมศาสตร์";
           if (u.includes("ขอนแก่น") || u.toLowerCase() === "kku") u = "มหาวิทยาลัยขอนแก่น";
@@ -1991,20 +1995,20 @@
       const discConversion = eligibleRows.length > 0 ? Math.round((usedRows.length / eligibleRows.length) * 100) : 0;
 
       resContainer.innerHTML =
-        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+        '<div class="p-4 rounded-2xl ' + cardBoxClass + ' space-y-2.5 transition">' +
           '<h4 class="text-xs ' + title1Class + ' flex items-center gap-1.5">🎓 <span>มหาวิทยาลัยแพทย์ในฝัน</span></h4>' +
           '<ul class="text-xs space-y-1.5">' + topUniHtml + '</ul>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+        '<div class="p-4 rounded-2xl ' + cardBoxClass + ' space-y-2.5 transition">' +
           '<h4 class="text-xs ' + title2Class + ' flex items-center gap-1.5">📢 <span>ช่องทาง Marketing ที่ได้ผลสุด</span></h4>' +
           '<ul class="text-xs space-y-1.5">' + chHtml + '</ul>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+        '<div class="p-4 rounded-2xl ' + cardBoxClass + ' space-y-2.5 transition">' +
           '<h4 class="text-xs ' + title3Class + ' flex items-center gap-1.5">👥 <span>Demographic สัดส่วนคน</span></h4>' +
           '<p class="text-xs ' + textSecondaryClass + '">🎒 นักเรียน: <b class="' + textPrimaryClass + '">' + studentCount + '</b> คน</p>' +
           '<p class="text-xs ' + textSecondaryClass + '">👪 ผู้ปกครอง: <b class="' + textPrimaryClass + '">' + parentCount + '</b> คน (' + parentRatio + '%)</p>' +
         '</div>' +
-        '<div class="surface-subcard p-4 rounded-2xl ' + cardBorderClass + ' space-y-2.5 transition">' +
+        '<div class="p-4 rounded-2xl ' + cardBoxClass + ' space-y-2.5 transition">' +
           '<h4 class="text-xs ' + title4Class + ' flex items-center gap-1.5">🛍️ <span>Marketing Discount Funnel</span></h4>' +
           '<p class="text-xs ' + textSecondaryClass + '">มีสิทธิ์ส่วนลด: <b class="' + textPrimaryClass + '">' + eligibleRows.length + '</b> คน</p>' +
           '<p class="text-xs ' + textSecondaryClass + '">ใช้สิทธิ์แล้ว: <b class="' + textPrimaryClass + '">' + usedRows.length + '</b> คน (<b class="' + (isLightMode ? 'text-emerald-700' : 'text-emerald-400') + '">' + discConversion + '%</b>)</p>' +

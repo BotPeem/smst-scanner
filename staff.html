@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SMST Open House 2026 · ระบบสตาฟ (เช็กอิน & Voucher)</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#140B33" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SMST Staff" />
+  <link rel="manifest" href="staff.webmanifest" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("smst_theme_mode") === "light") document.documentElement.dataset.theme = "light";
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Mali:wght@500;600&family=Cinzel:wght@700&family=Big+Shoulders+Inline+Display:wght@800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/staff.css" />
+</head>
+<body class="staff">
+  <script src="assets/js/icons.js"></script>
+  <div class="sky" aria-hidden="true"></div>
+
+  <!-- ================= หน้าจอ LOGIN ================= -->
+  <div class="login-screen" id="loginScreen" hidden>
+    <div class="login-card card">
+      <div class="login-logos">
+        <img class="logo-round" src="assets/img/oph-logo.png" alt="SMST Open House 2026" width="58" height="58" />
+        <img class="logo-round" src="assets/img/smst-logo.png" alt="ตราสัญลักษณ์ สพท. (SMST)" width="58" height="58" />
+      </div>
+      <div class="login-head">
+        <span class="chip chip-gold"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>STAFF PORTAL</span>
+        <h1 class="login-title"><span class="t-smst">SMST</span><span class="t-oph">OPEN HOUSE 2026</span></h1>
+        <p>ระบบเช็กอินฝ่ายทะเบียน และ Voucher ฝ่าย Marketing</p>
+      </div>
+
+      <form class="login-form" id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginUsername">Username</label>
+          <div class="input-wrap">
+            <svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg>
+            <input class="input" id="loginUsername" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ชื่อผู้ใช้งาน" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrap">
+            <svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+            <input class="input with-action" id="loginPassword" type="password" autocomplete="current-password" placeholder="รหัสผ่าน" required />
+            <button type="button" class="icon-btn icon-btn-sm input-action" data-action="toggle-password" aria-label="แสดงรหัสผ่าน" aria-pressed="false">
+              <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
+            </button>
+          </div>
+        </div>
+        <p class="form-error" id="loginError" role="alert" hidden></p>
+        <button class="btn btn-primary btn-lg btn-block" id="loginBtn" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#i-log-in"></use></svg>
+          <span>เข้าสู่ระบบ</span>
+        </button>
+      </form>
+
+      <div class="login-foot">
+        <a href="./"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>หน้าตรวจสอบการสมัคร</a>
+        <button type="button" class="icon-btn icon-btn-sm" data-action="toggle-theme" aria-label="สลับโหมดสี" title="สลับโหมดสี">
+          <svg class="icon only-dark" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="icon only-light" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= หน้าจอหลักของแอป ================= -->
+  <div class="app" id="appScreen" hidden>
+    <aside class="rail" aria-label="เมนูหลัก">
+      <a class="rail-brand" href="./" title="ไปหน้าตรวจสอบการสมัครของน้อง ๆ">
+        <img src="assets/img/oph-logo.png" alt="" width="46" height="46" />
+        <div><b>SMST</b><span>Open House 2026 · Staff</span></div>
+      </a>
+
+      <nav class="appnav" id="appNav">
+        <button type="button" class="nav-item" data-action="tab" data-tab="scan">
+          <svg class="icon" aria-hidden="true"><use href="#i-scan"></use></svg><span>สแกน / เช็กอิน</span>
+        </button>
+        <button type="button" class="nav-item" data-action="tab" data-tab="list">
+          <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg><span>รายชื่อ</span>
+        </button>
+        <button type="button" class="nav-item" data-action="tab" data-tab="dashboard" data-admin-only hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg><span>Dashboard</span>
+        </button>
+        <button type="button" class="nav-item" data-action="tab" data-tab="staff" data-admin-only hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg><span>สตาฟ</span>
+        </button>
+        <button type="button" class="nav-item" data-action="tab" data-tab="import" data-admin-only hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-upload"></use></svg><span>นำเข้า CSV</span>
+        </button>
+      </nav>
+
+      <div class="rail-stats">
+        <div class="stat-row">
+          <div class="stat-row-head"><span>เข้างานแล้ว</span><span><b data-stat="checked">0</b> <small>/ <span data-stat="total">0</span></small></span></div>
+          <div class="progress"><span data-stat-bar="checkin"></span></div>
+        </div>
+        <div class="stat-row" data-voucher-only>
+          <div class="stat-row-head"><span>Voucher ที่ใช้แล้ว</span><span><b data-stat="vused">0</b> <small>/ <span data-stat="veligible">0</span></small></span></div>
+          <div class="progress progress-lav"><span data-stat-bar="voucher"></span></div>
+        </div>
+      </div>
+
+      <div class="rail-foot">
+        <div class="user-card">
+          <span class="avatar" data-user="initial">-</span>
+          <div class="user-card-main">
+            <p class="user-card-name" data-user="name">-</p>
+            <span data-user="role-chip"></span>
+          </div>
+        </div>
+        <div class="rail-actions">
+          <button type="button" class="icon-btn" data-action="toggle-theme" aria-label="สลับโหมดสี" title="สลับโหมดสี">
+            <svg class="icon only-dark" aria-hidden="true"><use href="#i-moon"></use></svg>
+            <svg class="icon only-light" aria-hidden="true"><use href="#i-sun"></use></svg>
+          </button>
+          <button type="button" class="icon-btn" data-action="export" aria-label="ดาวน์โหลด CSV สำรอง" title="ดาวน์โหลด CSV สำรอง">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+          </button>
+          <button type="button" class="icon-btn" data-action="logout" aria-label="ออกจากระบบ" title="ออกจากระบบ" style="color: var(--rose)">
+            <svg class="icon" aria-hidden="true"><use href="#i-log-out"></use></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="app-body">
+      <header class="topbar">
+        <a class="topbar-brand" href="./" title="ไปหน้าตรวจสอบการสมัครของน้อง ๆ">
+          <img src="assets/img/oph-logo.png" alt="" width="36" height="36" />
+          <b>SMST</b>
+        </a>
+        <div class="topbar-mode">
+          <span data-user="role-chip-lg"></span>
+          <p data-user="role-desc"></p>
+        </div>
+        <div class="topbar-stats">
+          <div class="stat-pill" title="เช็กอินเข้างานแล้ว (ไม่นับที่ยกเลิก)">
+            <svg class="icon" aria-hidden="true"><use href="#i-user-check"></use></svg>
+            <span class="stat-pill-label">เข้างาน</span>
+            <b data-stat="checked">0</b><small>/<span data-stat="total">0</span></small>
+          </div>
+          <div class="stat-pill is-voucher" title="Voucher ที่ใช้แล้ว / ผู้มีสิทธิ์" data-voucher-only>
+            <svg class="icon" aria-hidden="true"><use href="#i-gift"></use></svg>
+            <span class="stat-pill-label">Voucher</span>
+            <b data-stat="vused">0</b><small>/<span data-stat="veligible">0</span></small>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <span class="net-chip" id="netChip" hidden><svg class="icon" aria-hidden="true"><use href="#i-wifi-off"></use></svg><span id="netChipText">ออฟไลน์</span></span>
+          <span class="clock" aria-label="เวลาปัจจุบัน"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg><span id="clockText">--:--</span></span>
+          <button type="button" class="icon-btn desktop-only" data-action="refresh" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล">
+            <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+          </button>
+          <button type="button" class="btn btn-secondary desktop-only" data-action="export" title="ดาวน์โหลดไฟล์ CSV รายชื่อล่าสุด">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>Export CSV
+          </button>
+          <button type="button" class="user-menu-btn mobile-only" id="userMenuBtn" data-action="user-menu" aria-label="เมนูผู้ใช้" aria-haspopup="menu" aria-expanded="false">
+            <span class="avatar" data-user="initial">-</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="popover" id="userMenu" role="menu" hidden>
+        <div class="popover-head">
+          <span class="avatar" data-user="initial">-</span>
+          <div class="user-card-main">
+            <p class="user-card-name" data-user="name">-</p>
+            <span data-user="role-chip"></span>
+          </div>
+        </div>
+        <button type="button" class="menu-item" role="menuitem" data-action="toggle-theme">
+          <svg class="icon only-dark" aria-hidden="true"><use href="#i-sun"></use></svg>
+          <svg class="icon only-light" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <span class="only-dark">เปลี่ยนเป็นโหมดกลางวัน</span><span class="only-light">เปลี่ยนเป็นโหมดกลางคืน</span>
+        </button>
+        <button type="button" class="menu-item" role="menuitem" data-action="refresh">
+          <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>รีเฟรชข้อมูล
+        </button>
+        <button type="button" class="menu-item" role="menuitem" data-action="export">
+          <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>ดาวน์โหลด CSV สำรอง
+        </button>
+        <a class="menu-item" role="menuitem" href="./">
+          <svg class="icon" aria-hidden="true"><use href="#i-ticket"></use></svg>หน้าตรวจสอบของน้อง ๆ
+        </a>
+        <button type="button" class="menu-item is-danger" role="menuitem" data-action="logout">
+          <svg class="icon" aria-hidden="true"><use href="#i-log-out"></use></svg>ออกจากระบบ
+        </button>
+      </div>
+
+      <main class="app-main" id="appMain">
+        <!-- ================= แท็บ 1: สแกน / เช็กอิน ================= -->
+        <section class="view" id="view-scan" aria-labelledby="scanTitle">
+          <div class="view-head">
+            <div>
+              <h1 id="scanTitle">สแกน QR / เช็กอิน</h1>
+              <p id="scanSubtitle">สแกนบัตร หรือค้นหาด้วยรหัสบัตร รหัสจอง ชื่อ หรือเบอร์โทร</p>
+            </div>
+          </div>
+
+          <div class="scan-layout">
+            <div class="scan-panel card">
+              <div class="panel-head">
+                <h2><svg class="icon" aria-hidden="true"><use href="#i-scan"></use></svg>สแกนบัตร</h2>
+                <span id="modePill"></span>
+              </div>
+
+              <div class="scanner" id="scannerBox">
+                <div id="qr-reader"></div>
+                <div class="scanner-frame" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="scanline"></span></div>
+                <div class="scanner-overlay" id="scannerIdle">
+                  <span class="icon-tile"><svg class="icon" aria-hidden="true"><use href="#i-camera"></use></svg></span>
+                  <p>เปิดกล้องเพื่อสแกน QR รหัสบัตร (SMST-…) ของน้อง ๆ</p>
+                  <button type="button" class="btn btn-primary" data-action="start-camera">
+                    <svg class="icon" aria-hidden="true"><use href="#i-camera"></use></svg>เปิดกล้องสแกน
+                  </button>
+                </div>
+                <div class="scanner-overlay" id="scannerStarting" hidden>
+                  <span class="spinner"></span>
+                  <p>กำลังเปิดกล้อง...</p>
+                </div>
+                <div class="scanner-overlay scanner-paused" id="scannerPaused" hidden>
+                  <button type="button" class="btn btn-primary btn-lg" data-action="resume-scan">
+                    <svg class="icon" aria-hidden="true"><use href="#i-scan"></use></svg>สแกนคนถัดไป
+                  </button>
+                  <p>พักกล้องไว้ระหว่างดูผลการสแกน</p>
+                </div>
+              </div>
+
+              <div class="scanner-controls" id="scannerControls" hidden>
+                <button type="button" class="btn btn-secondary btn-sm" data-action="switch-camera">
+                  <svg class="icon" aria-hidden="true"><use href="#i-switch-camera"></use></svg>สลับกล้อง
+                </button>
+                <button type="button" class="btn btn-danger-soft btn-sm" data-action="stop-camera">
+                  <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>ปิดกล้อง
+                </button>
+              </div>
+
+              <form class="search-form" id="searchForm" role="search">
+                <div class="input-wrap">
+                  <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                  <input class="input" id="searchInput" type="text" placeholder="รหัสบัตร / รหัสจอง / ชื่อ / เบอร์โทร" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="search" aria-label="ค้นหาบัตร" />
+                </div>
+                <button type="submit" class="btn btn-secondary">ค้นหา</button>
+              </form>
+
+              <div class="scan-options">
+                <label class="switch" data-checkin-only>
+                  <input type="checkbox" id="optAutoCheckin" />
+                  <span class="switch-ui"></span>
+                  <span>เช็กอินอัตโนมัติเมื่อสแกน<small class="switch-hint">สำหรับช่วงคนเยอะ · ข้ามบัตรที่ยกเลิก / รอชำระ / เช็กอินแล้ว</small></span>
+                </label>
+                <label class="switch">
+                  <input type="checkbox" id="optSound" />
+                  <span class="switch-ui"></span>
+                  <span>เสียงและการสั่นแจ้งผลสแกน</span>
+                </label>
+              </div>
+
+              <div class="recent">
+                <div class="recent-head">
+                  <h3><svg class="icon" aria-hidden="true"><use href="#i-history"></use></svg>ล่าสุดจากเครื่องนี้</h3>
+                </div>
+                <ul class="recent-list" id="recentList"></ul>
+              </div>
+            </div>
+
+            <div class="result-panel" id="resultPanel" aria-live="polite">
+              <div id="resultContainer"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= แท็บ 2: รายชื่อทั้งหมด ================= -->
+        <section class="view" id="view-list" aria-labelledby="listTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h1 id="listTitle">รายชื่อผู้สมัครทั้งหมด</h1>
+              <p>เรียงตามเวลาจอง · แตะรายชื่อเพื่อเปิดการ์ดเช็กอิน / Voucher</p>
+            </div>
+          </div>
+
+          <div class="card list-card">
+            <div class="list-toolbar">
+              <div class="input-wrap">
+                <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                <input class="input" id="listSearch" type="text" placeholder="ค้นหาชื่อ / โรงเรียน / รหัส / เบอร์โทร" autocomplete="off" aria-label="ค้นหาในรายชื่อ" />
+              </div>
+              <select class="select" id="roundFilterSelect" aria-label="กรองตามรอบบัตร">
+                <option value="all">ทุกรอบบัตร</option>
+                <option value="early">รอบ Early Bird</option>
+                <option value="morning">รอบทั่วไป · เช้า</option>
+                <option value="afternoon">รอบทั่วไป · บ่าย</option>
+                <option value="walkin">รอบ Walk-in</option>
+              </select>
+              <button type="button" class="btn btn-secondary" data-action="toggle-sort">
+                <svg class="icon" aria-hidden="true"><use href="#i-sort"></use></svg><span id="sortOrderLabel">จองก่อน → ล่าสุด</span>
+              </button>
+              <button type="button" class="icon-btn" data-action="refresh" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล">
+                <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+              </button>
+            </div>
+
+            <div class="filter-chips" role="group" aria-label="ตัวกรองด่วน">
+              <button type="button" class="chip-btn is-active" data-action="quick-filter" data-qf="all">ทั้งหมด <b data-qf-count="all">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="uncheck">ยังไม่เข้างาน <b data-qf-count="uncheck">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="checked">เข้างานแล้ว <b data-qf-count="checked">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="student">นักเรียน <b data-qf-count="student">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="parent">ผู้ปกครอง <b data-qf-count="parent">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="disc-unused" data-voucher-only>Voucher ยังไม่ใช้ <b data-qf-count="disc-unused">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="disc-used" data-voucher-only>Voucher ใช้แล้ว <b data-qf-count="disc-used">0</b></button>
+              <button type="button" class="chip-btn" data-action="quick-filter" data-qf="issue">รอชำระ / ยกเลิก <b data-qf-count="issue">0</b></button>
+            </div>
+
+            <div class="rows-head" aria-hidden="true">
+              <span>#</span><span>ชื่อ - นามสกุล</span><span>รอบ · ประเภท · รหัส</span><span>เวลาจอง / สถานะ</span><span style="text-align: right">เช็กอิน · Voucher</span>
+            </div>
+            <div class="rows" id="allAttendeesList"></div>
+            <p class="list-count" id="listCount"></p>
+          </div>
+        </section>
+
+        <!-- ================= แท็บ 3: DASHBOARD (เฉพาะ Admin) ================= -->
+        <section class="view" id="view-dashboard" aria-labelledby="dashTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h1 id="dashTitle">Dashboard สรุปยอด</h1>
+              <p>ไม่นับการจองที่ยกเลิก · อัปเดตอัตโนมัติทุก 30 วินาที</p>
+            </div>
+            <div class="view-head-actions">
+              <button type="button" class="btn btn-secondary btn-sm" data-action="refresh">
+                <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>รีเฟรช
+              </button>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi card">
+              <div class="kpi-head"><span>ผู้สมัครทั้งหมด</span><span class="icon-tile tone-gold"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg></span></div>
+              <p class="kpi-value" id="kpiTotal">0</p>
+              <p class="kpi-sub" id="kpiTotalSub">-</p>
+            </div>
+            <div class="kpi card">
+              <div class="kpi-head"><span>เช็กอินแล้ว</span><span class="icon-tile tone-teal"><svg class="icon" aria-hidden="true"><use href="#i-user-check"></use></svg></span></div>
+              <p class="kpi-value"><span id="kpiChecked">0</span> <small id="kpiCheckedPct">0%</small></p>
+              <div class="progress"><span id="kpiCheckedBar"></span></div>
+            </div>
+            <div class="kpi card" data-voucher-only>
+              <div class="kpi-head"><span>Voucher ที่ใช้แล้ว</span><span class="icon-tile tone-lav"><svg class="icon" aria-hidden="true"><use href="#i-gift"></use></svg></span></div>
+              <p class="kpi-value"><span id="kpiVoucher">0</span> <small id="kpiVoucherOf">/ 0</small></p>
+              <div class="progress progress-lav"><span id="kpiVoucherBar"></span></div>
+            </div>
+            <div class="kpi card">
+              <div class="kpi-head"><span>รอชำระ / รอตรวจสอบ</span><span class="icon-tile tone-amber"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span></div>
+              <p class="kpi-value" id="kpiPending">0</p>
+              <p class="kpi-sub" id="kpiPendingSub">-</p>
+            </div>
+          </div>
+
+          <div class="round-progress" id="roundProgress"></div>
+
+          <div class="chart-grid">
+            <div class="card chart-card">
+              <h2 class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>สัดส่วนผู้สมัครตามรอบบัตร</h2>
+              <div class="chart-box"><canvas id="roundDoughnutChart" role="img" aria-label="กราฟสัดส่วนผู้สมัครตามรอบบัตร"></canvas></div>
+              <div class="legend" id="doughnutLegend"></div>
+            </div>
+            <div class="card chart-card">
+              <h2 class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>ช่วงเวลาเช็กอิน (Peak hours)</h2>
+              <div class="chart-box"><canvas id="peakHoursBarChart" role="img" aria-label="กราฟจำนวนคนเช็กอินรายชั่วโมง"></canvas></div>
+              <p class="chart-note" id="peakSummaryText"></p>
+            </div>
+          </div>
+
+          <div class="card insights">
+            <div>
+              <h2 class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"></use></svg>Insights เชิงลึก</h2>
+              <p class="section-sub">มหาวิทยาลัยแพทย์ในฝัน · ช่องทางที่รู้จักโครงการ · สัดส่วนผู้เข้าร่วม · Voucher funnel</p>
+            </div>
+            <div class="insight-grid" id="deepDiveResults"></div>
+          </div>
+        </section>
+
+        <!-- ================= แท็บ 4: จัดการสตาฟ (เฉพาะ Admin) ================= -->
+        <section class="view" id="view-staff" aria-labelledby="staffTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h1 id="staffTitle">จัดการสตาฟ</h1>
+              <p>เพิ่ม / แก้ไขบัญชี และกำหนดฝ่าย (ทะเบียน · Marketing · Admin)</p>
+            </div>
+          </div>
+
+          <div class="staff-layout">
+            <div class="card card-pad staff-form-card">
+              <form class="staff-form" id="staffForm" novalidate>
+                <div class="panel-head">
+                  <div>
+                    <h2 class="section-title" id="staffFormTitle"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg><span>เพิ่มสตาฟใหม่</span></h2>
+                    <p class="section-sub">ชื่อที่แสดงจะถูกบันทึกเป็น "ผู้อนุมัติ" ในประวัติเช็กอิน / Voucher</p>
+                  </div>
+                  <button type="button" class="btn btn-ghost btn-sm" id="cancelEditStaffBtn" data-action="cancel-edit-staff" hidden>
+                    <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>ยกเลิก
+                  </button>
+                </div>
+
+                <input type="hidden" id="staffEditId" value="" />
+
+                <div class="field">
+                  <label for="staffFullName">ชื่อ - นามสกุล</label>
+                  <input class="input" id="staffFullName" type="text" placeholder="กรอกชื่อ-นามสกุลจริง" required />
+                </div>
+                <div class="form-grid-2">
+                  <div class="field">
+                    <label for="staffInstitution">สถาบัน (ตัวย่อ)</label>
+                    <input class="input" id="staffInstitution" type="text" placeholder="เช่น BM, SI, RA" required />
+                  </div>
+                  <div class="field">
+                    <label for="staffYearLevel">ชั้นปี</label>
+                    <input class="input" id="staffYearLevel" type="text" inputmode="numeric" placeholder="เช่น 1, 2, 3" required />
+                  </div>
+                </div>
+
+                <div class="preview-pill">
+                  <span>ชื่อที่แสดงตอนอนุมัติ</span>
+                  <b id="staffDisplayPreview">ชื่อ-นามสกุล สถาบัน#ชั้นปี</b>
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="field">
+                    <label for="staffUsername">Username</label>
+                    <input class="input mono" id="staffUsername" type="text" placeholder="ตั้งชื่อผู้ใช้งาน" autocomplete="off" autocapitalize="none" spellcheck="false" required />
+                  </div>
+                  <div class="field">
+                    <label for="staffPassword">Password</label>
+                    <input class="input mono" id="staffPassword" type="text" placeholder="ตั้งรหัสผ่าน" autocomplete="off" autocapitalize="none" spellcheck="false" required />
+                  </div>
+                </div>
+
+                <fieldset class="field">
+                  <legend>ฝ่าย / ระดับสิทธิ์ (Role)</legend>
+                  <div class="role-options">
+                    <label class="role-option">
+                      <input type="radio" name="staffRole" value="registration" checked />
+                      <span class="role-option-body">
+                        <span class="icon-tile tone-teal"><svg class="icon" aria-hidden="true"><use href="#i-clipboard"></use></svg></span>
+                        <span><b>ฝ่ายทะเบียน</b><small>สแกน / เช็กอินเข้างานอย่างเดียว</small></span>
+                      </span>
+                    </label>
+                    <label class="role-option">
+                      <input type="radio" name="staffRole" value="marketing" />
+                      <span class="role-option-body">
+                        <span class="icon-tile tone-lav"><svg class="icon" aria-hidden="true"><use href="#i-megaphone"></use></svg></span>
+                        <span><b>ฝ่าย Marketing</b><small>สแกน / ใช้ Voucher ส่วนลดอย่างเดียว</small></span>
+                      </span>
+                    </label>
+                    <label class="role-option">
+                      <input type="radio" name="staffRole" value="admin" />
+                      <span class="role-option-body">
+                        <span class="icon-tile tone-gold"><svg class="icon" aria-hidden="true"><use href="#i-crown"></use></svg></span>
+                        <span><b>Admin</b><small>ทำได้ทุกอย่าง + Dashboard + จัดการระบบ</small></span>
+                      </span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="saveStaffBtn">
+                  <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>บันทึกข้อมูลสตาฟ</span>
+                </button>
+              </form>
+            </div>
+
+            <div class="card card-pad">
+              <div class="panel-head" style="margin-bottom: 14px">
+                <div>
+                  <h2 class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg>ผู้ใช้งานในระบบ</h2>
+                  <p class="section-sub" id="staffCount">-</p>
+                </div>
+              </div>
+              <div class="staff-list" id="staffListContainer"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= แท็บ 5: นำเข้า CSV & รีเซ็ตระบบ (เฉพาะ Admin) ================= -->
+        <section class="view" id="view-import" aria-labelledby="importTitle" hidden>
+          <div class="view-head">
+            <div>
+              <h1 id="importTitle">นำเข้ารายชื่อจากไฟล์ CSV</h1>
+              <p>รองรับไฟล์ Early Bird (20 คอลัมน์) และรอบทั่วไป (23 คอลัมน์)</p>
+            </div>
+          </div>
+
+          <div class="import-grid">
+            <div class="card card-pad" style="display: grid; gap: 14px">
+              <label class="dropzone" id="dropzone">
+                <input type="file" id="csvFileInput" accept=".csv,text/csv" />
+                <span class="icon-tile"><svg class="icon" aria-hidden="true"><use href="#i-file-up"></use></svg></span>
+                <span class="dropzone-title">ลากไฟล์ CSV มาวาง หรือแตะเพื่อเลือกไฟล์</span>
+                <span class="dropzone-sub">ไฟล์ที่ส่งออกจากระบบจองบัตร (.csv)</span>
+                <span class="dropzone-file" id="dropzoneFile" hidden></span>
+              </label>
+              <button type="button" class="btn btn-primary btn-lg btn-block" id="importBtn" data-action="import-csv">
+                <svg class="icon" aria-hidden="true"><use href="#i-upload"></use></svg><span>อัปโหลดและจัดเรียงตามเวลาจองอัตโนมัติ</span>
+              </button>
+              <div class="import-status" id="importStatus" aria-live="polite"></div>
+            </div>
+
+            <div class="card card-pad">
+              <h2 class="section-title" style="margin-bottom: 14px"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>ระบบจัดการให้อัตโนมัติ</h2>
+              <ul class="checklist">
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>แยกนักเรียน / ผู้ปกครองอัตโนมัติ</b> — Early Bird เป็นนักเรียนทั้งหมด ส่วนรอบทั่วไป / Walk-in อ่านจากคอลัมน์ "ประเภท"</span></li>
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>แก้ช่องขยับจาก ID Line</b> — ดึงข้อมูลที่เลื่อนคอลัมน์กลับเข้าที่ให้อัตโนมัติ</span></li>
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>รักษาสถานะเดิม</b> — คนที่เช็กอินหรือใช้ Voucher ไปแล้ว สถานะจะไม่หายตอนอัปเดตไฟล์ใหม่</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card card-pad" style="display: grid; gap: 14px">
+            <div>
+              <h2 class="section-title"><svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>โซนรีเซ็ต (หลังทดสอบระบบ)</h2>
+              <p class="section-sub">ต้องพิมพ์ RESET เพื่อยืนยันทุกครั้ง · รายชื่อจะไม่ถูกลบ</p>
+            </div>
+            <div class="danger-zone">
+              <div class="danger-card">
+                <h3><svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"></use></svg>รีเซ็ตการเช็กอินทั้งหมด</h3>
+                <p>ล้างสถานะ "เช็กอินเข้างาน" ของทุกคนกลับเป็นยังไม่เข้างาน โดยรายชื่อและสิทธิ์ Voucher ไม่หาย</p>
+                <button type="button" class="btn btn-danger" data-action="reset-checkins">
+                  <svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"></use></svg>รีเซ็ตเช็กอินทุกคน
+                </button>
+              </div>
+              <div class="danger-card" data-voucher-only>
+                <h3><svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"></use></svg>รีเซ็ต Voucher ทั้งหมด</h3>
+                <p>ล้างสถานะการใช้ Voucher ส่วนลดซื้อของหน้างานของทุกคนกลับเป็นยังไม่ได้ใช้สิทธิ์</p>
+                <button type="button" class="btn btn-danger" data-action="reset-discounts">
+                  <svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"></use></svg>รีเซ็ต Voucher ทุกคน
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/staff.js"></script>
+</body>
+</html>

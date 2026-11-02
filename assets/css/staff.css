@@ -858,6 +858,11 @@ body.staff {
   border: 4px solid #fbc80e;
   filter: drop-shadow(0 0 6px rgba(251, 200, 14, 0.85));
 }
+/* เพิ่มส่วนนี้: ปรับสีกรอบเล็งมุมให้คมชัดขึ้นในโหมดสว่าง */
+:root[data-theme="light"] .scanner-frame i {
+  border-color: #d49500;
+  filter: drop-shadow(0 0 6px rgba(180, 120, 0, 0.6));
+}
 
 .scanner-frame i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 14px; }
 .scanner-frame i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 14px; }
@@ -873,6 +878,11 @@ body.staff {
   background: linear-gradient(90deg, transparent, #ffe07a, transparent);
   box-shadow: 0 0 12px rgba(251, 200, 14, 0.9);
   animation: scanline 2.2s ease-in-out infinite alternate;
+}
+/* เพิ่มส่วนนี้: เส้นสแกนสีทองเข้มมองเห็นชัดเจนในโหมดสว่าง */
+:root[data-theme="light"] .scanline {
+  background: linear-gradient(90deg, transparent, #d49500, transparent);
+  box-shadow: 0 0 10px rgba(180, 120, 0, 0.7);
 }
 
 @keyframes scanline {
@@ -893,11 +903,19 @@ body.staff {
   text-align: center;
   color: #f1eaff;
 }
+/* เพิ่มส่วนนี้: ข้อความหลักเปลี่ยนเป็นสีเข้มใน Light mode */
+:root[data-theme="light"] .scanner-overlay {
+  color: var(--text);
+}
 
 .scanner-overlay p {
   max-width: 260px;
   font-size: 13.5px;
   color: #cfc1f3;
+}
+/* เพิ่มส่วนนี้: คำบรรยายใต้กล้องเปลี่ยนเป็นสีม่วงเข้มอ่านง่าย */
+:root[data-theme="light"] .scanner-overlay p {
+  color: var(--text-2);
 }
 
 .scanner-overlay .icon-tile {
@@ -907,6 +925,12 @@ body.staff {
   color: #ffd54a;
   background: rgba(251, 200, 14, 0.14);
   border-color: rgba(251, 200, 14, 0.4);
+}
+/* เพิ่มส่วนนี้: กรอบไอคอนกล้องใช้โทนสีทองประจำธีมสว่าง */
+:root[data-theme="light"] .scanner-overlay .icon-tile {
+  color: var(--gold);
+  background: var(--gold-soft);
+  border-color: var(--gold-line);
 }
 
 .scanner-overlay .icon-tile .icon {
@@ -918,6 +942,14 @@ body.staff {
   background: rgba(10, 5, 30, 0.58);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
+}
+/* เพิ่มส่วนนี้: หน้าจอพักกล้องใน Light mode */
+:root[data-theme="light"] .scanner-paused {
+  background: rgba(240, 235, 255, 0.82);
+  color: var(--text);
+}
+:root[data-theme="light"] .scanner-paused p {
+  color: var(--text-2);
 }
 
 .scanner-controls {

@@ -8,9 +8,9 @@ window.SMST_CONFIG = {
   event: {
     name: "SMST Open House 2026",
     organizer: "สหพันธ์นิสิตนักศึกษาแพทย์แห่งประเทศไทย (สพท.)",
-    date: null,      // วันงาน เช่น "2026-11-28" — ใช้แสดงผล และใช้เช็กว่ามาตรงรอบหรือไม่ในวันงาน
-    venue: null,     // ชื่อสถานที่ เช่น "อาคาร ... ชั้น ..."
-    mapUrl: null,    // ลิงก์ Google Maps (ถ้ามี)
+    date: "2026-11-28",      // วันงาน: 28 พ.ย. 2569
+    venue: "สถานีกลางกรุงเทพอภิวัฒน์ ชั้น M", // ชื่อสถานที่
+    mapUrl: "https://www.google.com/maps/place/Krung+Thep+Aphiwat+Central+Station/@13.8039601,100.5412343,17.75z/data=!4m6!3m5!1s0x30e29de8f7a73e4d:0x4f6950293cc41764!8m2!3d13.8030173!4d100.5425595!16s%2Fg%2F11khbnn96b?entry=tts&g_ep=EgoyMDI2MTAwNy4wIPu8ASoASAFQAw%3D%3D&skid=6df5ed2b-e63c-446e-912d-15ef23667e31",    // ลิงก์ Google Maps
   },
 
   // ---------------------------------------------------------------------

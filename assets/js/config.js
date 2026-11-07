@@ -49,7 +49,7 @@ window.SMST_CONFIG = {
       arrive: null, start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
-      showOnLanding: false, // เปิดเป็น true เมื่อยืนยันว่ามีรอบ Walk-in
+      showOnLanding: true, // เปิดเป็น true เมื่อยืนยันว่ามีรอบ Walk-in
     },
   },
 

@@ -420,6 +420,7 @@ const ACTIONS = {
     el.setAttribute("aria-label", show ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน");
     el.innerHTML = icon(show ? "eye-off" : "eye");
   },
+  "change-password": () => openChangePasswordModal(),
   "start-camera": () => startScanner(),
   "stop-camera": () => stopScanner(),
   "resume-scan": () => resumeScanner(),
@@ -2161,6 +2162,208 @@ async function deleteStaffById(id) {
     showToast("ลบบัญชี " + userObj.username + " แล้ว", "success");
     loadStaffList();
   }
+}
+
+// ================= 15.1 CHANGE PASSWORD (Staff & Admin เปลี่ยนรหัสผ่านของตนเอง) =================
+function openChangePasswordModal() {
+  if (!currentUser) {
+    showToast("กรุณาเข้าสู่ระบบก่อน", "warning");
+    return;
+  }
+  closeUserMenu();
+
+  if (!navigator.onLine || !supabaseClient) {
+    showToast("ไม่สามารถเปลี่ยนรหัสผ่านขณะออฟไลน์ได้ กรุณาเชื่อมต่ออินเทอร์เน็ต", "warning");
+    return;
+  }
+
+  const username = currentUser.username || "-";
+  const displayName = valOr(currentUser.display_name, username);
+
+  const modalHtml =
+    '<div class="modal-icon tone-gold">' +
+    icon("key") +
+    "</div>" +
+    '<h2 class="modal-title">เปลี่ยนรหัสผ่าน</h2>' +
+    '<p class="modal-text">สำหรับบัญชี <b class="mono">' +
+    esc(username) +
+    "</b> (" +
+    esc(displayName) +
+    ")</p>" +
+    '<form class="modal-form" id="changePasswordModalForm" novalidate style="display: grid; gap: 14px; margin-top: 16px;">' +
+    '  <div class="field">' +
+    '    <label for="changePassCurrent">รหัสผ่านปัจจุบัน</label>' +
+    '    <div class="input-wrap">' +
+    icon("lock") +
+    '      <input class="input with-action mono" id="changePassCurrent" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่านปัจจุบัน" required />' +
+    '      <button type="button" class="icon-btn icon-btn-sm input-action" data-action="toggle-password" aria-label="แสดงรหัสผ่าน" aria-pressed="false">' +
+    icon("eye") +
+    "      </button>" +
+    "    </div>" +
+    "  </div>" +
+    '  <div class="field">' +
+    '    <label for="changePassNew">รหัสผ่านใหม่</label>' +
+    '    <div class="input-wrap">' +
+    icon("key") +
+    '      <input class="input with-action mono" id="changePassNew" type="password" autocomplete="new-password" placeholder="ตั้งรหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)" required />' +
+    '      <button type="button" class="icon-btn icon-btn-sm input-action" data-action="toggle-password" aria-label="แสดงรหัสผ่าน" aria-pressed="false">' +
+    icon("eye") +
+    "      </button>" +
+    "    </div>" +
+    "  </div>" +
+    '  <div class="field">' +
+    '    <label for="changePassConfirm">ยืนยันรหัสผ่านใหม่</label>' +
+    '    <div class="input-wrap">' +
+    icon("check") +
+    '      <input class="input with-action mono" id="changePassConfirm" type="password" autocomplete="new-password" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" required />' +
+    '      <button type="button" class="icon-btn icon-btn-sm input-action" data-action="toggle-password" aria-label="แสดงรหัสผ่าน" aria-pressed="false">' +
+    icon("eye") +
+    "      </button>" +
+    "    </div>" +
+    "  </div>" +
+    '  <p class="form-error" id="changePassModalError" role="alert" hidden></p>' +
+    '  <div class="modal-actions" style="margin-top: 8px;">' +
+    '    <button type="button" class="btn btn-secondary" data-modal-close="cancel">ยกเลิก</button>' +
+    '    <button type="submit" class="btn btn-primary" id="changePassSubmitBtn">' +
+    icon("check") +
+    "      <span>บันทึกรหัสผ่านใหม่</span>" +
+    "    </button>" +
+    "  </div>" +
+    "</form>";
+  const handle = openModal(modalHtml, {
+    className: "modal-change-password",
+    label: "เปลี่ยนรหัสผ่าน",
+  });
+
+  const form = handle.el.querySelector("#changePasswordModalForm");
+  const errEl = handle.el.querySelector("#changePassModalError");
+  const submitBtn = handle.el.querySelector("#changePassSubmitBtn");
+  const curPassInput = handle.el.querySelector("#changePassCurrent");
+  const newPassInput = handle.el.querySelector("#changePassNew");
+  const confirmPassInput = handle.el.querySelector("#changePassConfirm");
+
+  function showError(msg) {
+    errEl.innerHTML = icon("alert") + "<span>" + esc(msg) + "</span>";
+    errEl.hidden = false;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errEl.hidden = true;
+
+    const curPass = curPassInput.value.trim();
+    const newPass = newPassInput.value.trim();
+    const confirmPass = confirmPassInput.value.trim();
+
+    if (!curPass) {
+      showError("กรุณากรอกรหัสผ่านปัจจุบัน");
+      curPassInput.focus();
+      return;
+    }
+    if (!newPass) {
+      showError("กรุณากรอกรหัสผ่านใหม่");
+      newPassInput.focus();
+      return;
+    }
+    if (newPass.length < 4) {
+      showError("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 4 ตัวอักษร");
+      newPassInput.focus();
+      return;
+    }
+    if (newPass !== confirmPass) {
+      showError("รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน");
+      confirmPassInput.focus();
+      return;
+    }
+    if (curPass === newPass) {
+      showError("รหัสผ่านใหม่ต้องไม่เหมือนกับรหัสผ่านเดิม");
+      newPassInput.focus();
+      return;
+    }
+
+    if (!navigator.onLine || !supabaseClient) {
+      showError("เชื่อมต่ออินเทอร์เน็ตไม่ได้ กรุณาตรวจสอบการเชื่อมต่อแล้วลองใหม่");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    const originalBtnText = submitBtn.querySelector("span").textContent;
+    submitBtn.querySelector("span").textContent = "กำลังตรวจสอบ...";
+
+    try {
+      let query = supabaseClient.from("staff_users").select("id, password, username");
+      if (currentUser.id) {
+        query = query.eq("id", currentUser.id);
+      } else {
+        query = query.ilike("username", escapeLike(currentUser.username));
+      }
+      const { data: userRow, error: fetchErr } = await query.maybeSingle();
+
+      if (fetchErr) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector("span").textContent = originalBtnText;
+        showError("เกิดข้อผิดพลาดในการตรวจสอบข้อมูล: " + fetchErr.message);
+        return;
+      }
+      if (!userRow) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector("span").textContent = originalBtnText;
+        showError("ไม่พบข้อมูลบัญชีนี้ในระบบ");
+        return;
+      }
+      if (userRow.password !== curPass) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector("span").textContent = originalBtnText;
+        showError("รหัสผ่านปัจจุบันไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+        curPassInput.value = "";
+        curPassInput.focus();
+        return;
+      }
+
+      submitBtn.querySelector("span").textContent = "กำลังบันทึก...";
+
+      let updateQuery = supabaseClient.from("staff_users").update({ password: newPass });
+      if (userRow.id) {
+        updateQuery = updateQuery.eq("id", userRow.id);
+      } else {
+        updateQuery = updateQuery.ilike("username", escapeLike(userRow.username));
+      }
+      const { error: updateErr } = await updateQuery;
+
+      if (updateErr) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector("span").textContent = originalBtnText;
+        showError("บันทึกรหัสผ่านใหม่ไม่สำเร็จ: " + updateErr.message);
+        return;
+      }
+
+      if (!currentUser.id && userRow.id) {
+        currentUser.id = userRow.id;
+        writePref("smst_current_user", JSON.stringify(currentUser));
+      }
+
+      const cached = staffUsersCache.find(
+        (u) => (userRow.id && String(u.id) === String(userRow.id)) || (u.username && u.username.toLowerCase() === userRow.username.toLowerCase())
+      );
+      if (cached) {
+        cached.password = newPass;
+        const passTarget = document.querySelector('[data-pass-for="' + cached.id + '"]');
+        if (passTarget && passTarget.textContent !== "••••••") {
+          passTarget.textContent = newPass;
+        }
+      }
+
+      handle.close("saved");
+      feedback("success");
+      showToast('เปลี่ยนรหัสผ่านสำหรับ "' + (currentUser.display_name || currentUser.username) + '" เรียบร้อยแล้ว', "success", {
+        duration: 4500,
+      });
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.querySelector("span").textContent = originalBtnText;
+      showError("เกิดข้อผิดพลาด: " + (err && err.message ? err.message : String(err)));
+    }
+  });
 }
 
 // ================= 16. RESET ENGINE (Admin) =================

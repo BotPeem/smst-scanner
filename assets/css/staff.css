@@ -360,6 +360,20 @@ body.staff {
 
 .user-card-main {
   min-width: 0;
+  flex: 1;
+}
+.user-card .icon-btn-sm,
+.popover-head .icon-btn-sm {
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s, transform 0.15s;
+}
+@media (hover: hover) {
+  .user-card .icon-btn-sm:hover,
+  .popover-head .icon-btn-sm:hover {
+    color: var(--gold);
+    border-color: var(--gold-line);
+  }
 }
 
 .user-card-name {

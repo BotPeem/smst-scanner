@@ -411,7 +411,9 @@ const ACTIONS = {
     refreshData({ toast: true });
   },
   "toggle-password": (el) => {
-    const input = $("loginPassword");
+    const wrap = el.closest(".input-wrap");
+    const input = wrap ? wrap.querySelector("input") : $("loginPassword");
+    if (!input) return;
     const show = input.type === "password";
     input.type = show ? "text" : "password";
     el.setAttribute("aria-pressed", show ? "true" : "false");

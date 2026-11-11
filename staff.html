@@ -122,6 +122,9 @@
             <p class="user-card-name" data-user="name">-</p>
             <span data-user="role-chip"></span>
           </div>
+          <button type="button" class="icon-btn icon-btn-sm" data-action="change-password" aria-label="เปลี่ยนรหัสผ่าน" title="เปลี่ยนรหัสผ่าน">
+            <svg class="icon" aria-hidden="true"><use href="#i-key"></use></svg>
+          </button>
         </div>
         <div class="rail-actions">
           <button type="button" class="icon-btn" data-action="toggle-theme" aria-label="สลับโหมดสี" title="สลับโหมดสี">
@@ -163,6 +166,9 @@
         <div class="topbar-actions">
           <span class="net-chip" id="netChip" hidden><svg class="icon" aria-hidden="true"><use href="#i-wifi-off"></use></svg><span id="netChipText">ออฟไลน์</span></span>
           <span class="clock" aria-label="เวลาปัจจุบัน"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg><span id="clockText">--:--</span></span>
+          <button type="button" class="icon-btn desktop-only" data-action="change-password" aria-label="เปลี่ยนรหัสผ่าน" title="เปลี่ยนรหัสผ่าน">
+            <svg class="icon" aria-hidden="true"><use href="#i-key"></use></svg>
+          </button>
           <button type="button" class="icon-btn desktop-only" data-action="refresh" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล">
             <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
           </button>
@@ -182,7 +188,13 @@
             <p class="user-card-name" data-user="name">-</p>
             <span data-user="role-chip"></span>
           </div>
+          <button type="button" class="icon-btn icon-btn-sm" data-action="change-password" aria-label="เปลี่ยนรหัสผ่าน" title="เปลี่ยนรหัสผ่าน">
+            <svg class="icon" aria-hidden="true"><use href="#i-key"></use></svg>
+          </button>
         </div>
+        <button type="button" class="menu-item" role="menuitem" data-action="change-password">
+          <svg class="icon" aria-hidden="true"><use href="#i-key"></use></svg>เปลี่ยนรหัสผ่าน
+        </button>
         <button type="button" class="menu-item" role="menuitem" data-action="toggle-theme">
           <svg class="icon only-dark" aria-hidden="true"><use href="#i-sun"></use></svg>
           <svg class="icon only-light" aria-hidden="true"><use href="#i-moon"></use></svg>

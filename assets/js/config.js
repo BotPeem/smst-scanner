@@ -25,28 +25,35 @@ window.SMST_CONFIG = {
   rounds: {
     early: {
       label: "รอบ Early Bird",
-      arrive: null, start: null, end: null,
+      arrive: "07:00", start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,
     },
     morning: {
       label: "รอบทั่วไป · เช้า",
-      arrive: null, start: null, end: null,
+      arrive: "07:00", start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,
     },
     afternoon: {
       label: "รอบทั่วไป · บ่าย",
-      arrive: null, start: null, end: null,
+      arrive: "13:00", start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,
     },
     walkin: {
       label: "รอบ Walk-in",
-      arrive: null, start: null, end: null,
+      arrive: "07:00 / 13:00",
+       arriveMorning: "07:00",
+       arriveAfternoon: "13:00",
+       slots: [
+         { label: "รอบเช้า", arrive: "07:00" },
+         { label: "รอบบ่าย", arrive: "13:00" },
+       ],
+       start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true, // เปิดเป็น true เมื่อยืนยันว่ามีรอบ Walk-in

@@ -5,8 +5,8 @@
       "source": "/staff",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
-  ],   <--- 1. เติมเครื่องหมายคอมม่า (,) ตรงนี้
-  "redirects": [                                                             <--- 2. เติมก้อนนี้ทั้งหมดลงไป
+  ],
+  "redirects": [
     {
       "source": "/line",
       "destination": "https://line.me/ti/g2/_i2NWH_pgSBmJz1v3X2WgepqpS5dEi10J7B2pw",

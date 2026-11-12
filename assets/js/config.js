@@ -25,21 +25,33 @@ window.SMST_CONFIG = {
   rounds: {
     early: {
       label: "รอบ Early Bird",
-      arrive: "07:00", start: null, end: null,
+      arrive: "07:00",
+      slots: [
+        { label: "รอบเช้า", arrive: "07:00" },
+      ],
+      start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,
     },
     morning: {
       label: "รอบทั่วไป · เช้า",
-      arrive: "07:00", start: null, end: null,
+      arrive: "07:00",
+      slots: [
+        { label: "รอบเช้า", arrive: "07:00" },
+      ],
+      start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,
     },
     afternoon: {
       label: "รอบทั่วไป · บ่าย",
-      arrive: "13:00", start: null, end: null,
+      arrive: "13:00",
+      slots: [
+        { label: "รอบบ่าย", arrive: "13:00" },
+      ],
+      start: null, end: null,
       checkInFrom: null, checkInUntil: null,
       note: "",
       showOnLanding: true,

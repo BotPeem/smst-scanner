@@ -1014,15 +1014,16 @@
 }
 
 .round-card-time {
-  font-size: 32px;
+  font-size: 46px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.05;
   color: var(--tone);
+  letter-spacing: -0.01em;
 }
 
 .round-card-time small {
-  margin-left: 3px;
-  font-size: 0.45em;
+  margin-left: 4px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-2);
 }
@@ -1042,30 +1043,31 @@
 .round-slot {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 10px;
-  border-radius: 12px;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
   border: 1px solid var(--line);
   background: var(--surface-2);
 }
 
 .round-slot-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-2);
 }
 
 .round-slot-time {
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
   color: var(--tone);
+  white-space: nowrap;
 }
 
 .round-slot-time small {
-  margin-left: 2px;
-  font-size: 0.55em;
-  font-weight: 500;
+  margin-left: 3px;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text-2);
 }
 

@@ -164,7 +164,22 @@ function describeRoundSchedule(key) {
   let range = null;
   if (r.start && r.end) range = r.start + "–" + r.end + " น.";
   else if (r.start) range = "เริ่ม " + r.start + " น.";
-  return { arrive: r.arrive || null, range, note: r.note || "" };
+  const slots =
+     r.slots ||
+     (r.arriveMorning && r.arriveAfternoon
+       ? [
+           { label: "รอบเช้า", arrive: r.arriveMorning },
+           { label: "รอบบ่าย", arrive: r.arriveAfternoon },
+         ]
+       : null);
+   return {
+     arrive: r.arrive || null,
+     arriveMorning: r.arriveMorning || null,
+     arriveAfternoon: r.arriveAfternoon || null,
+     slots,
+     range,
+     note: r.note || "",
+   };
 }
 
 // เตือนเมื่อสแกนนอกช่วงเวลาของรอบ (เฉพาะวันงาน และเมื่อตั้งค่า checkInFrom/checkInUntil ไว้)

@@ -107,14 +107,33 @@ function renderSchedule() {
   const cards = ROUND_ORDER.filter((key) => getRoundConfig(key).showOnLanding !== false).map((key) => {
     const meta = getRoundMeta(key);
     const sched = describeRoundSchedule(key);
+    let timeHtml = "";
+    if (sched.slots && sched.slots.length) {
+      timeHtml =
+        '<div class="round-card-slots">' +
+        sched.slots
+          .map(
+            (s) =>
+              '<div class="round-slot">' +
+                '<span class="round-slot-label">' + esc(s.label) + "</span>" +
+                (s.arrive
+                  ? '<span class="round-slot-time">' + esc(s.arrive) + "<small>น.</small></span>"
+                  : '<span class="round-slot-time is-tba">รอประกาศ</span>') +
+              "</div>"
+          )
+          .join("") +
+        "</div>";
+    } else if (sched.arrive) {
+      timeHtml = '<p class="round-card-time">' + esc(sched.arrive) + "<small>น.</small></p>";
+    } else {
+      timeHtml = '<p class="round-card-time is-tba">รอประกาศ</p>';
+    }
     return (
       '<article class="round-card card tone-' + meta.tone + '">' +
         "<div>" + roundChip(meta) + "</div>" +
         "<h3>" + esc(meta.name) + "</h3>" +
         '<p class="kicker">' + icon("clock") + "ควรมาถึง</p>" +
-        (sched.arrive
-          ? '<p class="round-card-time">' + esc(sched.arrive) + "<small>น.</small></p>"
-          : '<p class="round-card-time is-tba">รอประกาศ</p>') +
+        timeHtml +
         (sched.range ? "<p>ช่วงกิจกรรม " + esc(sched.range) + "</p>" : "") +
         (sched.note ? "<p>" + esc(sched.note) + "</p>" : "") +
       "</article>"

@@ -1040,6 +1040,11 @@
   margin: 2px 0 4px;
 }
 
+.round-card-slots.is-single,
+.round-card-slots:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
 .round-slot {
   display: flex;
   flex-direction: column;

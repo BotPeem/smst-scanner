@@ -107,27 +107,28 @@ function renderSchedule() {
   const cards = ROUND_ORDER.filter((key) => getRoundConfig(key).showOnLanding !== false).map((key) => {
     const meta = getRoundMeta(key);
     const sched = describeRoundSchedule(key);
-    let timeHtml = "";
-    if (sched.slots && sched.slots.length) {
-      timeHtml =
-        '<div class="round-card-slots">' +
-        sched.slots
-          .map(
-            (s) =>
-              '<div class="round-slot">' +
-                '<span class="round-slot-label">' + esc(s.label) + "</span>" +
-                (s.arrive
-                  ? '<span class="round-slot-time">' + esc(s.arrive) + "<small>น.</small></span>"
-                  : '<span class="round-slot-time is-tba">รอประกาศ</span>') +
-              "</div>"
-          )
-          .join("") +
-        "</div>";
-    } else if (sched.arrive) {
-      timeHtml = '<p class="round-card-time">' + esc(sched.arrive) + "<small>น.</small></p>";
-    } else {
-      timeHtml = '<p class="round-card-time is-tba">รอประกาศ</p>';
-    }
+    const slots =
+      sched.slots && sched.slots.length
+        ? sched.slots
+        : sched.arrive
+        ? [{ label: key === "afternoon" ? "รอบบ่าย" : "รอบเช้า", arrive: sched.arrive }]
+        : [{ label: key === "afternoon" ? "รอบบ่าย" : "รอบเช้า", arrive: null }];
+
+    const isSingle = slots.length === 1;
+    const timeHtml =
+      '<div class="round-card-slots' + (isSingle ? " is-single" : "") + '">' +
+      slots
+        .map(
+          (s) =>
+            '<div class="round-slot">' +
+              (s.label ? '<span class="round-slot-label">' + esc(s.label) + "</span>" : "") +
+              (s.arrive
+                ? '<span class="round-slot-time">' + esc(s.arrive) + "<small>น.</small></span>"
+                : '<span class="round-slot-time is-tba">รอประกาศ</span>') +
+            "</div>"
+        )
+        .join("") +
+      "</div>";
     return (
       '<article class="round-card card tone-' + meta.tone + '">' +
         "<div>" + roundChip(meta) + "</div>" +

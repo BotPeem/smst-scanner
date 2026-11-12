@@ -1037,9 +1037,11 @@ function renderTicketGroup(rows, opts) {
       "</div>"
     : "";
 
-  const schedText = sched.arrive
-    ? "มาถึง " + sched.arrive + " น." + (sched.range ? " · " + sched.range : "")
-    : sched.range || "รอประกาศ";
+  const schedText = sched.slots && sched.slots.length
+    ? sched.slots.map((s) => s.label + " " + s.arrive + " น.").join(" / ")
+    : (sched.arrive
+      ? "มาถึง " + sched.arrive + " น." + (sched.range ? " · " + sched.range : "")
+      : sched.range || "รอประกาศ");
 
   const metaHtml =
     "<div>" +

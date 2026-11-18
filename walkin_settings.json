@@ -1,0 +1,11 @@
+{
+  "isOpen": true,
+  "morningOpen": true,
+  "afternoonOpen": true,
+  "maxQuotaMorning": 150,
+  "maxQuotaAfternoon": 150,
+  "priceStudent": 529,
+  "priceParent": 259,
+  "updatedAt": "18/11/2569 15:21:26 น.",
+  "updatedBy": "Admin Test"
+}
